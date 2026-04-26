@@ -10,7 +10,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
   PieChart, Pie, Cell, BarChart, Bar, Legend
 } from "recharts";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 
 // --- Extended Mock Data for Time Filters ---
 const mockDataSets: any = {
@@ -162,12 +162,12 @@ export default function InvestorDashboard() {
     { name: "Suporte", icon: Headset },
   ];
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: { opacity: 1, transition: { staggerChildren: 0.1 } }
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
   };
@@ -494,13 +494,15 @@ export default function InvestorDashboard() {
 
 // Helper Component for KPI Cards (Interactive)
 function KpiCard({ title, value, trend, trendUp, subtitle, icon, neutral = false, onClick }: any) {
+  const cardVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+  };
+
   return (
     <motion.button 
       onClick={onClick}
-      variants={{
-        hidden: { opacity: 0, y: 20 },
-        show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-      }}
+      variants={cardVariants}
       whileHover={{ y: -4, scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 flex flex-col justify-center transition-all hover:bg-slate-900/70 hover:border-blue-500/30 relative overflow-hidden group cursor-pointer shadow-lg w-full text-left"
