@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, BarChart, Bar, Legend
+  PieChart, Pie, Cell, BarChart, Bar, Legend, ScatterChart, Scatter, ZAxis, ReferenceArea
 } from "recharts";
 
 // --- Extended Mock Data for Time Filters ---
@@ -85,10 +85,12 @@ const timelineEvents = [
   { id: 4, title: "Relatório de qualidade emitido", time: "3 dias atrás", type: "info" },
 ];
 
-const materialLossData = [
-  { name: "Blocos de Concreto", loss: 4.5, limit: 5 },
-  { name: "Aço", loss: 2.1, limit: 3 },
-  { name: "Cimento", loss: 6.2, limit: 5 }, 
+const riskMatrixData = [
+  { name: 'Residencial Alpha', delayDays: -5, costOverrun: -2, status: 'on_track' },
+  { name: 'Torre Horizonte', delayDays: 45, costOverrun: 15, status: 'delayed' },
+  { name: 'Condomínio Reserva', delayDays: 10, costOverrun: 5, status: 'warning' },
+  { name: 'Villa Serena', delayDays: -2, costOverrun: 1, status: 'on_track' },
+  { name: 'Corporate Plaza', delayDays: 60, costOverrun: 8, status: 'delayed' },
 ];
 
 // --- Sub-components ---
@@ -320,31 +322,36 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
 
       {/* Bottom Section (Métricas Operacionais) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Taxa de Perda de Material */}
-        <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6">
-          <h2 className="text-lg font-semibold text-white mb-1">Perda de Material</h2>
-          <p className="text-sm text-slate-400 mb-6">Métricas de desperdício (insumos)</p>
+        {/* Matriz de Risco do Portfólio */}
+        <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 relative overflow-hidden">
+          <h2 className="text-lg font-semibold text-white mb-1">Matriz de Risco</h2>
+          <p className="text-sm text-slate-400 mb-4">Atraso (Dias) x Desvio de Custo (%)</p>
           
-          <div className="space-y-6">
-            {materialLossData.map((item, idx) => (
-              <div key={idx} className="group">
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="font-medium text-slate-300">{item.name}</span>
-                  <span className={`font-semibold ${item.loss > item.limit ? 'text-red-400' : 'text-slate-300'}`}>
-                    {item.loss}% <span className="text-slate-500 font-normal text-xs ml-1">(limite: {item.limit}%)</span>
-                  </span>
-                </div>
-                <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                  <motion.div 
-                    initial={{ width: 0 }}
-                    whileInView={{ width: `${Math.min((item.loss / item.limit) * 100, 100)}%` }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1, delay: 0.2 + idx * 0.1 }}
-                    className={`h-1.5 rounded-full ${item.loss > item.limit ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 'bg-blue-500'}`} 
-                  />
-                </div>
-              </div>
-            ))}
+          <div className="h-56 w-full relative z-10">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+              <ScatterChart margin={{ top: 10, right: 10, bottom: 0, left: -20 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                <XAxis type="number" dataKey="costOverrun" name="Desvio de Custo" unit="%" stroke="#64748b" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
+                <YAxis type="number" dataKey="delayDays" name="Atraso" unit=" dias" stroke="#64748b" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
+                <ZAxis type="category" dataKey="name" name="Obra" />
+                <RechartsTooltip 
+                  cursor={{ strokeDasharray: '3 3', stroke: '#334155' }}
+                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}
+                  itemStyle={{ color: '#f8fafc', fontSize: '13px' }}
+                  labelStyle={{ display: 'none' }}
+                  formatter={(value: any, name: any, props: any) => {
+                    if (name === 'Obra') return [value, ''];
+                    return [value + (name === 'Atraso' ? ' dias' : '%'), name];
+                  }}
+                />
+                <ReferenceArea x1={10} x2={25} y1={20} y2={80} fill="#ef4444" fillOpacity={0.1} />
+                <Scatter name="Obras" data={riskMatrixData} shape="circle">
+                  {riskMatrixData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.status === 'delayed' ? '#ef4444' : entry.status === 'warning' ? '#f59e0b' : '#10b981'} />
+                  ))}
+                </Scatter>
+              </ScatterChart>
+            </ResponsiveContainer>
           </div>
         </motion.div>
 

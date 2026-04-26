@@ -14,7 +14,9 @@ const projectsData = [
     status: "on_track",
     image: "https://images.unsplash.com/photo-1541888086425-d81bb19240f5?q=80&w=2000&auto=format&fit=crop",
     deadline: "Nov 2026",
-    budget: "R$ 12.5M"
+    projectedDeadline: "Nov 2026",
+    budget: "R$ 12.5M",
+    eac: "R$ 12.4M"
   },
   {
     id: 2,
@@ -24,17 +26,21 @@ const projectsData = [
     status: "delayed",
     image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=2000&auto=format&fit=crop",
     deadline: "Fev 2027",
-    budget: "R$ 45.0M"
+    projectedDeadline: "Mai 2027",
+    budget: "R$ 45.0M",
+    eac: "R$ 49.2M"
   },
   {
     id: 3,
     name: "Condomínio Reserva",
     location: "Campinas, SP",
     progress: 15,
-    status: "on_track",
+    status: "warning",
     image: "https://images.unsplash.com/photo-1590486803833-1c5dc8ddd4c8?q=80&w=2000&auto=format&fit=crop",
     deadline: "Ago 2027",
-    budget: "R$ 8.2M"
+    projectedDeadline: "Out 2027",
+    budget: "R$ 8.2M",
+    eac: "R$ 8.7M"
   }
 ];
 
@@ -154,8 +160,8 @@ export default function ProjectsView() {
               <div className="absolute inset-0 bg-slate-900/20 group-hover:bg-transparent transition-colors z-10" />
               <img src={project.image} alt={project.name} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
               <div className="absolute top-4 right-4 z-20">
-                <span className={`px-2.5 py-1 text-xs font-semibold rounded-full backdrop-blur-md ${project.status === 'on_track' ? 'bg-green-500/80 text-white' : 'bg-red-500/80 text-white'}`}>
-                  {project.status === 'on_track' ? 'No Prazo' : 'Atrasado'}
+                <span className={`px-2.5 py-1 text-xs font-semibold rounded-full backdrop-blur-md ${project.status === 'on_track' ? 'bg-green-500/80 text-white' : project.status === 'warning' ? 'bg-amber-500/80 text-white' : 'bg-red-500/80 text-white'}`}>
+                  {project.status === 'on_track' ? 'No Prazo' : project.status === 'warning' ? 'Atenção' : 'Atrasado'}
                 </span>
               </div>
               {/* Photo Gallery Indicator */}
@@ -176,11 +182,17 @@ export default function ProjectsView() {
                 <div className="bg-slate-800/50 p-3 rounded-xl border border-white/5">
                   <p className="text-xs text-slate-500 mb-1">Orçamento</p>
                   <p className="text-sm font-semibold text-white">{project.budget}</p>
+                  <p className={`text-[10px] mt-1 font-medium ${project.eac > project.budget ? 'text-red-400' : 'text-green-400'}`}>
+                    EAC: {project.eac}
+                  </p>
                 </div>
                 <div className="bg-slate-800/50 p-3 rounded-xl border border-white/5">
                   <p className="text-xs text-slate-500 mb-1">Entrega</p>
                   <p className="text-sm font-semibold text-white flex items-center">
                     <Calendar className="w-3.5 h-3.5 mr-1 text-slate-400" /> {project.deadline}
+                  </p>
+                  <p className={`text-[10px] mt-1 font-medium ${project.projectedDeadline !== project.deadline ? 'text-red-400' : 'text-slate-400'}`}>
+                    Proj: {project.projectedDeadline}
                   </p>
                 </div>
               </div>

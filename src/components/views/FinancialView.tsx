@@ -15,7 +15,7 @@ const cashflowData = [
   { month: "Jun", entrada: 0, saida: 350, acumulado: -50 },
 ];
 
-export default function FinancialView() {
+export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: { opacity: 1, transition: { staggerChildren: 0.1 } }

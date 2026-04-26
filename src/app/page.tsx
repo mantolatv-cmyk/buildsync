@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { 
   LayoutDashboard, FolderKanban, Wallet, FileText, ShieldCheck, Headset,
-  TrendingUp, Clock, Sparkles, ChevronDown, X, PieChart as PieChartIcon, BarChart3, Menu
+  TrendingUp, Clock, Sparkles, ChevronDown, X, PieChart as PieChartIcon, BarChart3, Menu, Package
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -11,6 +11,7 @@ import OverviewView from "@/components/views/OverviewView";
 import ProjectsView from "@/components/views/ProjectsView";
 import FinancialView from "@/components/views/FinancialView";
 import ReportsView from "@/components/views/ReportsView";
+import SupplyView from "@/components/views/SupplyView";
 import ReportDrawer from "@/components/ReportDrawer";
 
 export default function InvestorDashboard() {
@@ -25,6 +26,7 @@ export default function InvestorDashboard() {
     { name: "Visão Geral", icon: LayoutDashboard },
     { name: "Projetos", icon: FolderKanban },
     { name: "Financeiro", icon: Wallet },
+    { name: "Suprimentos", icon: Package },
     { name: "Relatórios", icon: FileText },
     { name: "Suporte", icon: Headset },
   ];
@@ -171,9 +173,10 @@ export default function InvestorDashboard() {
           >
             {activeMenu === "Visão Geral" && <OverviewView timeFilter={timeFilter} setActiveKpiDetail={setActiveKpiDetail} />}
             {activeMenu === "Projetos" && <ProjectsView />}
-            {activeMenu === "Financeiro" && <FinancialView />}
+            {activeMenu === "Financeiro" && <FinancialView timeFilter={timeFilter} />}
+            {activeMenu === "Suprimentos" && <SupplyView />}
             {activeMenu === "Relatórios" && <ReportsView />}
-            {activeMenu !== "Visão Geral" && activeMenu !== "Projetos" && activeMenu !== "Financeiro" && activeMenu !== "Relatórios" && (
+            {activeMenu !== "Visão Geral" && activeMenu !== "Projetos" && activeMenu !== "Financeiro" && activeMenu !== "Suprimentos" && activeMenu !== "Relatórios" && (
               <div className="flex flex-col items-center justify-center h-[60vh] text-slate-500">
                 <ShieldCheck className="w-16 h-16 mb-4 opacity-20" />
                 <p>Módulo {activeMenu} em desenvolvimento</p>
