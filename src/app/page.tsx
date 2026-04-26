@@ -1,157 +1,24 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { 
   LayoutDashboard, FolderKanban, Wallet, FileText, ShieldCheck, Headset,
-  TrendingUp, AlertCircle, Clock, ArrowUpRight, ArrowDownRight, Sparkles,
-  ChevronDown, X, BarChart3, PieChart as PieChartIcon
+  TrendingUp, Clock, Sparkles, ChevronDown, X, PieChart as PieChartIcon, BarChart3
 } from "lucide-react";
-import { 
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, BarChart, Bar, Legend
-} from "recharts";
-import { motion, AnimatePresence, Variants } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
-// --- Extended Mock Data for Time Filters ---
-const mockDataSets: any = {
-  month: {
-    kpis: {
-      capital: "R$ 850.000",
-      yoc: "14.2%",
-      costPerSqm: "R$ 3.900",
-      capitalTrend: "+2%",
-      yocTrend: "+0.1%",
-      costTrend: "-0.5%"
-    },
-    costData: [
-      { month: "Sem 1", orcado: 200000, realizado: 195000 },
-      { month: "Sem 2", orcado: 400000, realizado: 410000 },
-      { month: "Sem 3", orcado: 600000, realizado: 620000 },
-      { month: "Sem 4", orcado: 850000, realizado: 840000 },
-    ]
-  },
-  quarter: {
-    kpis: {
-      capital: "R$ 2.450.000",
-      yoc: "14.5%",
-      costPerSqm: "R$ 3.880",
-      capitalTrend: "+8%",
-      yocTrend: "+0.3%",
-      costTrend: "-1.2%"
-    },
-    costData: [
-      { month: "Out", orcado: 700000, realizado: 710000 },
-      { month: "Nov", orcado: 1500000, realizado: 1480000 },
-      { month: "Dez", orcado: 2500000, realizado: 2450000 },
-    ]
-  },
-  ytd: {
-    kpis: {
-      capital: "R$ 4.250.000",
-      yoc: "14.8%",
-      costPerSqm: "R$ 3.850",
-      capitalTrend: "+12%",
-      yocTrend: "+0.5%",
-      costTrend: "-2.1%"
-    },
-    costData: [
-      { month: "Jan", orcado: 150000, realizado: 145000 },
-      { month: "Fev", orcado: 300000, realizado: 310000 },
-      { month: "Mar", orcado: 450000, realizado: 460000 },
-      { month: "Abr", orcado: 600000, realizado: 590000 },
-      { month: "Mai", orcado: 750000, realizado: 780000 },
-      { month: "Jun", orcado: 900000, realizado: 920000 },
-    ]
-  }
-};
-
-const complianceData = [
-  { name: "Compliant", value: 92 },
-  { name: "Pending", value: 8 },
-];
-
-const spiData = [
-  { etapa: "Fundação", spi: 1.05 },
-  { etapa: "Alvenaria", spi: 0.95 },
-  { etapa: "Cobertura", spi: 1.10 },
-  { etapa: "Instalações", spi: 0.88 },
-  { etapa: "Acabamento", spi: 1.00 },
-];
-
-const timelineEvents = [
-  { id: 1, title: "Nota fiscal de cimento aprovada", time: "Hoje, 10:30", type: "success" },
-  { id: 2, title: "Alvará de construção anexado", time: "Ontem, 15:45", type: "success" },
-  { id: 3, title: "Atraso na entrega do aço", time: "2 dias atrás", type: "alert" },
-  { id: 4, title: "Relatório de qualidade emitido", time: "3 dias atrás", type: "info" },
-];
-
-const materialLossData = [
-  { name: "Blocos de Concreto", loss: 4.5, limit: 5 },
-  { name: "Aço", loss: 2.1, limit: 3 },
-  { name: "Cimento", loss: 6.2, limit: 5 }, 
-];
-
-// --- Sub-components ---
-
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-slate-900/90 backdrop-blur-md border border-slate-700 p-3 rounded-lg shadow-2xl z-50">
-        <p className="text-slate-300 text-sm mb-1">{label}</p>
-        {payload.map((p: any, idx: number) => (
-          <p key={idx} className="text-sm font-semibold" style={{ color: p.color }}>
-            {p.name}: R$ {(p.value).toLocaleString('pt-BR')}
-          </p>
-        ))}
-      </div>
-    );
-  }
-  return null;
-};
-
-const AnimatedCounter = ({ value, prefix = "", suffix = "", isCurrency = false }: any) => {
-  const [count, setCount] = useState(0);
-  
-  useEffect(() => {
-    const targetValue = parseFloat(value.replace(/[^0-9.-]+/g, ""));
-    if (isNaN(targetValue)) return;
-
-    const duration = 1000; 
-    const steps = 30;
-    const stepTime = Math.abs(Math.floor(duration / steps));
-    let currentStep = 0;
-    
-    const timer = setInterval(() => {
-      currentStep++;
-      const progress = currentStep / steps;
-      const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-      setCount(targetValue * easeProgress);
-      
-      if (currentStep >= steps) {
-        clearInterval(timer);
-        setCount(targetValue);
-      }
-    }, stepTime);
-    
-    return () => clearInterval(timer);
-  }, [value]);
-
-  const displayValue = isCurrency 
-    ? count.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
-    : count.toFixed(1);
-
-  return <span>{prefix}{displayValue}{suffix}</span>;
-};
-
-// --- Main Component ---
+// Import Views
+import OverviewView from "@/components/views/OverviewView";
+import ProjectsView from "@/components/views/ProjectsView";
+import FinancialView from "@/components/views/FinancialView";
+import ReportDrawer from "@/components/ReportDrawer";
 
 export default function InvestorDashboard() {
   const [activeMenu, setActiveMenu] = useState("Visão Geral");
   const [timeFilter, setTimeFilter] = useState("ytd");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [activeKpiDetail, setActiveKpiDetail] = useState<any>(null); // State for Drill-down Drawer
-
-  const currentData = mockDataSets[timeFilter];
+  const [isReportDrawerOpen, setIsReportDrawerOpen] = useState(false); // State for Report AI
 
   const menuItems = [
     { name: "Visão Geral", icon: LayoutDashboard },
@@ -161,16 +28,6 @@ export default function InvestorDashboard() {
     { name: "Compliance", icon: ShieldCheck },
     { name: "Suporte", icon: Headset },
   ];
-
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.1 } }
-  };
-
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-  };
 
   return (
     <div className="flex h-screen text-slate-200 font-sans overflow-hidden bg-[#020617] relative selection:bg-blue-500/30">
@@ -221,194 +78,87 @@ export default function InvestorDashboard() {
             animate={{ opacity: 1, x: 0 }}
             className="text-2xl font-semibold text-white tracking-tight flex items-center"
           >
-            Dashboard Executivo
+            {activeMenu}
             
-            {/* Global Time Filter */}
-            <div className="relative ml-6">
-              <button 
-                onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className="flex items-center space-x-2 text-sm font-medium bg-slate-800/50 hover:bg-slate-700/50 border border-white/10 px-3 py-1.5 rounded-lg transition-colors"
-              >
-                <Clock className="w-4 h-4 text-slate-400" />
-                <span className="text-slate-200">
-                  {timeFilter === 'month' ? 'Este Mês' : timeFilter === 'quarter' ? 'Último Trimestre' : 'Acumulado (YTD)'}
-                </span>
-                <ChevronDown className="w-4 h-4 text-slate-400" />
-              </button>
-              
-              <AnimatePresence>
-                {isFilterOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="absolute top-full left-0 mt-2 w-48 bg-slate-900 border border-white/10 rounded-xl shadow-2xl py-1 z-50 overflow-hidden"
-                  >
-                    {[
-                      { id: 'month', label: 'Este Mês' },
-                      { id: 'quarter', label: 'Último Trimestre' },
-                      { id: 'ytd', label: 'Acumulado (YTD)' }
-                    ].map(option => (
-                      <button
-                        key={option.id}
-                        onClick={() => { setTimeFilter(option.id); setIsFilterOpen(false); }}
-                        className={`w-full text-left px-4 py-2 text-sm transition-colors ${timeFilter === option.id ? 'bg-blue-500/20 text-blue-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+            {/* Global Time Filter (Only show on Visão Geral and Financeiro) */}
+            {(activeMenu === "Visão Geral" || activeMenu === "Financeiro") && (
+              <div className="relative ml-6">
+                <button 
+                  onClick={() => setIsFilterOpen(!isFilterOpen)}
+                  className="flex items-center space-x-2 text-sm font-medium bg-slate-800/50 hover:bg-slate-700/50 border border-white/10 px-3 py-1.5 rounded-lg transition-colors"
+                >
+                  <Clock className="w-4 h-4 text-slate-400" />
+                  <span className="text-slate-200">
+                    {timeFilter === 'month' ? 'Este Mês' : timeFilter === 'quarter' ? 'Último Trimestre' : 'Acumulado (YTD)'}
+                  </span>
+                  <ChevronDown className="w-4 h-4 text-slate-400" />
+                </button>
+                
+                <AnimatePresence>
+                  {isFilterOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute top-full left-0 mt-2 w-48 bg-slate-900 border border-white/10 rounded-xl shadow-2xl py-1 z-50 overflow-hidden"
+                    >
+                      {[
+                        { id: 'month', label: 'Este Mês' },
+                        { id: 'quarter', label: 'Último Trimestre' },
+                        { id: 'ytd', label: 'Acumulado (YTD)' }
+                      ].map(option => (
+                        <button
+                          key={option.id}
+                          onClick={() => { setTimeFilter(option.id); setIsFilterOpen(false); }}
+                          className={`w-full text-left px-4 py-2 text-sm transition-colors ${timeFilter === option.id ? 'bg-blue-500/20 text-blue-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
           </motion.h1>
 
           <div className="flex items-center space-x-5">
-            <button className="group relative px-5 py-2.5 bg-white text-slate-950 text-sm font-semibold rounded-xl overflow-hidden shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_25px_rgba(255,255,255,0.25)] transition-all">
+            <button 
+              onClick={() => setIsReportDrawerOpen(true)}
+              className="group relative px-5 py-2.5 bg-white text-slate-950 text-sm font-semibold rounded-xl overflow-hidden shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_25px_rgba(255,255,255,0.25)] transition-all"
+            >
               <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full group-hover:animate-shimmer" />
               <span className="flex items-center">
-                <Sparkles className="w-4 h-4 mr-2" />
-                Gerar Relatório
+                <Sparkles className="w-4 h-4 mr-2 text-blue-600 group-hover:text-blue-700 transition-colors" />
+                Gerar Relatório IA
               </span>
             </button>
           </div>
         </header>
 
-        <motion.div 
-          key={timeFilter} // Trigger re-animation when filter changes
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-          className="p-8 max-w-7xl mx-auto space-y-8"
-        >
-          {/* Top Cards (KPIs Executivos) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <KpiCard 
-              id="capital"
-              title="Capital Total Investido" 
-              value={<AnimatedCounter value={currentData.kpis.capital} />}
-              trend={currentData.kpis.capitalTrend} 
-              trendUp={true} 
-              subtitle="vs. período anterior"
-              onClick={() => setActiveKpiDetail({ id: 'capital', title: 'Composição de Capital Investido', value: currentData.kpis.capital })}
-            />
-            <KpiCard 
-              id="yoc"
-              title="YOC Projetado" 
-              value={<AnimatedCounter value={currentData.kpis.yoc} />}
-              trend={currentData.kpis.yocTrend} 
-              trendUp={true} 
-              subtitle="Yield on Cost"
-              onClick={() => setActiveKpiDetail({ id: 'yoc', title: 'Análise de Yield on Cost', value: currentData.kpis.yoc })}
-            />
-            <KpiCard 
-              id="cost"
-              title="Custo por m² Atual" 
-              value={<AnimatedCounter value={currentData.kpis.costPerSqm} />} 
-              trend={currentData.kpis.costTrend} 
-              trendUp={true} 
-              subtitle="Abaixo da média"
-              onClick={() => setActiveKpiDetail({ id: 'cost', title: 'Detalhamento de Custo por m²', value: currentData.kpis.costPerSqm })}
-            />
-            <KpiCard 
-              id="status"
-              title="Status do Prazo" 
-              value="No Prazo" 
-              icon={<Clock className="w-8 h-8 text-indigo-400 opacity-80" />}
-              subtitle="142 dias para entrega"
-              neutral={true}
-              onClick={() => setActiveKpiDetail({ id: 'status', title: 'Cronograma Detalhado', value: '142 Dias' })}
-            />
-          </div>
-
-          {/* Middle Layer (Gráficos Principais) */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Gráfico de Linha - Desvio de Custo */}
-            <motion.div variants={itemVariants} className="lg:col-span-2 bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 relative group hover:bg-slate-900/50 transition-colors">
-              <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity duration-500 pointer-events-none" />
-              <div className="flex justify-between items-center mb-6 relative z-10">
-                <div>
-                  <h2 className="text-lg font-semibold text-white">Desvio de Custo</h2>
-                  <p className="text-sm text-slate-400">Orçado vs Realizado ({timeFilter === 'ytd' ? 'Últimos 6 meses' : timeFilter === 'quarter' ? 'Últimos 3 meses' : 'Mensal'})</p>
-                </div>
+        {/* View Router */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeMenu}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
+          >
+            {activeMenu === "Visão Geral" && <OverviewView timeFilter={timeFilter} setActiveKpiDetail={setActiveKpiDetail} />}
+            {activeMenu === "Projetos" && <ProjectsView />}
+            {activeMenu === "Financeiro" && <FinancialView />}
+            {activeMenu !== "Visão Geral" && activeMenu !== "Projetos" && activeMenu !== "Financeiro" && (
+              <div className="flex flex-col items-center justify-center h-[60vh] text-slate-500">
+                <ShieldCheck className="w-16 h-16 mb-4 opacity-20" />
+                <p>Módulo {activeMenu} em desenvolvimento</p>
               </div>
-              <div className="h-72 w-full relative z-10">
-                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-                  <LineChart data={currentData.costData} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
-                    <defs>
-                      <linearGradient id="colorRealizado" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                      </linearGradient>
-                      <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feGaussianBlur stdDeviation="4" result="blur" />
-                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                      </filter>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
-                    <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#64748b' }} dy={10} />
-                    <YAxis 
-                      axisLine={false} 
-                      tickLine={false} 
-                      tick={{ fill: '#64748b' }}
-                      tickFormatter={(value) => `R$${value / 1000}k`}
-                    />
-                    <RechartsTooltip content={<CustomTooltip />} cursor={{ stroke: '#334155', strokeWidth: 1, strokeDasharray: '4 4' }} />
-                    <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
-                    <Line type="monotone" name="Orçado" dataKey="orcado" stroke="#475569" strokeWidth={2} dot={false} activeDot={{ r: 4, fill: '#475569', stroke: '#0f172a' }} />
-                    <Line type="monotone" name="Realizado" dataKey="realizado" stroke="#3b82f6" strokeWidth={3} dot={false} activeDot={{ r: 6, fill: '#3b82f6', stroke: '#0f172a', strokeWidth: 2 }} filter="url(#glow)" />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </motion.div>
-
-            {/* Compliance Score (Radial) */}
-            <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 flex flex-col justify-between hover:bg-slate-900/50 transition-colors relative overflow-hidden">
-               <div className="absolute -right-10 -top-10 w-32 h-32 bg-indigo-500/10 blur-[50px] rounded-full pointer-events-none" />
-              <div>
-                <h2 className="text-lg font-semibold text-white">Compliance Score</h2>
-                <p className="text-sm text-slate-400">Conformidade documental</p>
-              </div>
-              <div className="h-56 relative flex items-center justify-center">
-                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-                  <PieChart>
-                    <defs>
-                      <linearGradient id="scoreGradient" x1="0" y1="0" x2="1" y2="1">
-                        <stop offset="0%" stopColor="#3b82f6" />
-                        <stop offset="100%" stopColor="#6366f1" />
-                      </linearGradient>
-                    </defs>
-                    <Pie
-                      data={complianceData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={70}
-                      outerRadius={90}
-                      startAngle={90}
-                      endAngle={-270}
-                      dataKey="value"
-                      stroke="none"
-                      cornerRadius={10}
-                    >
-                      {complianceData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={index === 0 ? "url(#scoreGradient)" : "#1e293b"} />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-4xl font-bold text-white tracking-tighter">
-                    <AnimatedCounter value="92" suffix="%" />
-                  </span>
-                  <span className="text-xs font-semibold text-indigo-400 uppercase mt-1 tracking-widest">Excelente</span>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </motion.div>
+            )}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
-      {/* Drill-down Drawer / Slide-over */}
+      {/* Drill-down Drawer / Slide-over (For KPI details from Overview) */}
       <AnimatePresence>
         {activeKpiDetail && (
           <>
@@ -488,52 +238,9 @@ export default function InvestorDashboard() {
           </>
         )}
       </AnimatePresence>
+
+      {/* AI Report Drawer */}
+      <ReportDrawer isOpen={isReportDrawerOpen} onClose={() => setIsReportDrawerOpen(false)} />
     </div>
-  );
-}
-
-// Helper Component for KPI Cards (Interactive)
-function KpiCard({ title, value, trend, trendUp, subtitle, icon, neutral = false, onClick }: any) {
-  const cardVariants: Variants = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-  };
-
-  return (
-    <motion.button 
-      onClick={onClick}
-      variants={cardVariants}
-      whileHover={{ y: -4, scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 flex flex-col justify-center transition-all hover:bg-slate-900/70 hover:border-blue-500/30 relative overflow-hidden group cursor-pointer shadow-lg w-full text-left"
-    >
-      <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-30 group-hover:text-blue-400 transition-all pointer-events-none">
-        {icon || <ArrowUpRight className="w-8 h-8" />}
-      </div>
-      <div className="flex justify-between items-start mb-2 relative z-10 w-full">
-        <h3 className="text-sm font-medium text-slate-400 group-hover:text-slate-300 transition-colors">{title}</h3>
-        {!icon && (
-          <div className={`flex items-center text-xs font-semibold px-2 py-1 rounded-md bg-opacity-20 backdrop-blur-sm ${
-            neutral ? 'bg-slate-500 text-slate-300' : 
-            trendUp ? 'bg-green-500/20 text-green-400 border border-green-500/20' : 'bg-red-500/20 text-red-400 border border-red-500/20'
-          }`}>
-            {trendUp ? <ArrowUpRight className="w-3 h-3 mr-1" /> : <ArrowDownRight className="w-3 h-3 mr-1" />}
-            {trend}
-          </div>
-        )}
-      </div>
-      <div className="mt-1 relative z-10">
-        <span className="text-3xl font-bold text-white tracking-tight">{value}</span>
-      </div>
-      <p className="text-sm text-slate-500 mt-2 relative z-10">{subtitle}</p>
-      
-      {/* Interaction hint */}
-      <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex items-center text-xs font-medium text-blue-400">
-        Ver detalhes
-      </div>
-      
-      {/* Subtle bottom glow line */}
-      <div className={`absolute bottom-0 left-0 h-0.5 w-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left ${neutral ? 'bg-slate-500' : trendUp ? 'bg-blue-500' : 'bg-red-500'}`} />
-    </motion.button>
   );
 }
