@@ -90,9 +90,9 @@ export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
           </motion.div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Gráfico de Fluxo de Caixa (Waterfall / Area) */}
-          <motion.div variants={itemVariants} className="lg:col-span-2 bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6">
+        <div className="grid grid-cols-1 gap-6">
+          {/* Gráfico de Fluxo de Caixa (Area) */}
+          <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6">
             <h3 className="text-lg font-semibold text-white mb-6">Fluxo de Caixa Acumulado (R$ milhares)</h3>
             <div className="h-80 w-full">
               <ResponsiveContainer width="100%" height="100%" minWidth={0}>
@@ -113,38 +113,6 @@ export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
                   <Area type="monotone" dataKey="acumulado" stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#colorAcumulado)" />
                 </AreaChart>
               </ResponsiveContainer>
-            </div>
-          </motion.div>
-
-          {/* Previsão de Chamadas de Capital */}
-          <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 flex flex-col">
-            <h3 className="text-lg font-semibold text-white mb-2">Chamadas de Capital</h3>
-            <p className="text-sm text-slate-400 mb-6">Próximos aportes previstos (Capital Calls)</p>
-
-            <div className="space-y-4 flex-1">
-              <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-3">
-                  <AlertCircle className="w-5 h-5 text-amber-500" />
-                </div>
-                <div className="text-xs font-bold text-amber-500 mb-1 tracking-wider uppercase">Chamada #04 - Pendente</div>
-                <div className="text-2xl font-bold text-white mb-2">R$ 800.000</div>
-                <div className="flex justify-between items-center text-sm text-slate-300">
-                  <span>Vencimento:</span>
-                  <span className="font-semibold text-amber-400">15 Ago 2026</span>
-                </div>
-                <button className="w-full mt-4 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 text-sm font-semibold rounded-lg transition-colors">
-                  Autorizar Transferência
-                </button>
-              </div>
-
-              <div className="bg-slate-800/30 border border-white/5 rounded-xl p-4">
-                <div className="text-xs font-bold text-slate-500 mb-1 tracking-wider uppercase">Chamada #05 - Prevista</div>
-                <div className="text-xl font-bold text-slate-300 mb-2">R$ 450.000</div>
-                <div className="flex justify-between items-center text-sm text-slate-400">
-                  <span>Vencimento Estimado:</span>
-                  <span>10 Nov 2026</span>
-                </div>
-              </div>
             </div>
           </motion.div>
         </div>
