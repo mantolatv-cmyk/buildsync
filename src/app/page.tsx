@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   LayoutDashboard, FolderKanban, Wallet, FileText, ShieldCheck, Headset,
   TrendingUp, Clock, Sparkles, ChevronDown, X, PieChart as PieChartIcon, BarChart3, Menu, Package
@@ -13,6 +13,7 @@ import FinancialView from "@/components/views/FinancialView";
 import ReportsView from "@/components/views/ReportsView";
 import SupplyView from "@/components/views/SupplyView";
 import ReportDrawer from "@/components/ReportDrawer";
+import Preloader from "@/components/Preloader";
 
 export default function InvestorDashboard() {
   const [activeMenu, setActiveMenu] = useState("Visão Geral");
@@ -21,6 +22,15 @@ export default function InvestorDashboard() {
   const [activeKpiDetail, setActiveKpiDetail] = useState<any>(null); // State for Drill-down Drawer
   const [isReportDrawerOpen, setIsReportDrawerOpen] = useState(false); // State for Report AI
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // State for Mobile Sidebar
+  const [isLoading, setIsLoading] = useState(true); // State for Initial Preloader
+
+  useEffect(() => {
+    // Keep preloader for 2.6 seconds to allow animation to complete
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2600);
+    return () => clearTimeout(timer);
+  }, []);
 
   const menuItems = [
     { name: "Visão Geral", icon: LayoutDashboard },
@@ -33,6 +43,10 @@ export default function InvestorDashboard() {
 
   return (
     <div className="flex h-screen text-slate-200 font-sans overflow-hidden bg-[#020617] relative selection:bg-blue-500/30">
+      <AnimatePresence mode="wait">
+        {isLoading && <Preloader />}
+      </AnimatePresence>
+
       {/* Background Glow Effects */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600/10 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-600/10 blur-[120px] pointer-events-none" />
