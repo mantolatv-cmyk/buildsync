@@ -126,16 +126,22 @@ export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
             <p className="text-sm text-slate-400 mb-6">Da Receita Bruta (VGV) à Margem Líquida (R$ Milhões)</p>
             <div className="h-72 w-full relative z-10">
               <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-                <BarChart data={waterfallData} margin={{ top: 20, right: 20, left: -20, bottom: 0 }}>
+                <BarChart data={waterfallData} margin={{ top: 20, right: 20, left: 70, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} tickFormatter={(val) => `R$${val}M`} domain={[0, 'dataMax']} />
+                  <YAxis 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fill: '#64748b', fontSize: 12 }} 
+                    tickFormatter={(val) => `R$${val}M`} 
+                    domain={[0, 60]} 
+                  />
                   <Tooltip 
                     cursor={{fill: '#1e293b', opacity: 0.4}} 
                     contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}
                     itemStyle={{ color: '#f8fafc', fontWeight: 'bold' }}
                     formatter={(value: any, name: any, props: any) => {
-                      if (name === 'bottom') return [];
+                      if (name === 'bottom') return null;
                       return [`R$ ${value}M`, props.payload.name];
                     }}
                     labelStyle={{ display: 'none' }}
