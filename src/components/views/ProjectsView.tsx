@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { Variants } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { MapPin, Calendar, ArrowRight, Camera } from "lucide-react";
+import { ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from "recharts";
 
 const projectsData = [
   {
@@ -38,6 +38,15 @@ const projectsData = [
   }
 ];
 
+const sCurveData = [
+  { mes: "Jan", custoPlan: 100, custoReal: 105, fisPlan: 5, fisReal: 4 },
+  { mes: "Fev", custoPlan: 250, custoReal: 260, fisPlan: 15, fisReal: 14 },
+  { mes: "Mar", custoPlan: 450, custoReal: 480, fisPlan: 30, fisReal: 28 },
+  { mes: "Abr", custoPlan: 700, custoReal: 740, fisPlan: 50, fisReal: 48 },
+  { mes: "Mai", custoPlan: 950, custoReal: 990, fisPlan: 75, fisReal: 70 },
+  { mes: "Jun", custoPlan: 1200, custoReal: 1250, fisPlan: 95, fisReal: 85 },
+];
+
 export default function ProjectsView() {
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -50,8 +59,8 @@ export default function ProjectsView() {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-8">
-      <div className="flex justify-between items-end">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
+      <div className="flex justify-between items-end mb-8">
         <div>
           <h2 className="text-2xl font-semibold text-white tracking-tight">Portfólio de Obras</h2>
           <p className="text-sm text-slate-400 mt-1">Gestão de múltiplos empreendimentos ativos</p>
@@ -65,6 +74,67 @@ export default function ProjectsView() {
           </button>
         </div>
       </div>
+
+      {/* Curva S do Portfólio (Engenharia) */}
+      <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl border border-white/5 rounded-2xl p-6 mb-8 shadow-xl relative overflow-hidden group">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-[80px] rounded-full pointer-events-none" />
+        <div className="flex justify-between items-center mb-6 relative z-10">
+          <div>
+            <h3 className="text-xl font-semibold text-white">Curva S de Engenharia (Consolidada)</h3>
+            <p className="text-sm text-slate-400">Avanço Físico (%) x Desembolso Financeiro (R$ mil)</p>
+          </div>
+        </div>
+        
+        <div className="h-80 w-full relative z-10">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+            <ComposedChart data={sCurveData} margin={{ top: 20, right: 20, bottom: 0, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
+              <XAxis dataKey="mes" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
+              
+              {/* Eixo Esquerdo: Financeiro (R$) */}
+              <YAxis 
+                yAxisId="left" 
+                orientation="left" 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{ fill: '#64748b', fontSize: 12 }} 
+                tickFormatter={(val) => `R$${val}k`}
+              />
+              
+              {/* Eixo Direito: Físico (%) */}
+              <YAxis 
+                yAxisId="right" 
+                orientation="right" 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{ fill: '#64748b', fontSize: 12 }} 
+                tickFormatter={(val) => `${val}%`}
+                domain={[0, 100]}
+              />
+              
+              <RechartsTooltip 
+                cursor={{ fill: '#1e293b', opacity: 0.4 }}
+                contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)' }}
+                itemStyle={{ color: '#f8fafc', fontSize: '14px', fontWeight: 500 }}
+                labelStyle={{ color: '#94a3b8', marginBottom: '8px' }}
+                formatter={(value: number, name: string) => {
+                  if (name.includes('Custo')) return [`R$ ${value}k`, name];
+                  return [`${value}%`, name];
+                }}
+              />
+              <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '13px' }} iconType="circle" />
+              
+              {/* Barras: Financeiro */}
+              <Bar yAxisId="left" dataKey="custoPlan" name="Custo Planejado" fill="#334155" radius={[4, 4, 0, 0]} barSize={24} />
+              <Bar yAxisId="left" dataKey="custoReal" name="Custo Realizado" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={24} opacity={0.8} />
+              
+              {/* Linhas: Físico */}
+              <Line yAxisId="right" type="monotone" dataKey="fisPlan" name="Físico Planejado" stroke="#94a3b8" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 4, fill: '#0f172a', stroke: '#94a3b8', strokeWidth: 2 }} />
+              <Line yAxisId="right" type="monotone" dataKey="fisReal" name="Físico Realizado" stroke="#10b981" strokeWidth={3} dot={{ r: 6, fill: '#0f172a', stroke: '#10b981', strokeWidth: 2 }} activeDot={{ r: 8, fill: '#10b981', stroke: '#fff' }} />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      </motion.div>
 
       <motion.div 
         variants={containerVariants}

@@ -3,14 +3,14 @@
 import React, { useState } from "react";
 import { 
   LayoutDashboard, FolderKanban, Wallet, FileText, ShieldCheck, Headset,
-  TrendingUp, Clock, Sparkles, ChevronDown, X, PieChart as PieChartIcon, BarChart3
+  TrendingUp, Clock, Sparkles, ChevronDown, X, PieChart as PieChartIcon, BarChart3, Menu
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Import Views
 import OverviewView from "@/components/views/OverviewView";
 import ProjectsView from "@/components/views/ProjectsView";
 import FinancialView from "@/components/views/FinancialView";
+import ReportsView from "@/components/views/ReportsView";
 import ReportDrawer from "@/components/ReportDrawer";
 
 export default function InvestorDashboard() {
@@ -19,13 +19,13 @@ export default function InvestorDashboard() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [activeKpiDetail, setActiveKpiDetail] = useState<any>(null); // State for Drill-down Drawer
   const [isReportDrawerOpen, setIsReportDrawerOpen] = useState(false); // State for Report AI
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // State for Mobile Sidebar
 
   const menuItems = [
     { name: "Visão Geral", icon: LayoutDashboard },
     { name: "Projetos", icon: FolderKanban },
     { name: "Financeiro", icon: Wallet },
     { name: "Relatórios", icon: FileText },
-    { name: "Compliance", icon: ShieldCheck },
     { name: "Suporte", icon: Headset },
   ];
 
@@ -35,22 +35,40 @@ export default function InvestorDashboard() {
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600/10 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-600/10 blur-[120px] pointer-events-none" />
       
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="fixed inset-0 bg-[#020617]/80 backdrop-blur-sm z-30 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
-      <aside className="w-64 bg-slate-900/50 backdrop-blur-2xl border-r border-white/5 flex flex-col z-10 relative">
-        <div className="h-20 flex items-center px-6 border-b border-white/5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mr-3 shadow-lg shadow-blue-500/20">
-            <TrendingUp className="text-white w-5 h-5" />
+      <aside className={`w-64 bg-slate-900/90 lg:bg-slate-900/50 backdrop-blur-2xl border-r border-white/5 flex flex-col z-40 fixed lg:relative h-full transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+        <div className="h-20 flex items-center justify-between px-6 border-b border-white/5">
+          <div className="flex items-center">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mr-3 shadow-lg shadow-blue-500/20">
+              <TrendingUp className="text-white w-5 h-5" />
+            </div>
+            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 tracking-tight">
+              BuildSync
+            </span>
           </div>
-          <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 tracking-tight">
-            BuildSync
-          </span>
+          <button onClick={() => setIsMobileMenuOpen(false)} className="lg:hidden text-slate-400 hover:text-white">
+            <X className="w-6 h-6" />
+          </button>
         </div>
         
-        <nav className="flex-1 py-6 px-4 space-y-2">
+        <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto custom-scrollbar">
           {menuItems.map((item) => (
             <button
               key={item.name}
-              onClick={() => setActiveMenu(item.name)}
+              onClick={() => { setActiveMenu(item.name); setIsMobileMenuOpen(false); }}
               className="relative w-full flex items-center px-3 py-3 rounded-xl transition-all duration-300 group overflow-hidden"
             >
               {activeMenu === item.name && (
@@ -71,28 +89,35 @@ export default function InvestorDashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto overflow-x-hidden relative scroll-smooth custom-scrollbar">
-        <header className="h-20 flex items-center justify-between px-8 bg-[#020617]/60 backdrop-blur-xl border-b border-white/5 sticky top-0 z-20">
-          <motion.h1 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="text-2xl font-semibold text-white tracking-tight flex items-center"
-          >
-            {activeMenu}
-            
-            {/* Global Time Filter (Only show on Visão Geral and Financeiro) */}
-            {(activeMenu === "Visão Geral" || activeMenu === "Financeiro") && (
-              <div className="relative ml-6">
-                <button 
-                  onClick={() => setIsFilterOpen(!isFilterOpen)}
-                  className="flex items-center space-x-2 text-sm font-medium bg-slate-800/50 hover:bg-slate-700/50 border border-white/10 px-3 py-1.5 rounded-lg transition-colors"
-                >
-                  <Clock className="w-4 h-4 text-slate-400" />
-                  <span className="text-slate-200">
-                    {timeFilter === 'month' ? 'Este Mês' : timeFilter === 'quarter' ? 'Último Trimestre' : 'Acumulado (YTD)'}
-                  </span>
-                  <ChevronDown className="w-4 h-4 text-slate-400" />
-                </button>
+      <main className="flex-1 overflow-y-auto overflow-x-hidden relative scroll-smooth custom-scrollbar flex flex-col w-full lg:w-auto">
+        <header className="h-20 flex items-center justify-between px-4 lg:px-8 bg-[#020617]/60 backdrop-blur-xl border-b border-white/5 sticky top-0 z-20">
+          <div className="flex items-center">
+            <button 
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="mr-4 text-slate-400 hover:text-white lg:hidden transition-colors"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+            <motion.h1 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-xl lg:text-2xl font-semibold text-white tracking-tight flex items-center"
+            >
+              {activeMenu}
+              
+              {/* Global Time Filter (Only show on Visão Geral and Financeiro) */}
+              {(activeMenu === "Visão Geral" || activeMenu === "Financeiro") && (
+                <div className="relative ml-2 lg:ml-6">
+                  <button 
+                    onClick={() => setIsFilterOpen(!isFilterOpen)}
+                    className="flex items-center space-x-1 lg:space-x-2 text-xs lg:text-sm font-medium bg-slate-800/50 hover:bg-slate-700/50 border border-white/10 px-2 lg:px-3 py-1.5 rounded-lg transition-colors"
+                  >
+                    <Clock className="w-3 h-3 lg:w-4 lg:h-4 text-slate-400 hidden sm:block" />
+                    <span className="text-slate-200">
+                      {timeFilter === 'month' ? 'Este Mês' : timeFilter === 'quarter' ? 'Último Trimestre' : 'Acumulado'}
+                    </span>
+                    <ChevronDown className="w-3 h-3 lg:w-4 lg:h-4 text-slate-400" />
+                  </button>
                 
                 <AnimatePresence>
                   {isFilterOpen && (
@@ -122,16 +147,15 @@ export default function InvestorDashboard() {
             )}
           </motion.h1>
 
-          <div className="flex items-center space-x-5">
+          <div className="flex items-center space-x-2 lg:space-x-5">
             <button 
               onClick={() => setIsReportDrawerOpen(true)}
-              className="group relative px-5 py-2.5 bg-white text-slate-950 text-sm font-semibold rounded-xl overflow-hidden shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_25px_rgba(255,255,255,0.25)] transition-all"
+              className="group relative px-3 lg:px-5 py-2 lg:py-2.5 bg-white text-slate-950 text-xs lg:text-sm font-semibold rounded-xl overflow-hidden shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_25px_rgba(255,255,255,0.25)] transition-all flex items-center"
             >
               <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full group-hover:animate-shimmer" />
-              <span className="flex items-center">
-                <Sparkles className="w-4 h-4 mr-2 text-blue-600 group-hover:text-blue-700 transition-colors" />
-                Gerar Relatório IA
-              </span>
+              <Sparkles className="w-4 h-4 mr-1 lg:mr-2 text-blue-600 group-hover:text-blue-700 transition-colors" />
+              <span className="hidden sm:inline">Gerar Relatório IA</span>
+              <span className="sm:hidden">Relatório IA</span>
             </button>
           </div>
         </header>
@@ -148,7 +172,8 @@ export default function InvestorDashboard() {
             {activeMenu === "Visão Geral" && <OverviewView timeFilter={timeFilter} setActiveKpiDetail={setActiveKpiDetail} />}
             {activeMenu === "Projetos" && <ProjectsView />}
             {activeMenu === "Financeiro" && <FinancialView />}
-            {activeMenu !== "Visão Geral" && activeMenu !== "Projetos" && activeMenu !== "Financeiro" && (
+            {activeMenu === "Relatórios" && <ReportsView />}
+            {activeMenu !== "Visão Geral" && activeMenu !== "Projetos" && activeMenu !== "Financeiro" && activeMenu !== "Relatórios" && (
               <div className="flex flex-col items-center justify-center h-[60vh] text-slate-500">
                 <ShieldCheck className="w-16 h-16 mb-4 opacity-20" />
                 <p>Módulo {activeMenu} em desenvolvimento</p>

@@ -63,9 +63,11 @@ const mockDataSets: any = {
   }
 };
 
-const complianceData = [
-  { name: "Compliant", value: 92 },
-  { name: "Pending", value: 8 },
+const roiData = [
+  { ano: "2024", projetado: 12.5, realizado: 12.5 },
+  { ano: "2025", projetado: 14.0, realizado: 14.2 },
+  { ano: "2026", projetado: 15.5, realizado: 16.1 },
+  { ano: "2027", projetado: 17.0, realizado: null },
 ];
 
 const spiData = [
@@ -206,7 +208,7 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
       variants={containerVariants}
       initial="hidden"
       animate="show"
-      className="p-8 max-w-7xl mx-auto space-y-8"
+      className="p-4 md:p-8 max-w-7xl mx-auto space-y-8"
     >
       {/* Top Cards (KPIs Executivos) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -289,50 +291,29 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
           </div>
         </motion.div>
 
-        {/* Compliance Score (Radial) */}
+        {/* Retorno do Investidor (ROI) */}
         <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 flex flex-col justify-between hover:bg-slate-900/50 transition-colors relative overflow-hidden">
-            <div className="absolute -right-10 -top-10 w-32 h-32 bg-indigo-500/10 blur-[50px] rounded-full pointer-events-none" />
+            <div className="absolute -right-10 -top-10 w-32 h-32 bg-emerald-500/10 blur-[50px] rounded-full pointer-events-none" />
           <div>
-            <h2 className="text-lg font-semibold text-white">Compliance Score</h2>
-            <p className="text-sm text-slate-400">Conformidade documental</p>
+            <h2 className="text-lg font-semibold text-white">Retorno sobre Investimento (ROI)</h2>
+            <p className="text-sm text-slate-400">Projetado vs. Realizado ao ano (%)</p>
           </div>
-          <div className="h-56 relative flex items-center justify-center">
+          <div className="h-56 w-full mt-4 relative z-10">
             <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-              <PieChart>
-                <defs>
-                  <linearGradient id="scoreGradient" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#3b82f6" />
-                    <stop offset="100%" stopColor="#6366f1" />
-                  </linearGradient>
-                </defs>
-                <Pie
-                  data={complianceData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={70}
-                  outerRadius={90}
-                  startAngle={90}
-                  endAngle={-270}
-                  dataKey="value"
-                  stroke="none"
-                  cornerRadius={10}
-                >
-                  {complianceData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={index === 0 ? "url(#scoreGradient)" : "#1e293b"} />
-                  ))}
-                </Pie>
-              </PieChart>
+              <BarChart data={roiData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
+                <XAxis dataKey="ano" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} tickFormatter={(val) => `${val}%`} />
+                <RechartsTooltip 
+                  cursor={{fill: '#1e293b'}} 
+                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}
+                  itemStyle={{ color: '#f8fafc' }}
+                />
+                <Legend iconType="circle" wrapperStyle={{ paddingTop: '10px', fontSize: '12px' }} />
+                <Bar dataKey="projetado" name="Projetado" fill="#475569" radius={[4, 4, 0, 0]} barSize={12} />
+                <Bar dataKey="realizado" name="Realizado" fill="#10b981" radius={[4, 4, 0, 0]} barSize={12} />
+              </BarChart>
             </ResponsiveContainer>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-4xl font-bold text-white tracking-tighter">
-                <AnimatedCounter value="92" suffix="%" />
-              </span>
-              <span className="text-xs font-semibold text-indigo-400 uppercase mt-1 tracking-widest">Excelente</span>
-            </div>
-          </div>
-          <div className="flex justify-center items-center text-sm text-slate-400 mt-2 bg-white/5 py-2 rounded-lg relative z-10">
-            <ShieldCheck className="w-4 h-4 text-indigo-400 mr-2" />
-            <span>Alvarás críticos em dia</span>
           </div>
         </motion.div>
       </div>
