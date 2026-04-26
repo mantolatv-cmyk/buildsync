@@ -161,7 +161,7 @@ export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
                 <BarChart data={waterfallData} margin={{ top: 20, right: 20, left: -20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} tickFormatter={(val) => `R$${val}M`} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} tickFormatter={(val) => `R$${val}M`} domain={[0, 'dataMax']} />
                   <Tooltip 
                     cursor={{fill: '#1e293b', opacity: 0.4}} 
                     contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}
@@ -173,7 +173,7 @@ export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
                     labelStyle={{ display: 'none' }}
                   />
                   <Bar dataKey="bottom" stackId="a" fill="transparent" />
-                  <Bar dataKey="value" stackId="a" radius={[4, 4, 4, 4]} barSize={40}>
+                  <Bar dataKey="value" stackId="a" barSize={40}>
                     {waterfallData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.fill} />
                     ))}
