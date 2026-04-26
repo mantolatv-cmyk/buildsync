@@ -197,7 +197,7 @@ export default function InvestorDashboard() {
                     />
                     <Tooltip 
                       contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                      formatter={(value: number) => [`R$ ${value.toLocaleString('pt-BR')}`, '']}
+                      formatter={(value: any) => [`R$ ${Number(value).toLocaleString('pt-BR')}`, '']}
                     />
                     <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
                     <Line type="monotone" name="Custo Orçado" dataKey="orcado" stroke="#94a3b8" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
