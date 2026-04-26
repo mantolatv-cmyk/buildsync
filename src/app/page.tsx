@@ -82,10 +82,10 @@ export default function InvestorDashboard() {
   ];
 
   return (
-    <div className="flex h-screen bg-slate-50 text-slate-800 font-sans overflow-hidden">
+    <div className="flex h-screen bg-blue-50/95 bg-[url('/bg-blueprint.png')] bg-cover bg-center bg-blend-soft-light text-slate-800 font-sans overflow-hidden relative">
       
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col shadow-sm z-10">
+      <aside className="w-64 bg-white/70 backdrop-blur-xl border-r border-white/50 flex flex-col shadow-[4px_0_24px_rgb(0,0,0,0.02)] z-10">
         <div className="h-16 flex items-center px-6 border-b border-slate-100">
           <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center mr-3">
             <TrendingUp className="text-white w-5 h-5" />
@@ -125,7 +125,7 @@ export default function InvestorDashboard() {
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto overflow-x-hidden">
-        <header className="h-16 flex items-center justify-between px-8 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-20">
+        <header className="h-16 flex items-center justify-between px-8 bg-white/50 backdrop-blur-xl border-b border-white/50 sticky top-0 z-20 shadow-[0_4px_30px_rgb(0,0,0,0.03)]">
           <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
             Dashboard do Investidor
           </h1>
@@ -177,7 +177,7 @@ export default function InvestorDashboard() {
           {/* Middle Layer (Gráficos Principais) */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Gráfico de Linha - Desvio de Custo */}
-            <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div className="lg:col-span-2 bg-white/80 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 p-6">
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h2 className="text-lg font-semibold text-slate-800">Desvio de Custo (Orçado vs Realizado)</h2>
@@ -208,7 +208,7 @@ export default function InvestorDashboard() {
             </div>
 
             {/* Gráfico Radial - Compliance Score */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col justify-between">
+            <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 p-6 flex flex-col justify-between">
               <div>
                 <h2 className="text-lg font-semibold text-slate-800">Compliance Score</h2>
                 <p className="text-sm text-slate-500">Conformidade documental atual</p>
@@ -249,7 +249,7 @@ export default function InvestorDashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             {/* Taxa de Perda de Material */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 p-6">
               <h2 className="text-lg font-semibold text-slate-800 mb-1">Perda de Material</h2>
               <p className="text-sm text-slate-500 mb-6">Métricas de desperdício em insumos críticos</p>
               
@@ -274,7 +274,7 @@ export default function InvestorDashboard() {
             </div>
 
             {/* Gráfico de Barras - SPI */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 p-6">
               <h2 className="text-lg font-semibold text-slate-800 mb-1">Índice de Desempenho (SPI)</h2>
               <p className="text-sm text-slate-500 mb-4">SPI por etapa da obra (&gt; 1 = Adiantado)</p>
               
@@ -299,7 +299,7 @@ export default function InvestorDashboard() {
             </div>
 
             {/* Timeline */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col">
+            <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 p-6 flex flex-col">
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h2 className="text-lg font-semibold text-slate-800">Timeline de Obras</h2>
@@ -339,7 +339,7 @@ export default function InvestorDashboard() {
 // Helper Component for KPI Cards
 function KpiCard({ title, value, trend, trendUp, subtitle, icon, neutral = false }: any) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col justify-center transition-all hover:shadow-md cursor-default">
+    <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 p-6 flex flex-col justify-center transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-default">
       <div className="flex justify-between items-start mb-2">
         <h3 className="text-sm font-medium text-slate-500">{title}</h3>
         {icon && icon}
