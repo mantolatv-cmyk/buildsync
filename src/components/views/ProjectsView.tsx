@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { motion, Variants } from "framer-motion";
 import { MapPin, Calendar, ArrowRight, Camera } from "lucide-react";
 import { ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from "recharts";
+import ProjectFormDrawer from "../ProjectFormDrawer";
 
 const projectsData = [
   {
@@ -54,6 +55,8 @@ const sCurveData = [
 ];
 
 export default function ProjectsView() {
+  const [isFormOpen, setIsFormOpen] = useState(false);
+
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: { opacity: 1, transition: { staggerChildren: 0.1 } }
@@ -75,7 +78,10 @@ export default function ProjectsView() {
           <button className="px-4 py-2 bg-slate-800 text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors border border-white/5">
             Filtrar por Status
           </button>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20">
+          <button 
+            onClick={() => setIsFormOpen(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20"
+          >
             Adicionar Obra
           </button>
         </div>
@@ -221,6 +227,8 @@ export default function ProjectsView() {
           </motion.div>
         ))}
       </motion.div>
+
+      <ProjectFormDrawer isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} />
     </div>
   );
 }
