@@ -82,7 +82,16 @@ export default function InvestorDashboard() {
   ];
 
   return (
-    <div className="flex h-screen bg-blue-50/95 bg-[url('/bg-blueprint.png')] bg-cover bg-center bg-blend-soft-light text-slate-800 font-sans overflow-hidden relative">
+    <div 
+      className="flex h-screen text-slate-800 font-sans overflow-hidden relative"
+      style={{
+        backgroundColor: "rgba(239, 246, 255, 0.95)", // blue-50 with 95% opacity
+        backgroundImage: "url('/bg-blueprint.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundBlendMode: "soft-light"
+      }}
+    >
       
       {/* Sidebar */}
       <aside className="w-64 bg-white/70 backdrop-blur-xl border-r border-white/50 flex flex-col shadow-[4px_0_24px_rgb(0,0,0,0.02)] z-10">
