@@ -356,7 +356,7 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
           
           <div className="h-52 w-full">
             <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-              <BarChart data={spiData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }} layout="vertical">
+              <BarChart data={spiData} margin={{ top: 10, right: 10, left: 70, bottom: 0 }} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#1e293b" />
                 <XAxis type="number" domain={[0, 1.2]} axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
                 <YAxis dataKey="etapa" type="category" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
