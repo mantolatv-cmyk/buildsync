@@ -4,7 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Variants } from "framer-motion";
 import { TrendingDown, ArrowRightLeft, Wallet, AlertCircle } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie, Legend } from "recharts";
 
 const cashflowData = [
   { month: "Jan", entrada: 0, saida: 150, acumulado: -150 },
@@ -13,6 +13,23 @@ const cashflowData = [
   { month: "Abr", entrada: 0, saida: 250, acumulado: -400 },
   { month: "Mai", entrada: 800, saida: 100, acumulado: 300 },
   { month: "Jun", entrada: 0, saida: 350, acumulado: -50 },
+];
+
+const waterfallData = [
+  { name: 'VGV', bottom: 0, value: 50, fill: '#10b981' },
+  { name: 'Terreno', bottom: 42, value: 8, fill: '#ef4444' },
+  { name: 'Obras', bottom: 20, value: 22, fill: '#ef4444' },
+  { name: 'Impostos', bottom: 16, value: 4, fill: '#ef4444' },
+  { name: 'Comercial', bottom: 14, value: 2, fill: '#ef4444' },
+  { name: 'Margem', bottom: 0, value: 14, fill: '#3b82f6' },
+];
+
+const costDistributionData = [
+  { name: 'Estrutura', value: 35, color: '#3b82f6' },
+  { name: 'Acabamentos', value: 28, color: '#8b5cf6' },
+  { name: 'Instalações', value: 18, color: '#10b981' },
+  { name: 'Esquadrias', value: 12, color: '#f59e0b' },
+  { name: 'Projetos', value: 7, color: '#64748b' },
 ];
 
 export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
@@ -127,6 +144,84 @@ export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
                   <span>Vencimento Estimado:</span>
                   <span>10 Nov 2026</span>
                 </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Nova Seção: Rentabilidade e Custos */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Gráfico Waterfall (DRE) */}
+          <motion.div variants={itemVariants} className="lg:col-span-2 bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 relative overflow-hidden">
+            <div className="absolute -right-20 -bottom-20 w-48 h-48 bg-blue-500/10 blur-[60px] rounded-full pointer-events-none" />
+            <h3 className="text-lg font-semibold text-white mb-1">DRE Dinâmico (Waterfall)</h3>
+            <p className="text-sm text-slate-400 mb-6">Da Receita Bruta (VGV) à Margem Líquida (R$ Milhões)</p>
+            <div className="h-72 w-full relative z-10">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                <BarChart data={waterfallData} margin={{ top: 20, right: 20, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} tickFormatter={(val) => `R$${val}M`} />
+                  <Tooltip 
+                    cursor={{fill: '#1e293b', opacity: 0.4}} 
+                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}
+                    itemStyle={{ color: '#f8fafc', fontWeight: 'bold' }}
+                    formatter={(value: any, name: any, props: any) => {
+                      if (name === 'bottom') return [];
+                      return [`R$ ${value}M`, props.payload.name];
+                    }}
+                    labelStyle={{ display: 'none' }}
+                  />
+                  <Bar dataKey="bottom" stackId="a" fill="transparent" />
+                  <Bar dataKey="value" stackId="a" radius={[4, 4, 4, 4]} barSize={40}>
+                    {waterfallData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </motion.div>
+
+          {/* Donut Chart (Distribuição de Custos) */}
+          <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 flex flex-col relative overflow-hidden">
+            <h3 className="text-lg font-semibold text-white mb-1">Distribuição de Custo (Obras)</h3>
+            <p className="text-sm text-slate-400 mb-4">Composição por Macroetapa</p>
+            <div className="flex-1 w-full relative z-10">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={200}>
+                <PieChart>
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}
+                    itemStyle={{ color: '#f8fafc' }}
+                    formatter={(value: any) => [`${value}%`, 'Participação']}
+                  />
+                  <Pie
+                    data={costDistributionData}
+                    cx="50%"
+                    cy="45%"
+                    innerRadius={65}
+                    outerRadius={85}
+                    paddingAngle={5}
+                    dataKey="value"
+                    stroke="none"
+                  >
+                    {costDistributionData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Legend 
+                    layout="horizontal" 
+                    verticalAlign="bottom" 
+                    align="center"
+                    iconType="circle"
+                    wrapperStyle={{ fontSize: '12px', color: '#94a3b8', paddingTop: '10px' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              {/* Central text for Donut */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none pb-[40px]">
+                <span className="text-xs text-slate-500 font-medium">Total</span>
+                <span className="text-lg font-bold text-white">R$ 22M</span>
               </div>
             </div>
           </motion.div>
