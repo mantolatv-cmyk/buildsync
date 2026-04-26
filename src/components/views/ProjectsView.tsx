@@ -117,8 +117,8 @@ export default function ProjectsView() {
                 contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)' }}
                 itemStyle={{ color: '#f8fafc', fontSize: '14px', fontWeight: 500 }}
                 labelStyle={{ color: '#94a3b8', marginBottom: '8px' }}
-                formatter={(value: number, name: string) => {
-                  if (name.includes('Custo')) return [`R$ ${value}k`, name];
+                formatter={(value: any, name: any) => {
+                  if (name && typeof name === 'string' && name.includes('Custo')) return [`R$ ${value}k`, name];
                   return [`${value}%`, name];
                 }}
               />

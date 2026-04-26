@@ -146,7 +146,7 @@ export default function InvestorDashboard() {
               </div>
             )}
           </motion.h1>
-
+          </div>
           <div className="flex items-center space-x-2 lg:space-x-5">
             <button 
               onClick={() => setIsReportDrawerOpen(true)}
