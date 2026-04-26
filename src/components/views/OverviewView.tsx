@@ -78,12 +78,6 @@ const spiData = [
   { etapa: "Acabamento", spi: 1.00 },
 ];
 
-const timelineEvents = [
-  { id: 1, title: "Nota fiscal de cimento aprovada", time: "Hoje, 10:30", type: "success" },
-  { id: 2, title: "Alvará de construção anexado", time: "Ontem, 15:45", type: "success" },
-  { id: 3, title: "Atraso na entrega do aço", time: "2 dias atrás", type: "alert" },
-  { id: 4, title: "Relatório de qualidade emitido", time: "3 dias atrás", type: "info" },
-];
 
 const riskMatrixData = [
   { name: 'Residencial Alpha', delayDays: -5, costOverrun: -2, status: 'on_track' },
@@ -321,7 +315,7 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
       </div>
 
       {/* Bottom Section (Métricas Operacionais) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Matriz de Risco do Portfólio */}
         <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 relative overflow-hidden">
           <h2 className="text-lg font-semibold text-white mb-1">Matriz de Risco</h2>
@@ -374,44 +368,6 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-          </div>
-        </motion.div>
-
-        {/* Timeline */}
-        <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 flex flex-col">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h2 className="text-lg font-semibold text-white">Timeline de Obras</h2>
-              <p className="text-sm text-slate-400">Últimos registros</p>
-            </div>
-            <button className="text-blue-400 text-sm font-medium hover:text-blue-300 transition-colors">Ver tudo</button>
-          </div>
-          
-          <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-            <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-700 before:to-transparent">
-              {timelineEvents.map((event, idx) => (
-                <motion.div 
-                  key={event.id}
-                  initial={{ opacity: 0, x: 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group"
-                >
-                  <div className={`flex items-center justify-center w-5 h-5 rounded-full border border-slate-700 bg-[#0f172a] shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 ${event.type === 'success' ? 'shadow-green-500/20' : event.type === 'alert' ? 'shadow-red-500/20' : 'shadow-blue-500/20'}`}>
-                    {event.type === 'success' && <div className="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)]" />}
-                    {event.type === 'alert' && <div className="w-2 h-2 bg-red-500 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.6)]" />}
-                    {event.type === 'info' && <div className="w-2 h-2 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.6)]" />}
-                  </div>
-                  <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] ml-3 md:ml-0 bg-slate-800/30 hover:bg-slate-800/50 transition-colors border border-white/5 p-3 rounded-xl">
-                    <div className="flex justify-between items-center mb-1">
-                      <time className="text-xs font-medium text-slate-500">{event.time}</time>
-                    </div>
-                    <div className="text-sm font-medium text-slate-200">{event.title}</div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
           </div>
         </motion.div>
 
