@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion, Variants } from "framer-motion";
-import { Package, ArrowRight } from "lucide-react";
+import { Package, ArrowRight, Star, Award, TrendingUp, ShieldCheck } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend, Cell } from "recharts";
 
 const supplyPriceData = [
@@ -11,6 +11,14 @@ const supplyPriceData = [
   { item: 'Cimento (Sc)', orcado: 28, atual: 32 },
   { item: 'Cobre (kg)', orcado: 45, atual: 52 },
   { item: 'Esquadrias (m²)', orcado: 800, atual: 780 },
+];
+
+const supplierRankingData = [
+  { id: 1, name: "Gerdau S.A.", category: "Aço & Estrutura", volume: "R$ 1.2M", stability: 98, score: 4.9 },
+  { id: 2, name: "Votorantim Cimentos", category: "Concreto & Agregados", volume: "R$ 850k", stability: 95, score: 4.8 },
+  { id: 3, name: "Tigre Tubos", category: "Instalações Hidrosanitárias", volume: "R$ 420k", stability: 92, score: 4.7 },
+  { id: 4, name: "Amanco Wavin", category: "Instalações Hidrosanitárias", volume: "R$ 380k", stability: 89, score: 4.5 },
+  { id: 5, name: "Portobello", category: "Acabamentos & Pisos", volume: "R$ 610k", stability: 85, score: 4.6 },
 ];
 
 export default function SupplyView() {
@@ -32,6 +40,9 @@ export default function SupplyView() {
           <p className="text-sm text-slate-400 mt-1">Gestão de insumos críticos (Curva ABC)</p>
         </div>
         <div className="flex space-x-3">
+          <button className="px-4 py-2 bg-blue-600/10 text-blue-400 border border-blue-500/20 rounded-xl text-sm font-semibold hover:bg-blue-600/20 transition-colors">
+            Gerar Relatório ABC
+          </button>
           <button className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20">
             Adicionar Insumo
           </button>
@@ -42,14 +53,20 @@ export default function SupplyView() {
         variants={containerVariants}
         initial="hidden"
         animate="show"
-        className="grid grid-cols-1 gap-6"
+        className="grid grid-cols-1 gap-8"
       >
         {/* Gráfico de Variação de Preços (Inflação Interna) */}
         <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 relative overflow-hidden">
           <div className="absolute -right-10 -top-10 w-32 h-32 bg-amber-500/10 blur-[50px] rounded-full pointer-events-none" />
-          <div className="mb-6 relative z-10">
-            <h3 className="text-lg font-semibold text-white">Variação de Custo: Insumos Curva A</h3>
-            <p className="text-sm text-slate-400">Preço Orçado (Base) vs. Preço Atual de Mercado (R$)</p>
+          <div className="mb-6 relative z-10 flex justify-between items-start">
+            <div>
+              <h3 className="text-lg font-semibold text-white">Variação de Custo: Insumos Curva A</h3>
+              <p className="text-sm text-slate-400">Preço Orçado (Base) vs. Preço Atual de Mercado</p>
+            </div>
+            <div className="flex items-center space-x-2 px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded-lg">
+              <TrendingUp className="w-4 h-4 text-red-400" />
+              <span className="text-xs font-bold text-red-400 uppercase">Inflação Portfólio: +4.2%</span>
+            </div>
           </div>
           
           <div className="h-80 w-full relative z-10">
@@ -74,6 +91,78 @@ export default function SupplyView() {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
+          </div>
+        </motion.div>
+
+        {/* Tabela de Ranking de Fornecedores */}
+        <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 overflow-hidden">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                <Award className="w-5 h-5 text-blue-400" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-white">Ranking de Performance: Fornecedores</h3>
+                <p className="text-sm text-slate-400">Avaliação por Volume, Estabilidade e Pontualidade</p>
+              </div>
+            </div>
+            <button className="text-sm font-medium text-blue-400 hover:text-blue-300 flex items-center transition-colors">
+              Gerenciar Parceiros <ArrowRight className="w-4 h-4 ml-2" />
+            </button>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-white/5 pb-4">
+                  <th className="py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Parceiro</th>
+                  <th className="py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Macro Categoria</th>
+                  <th className="py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Volume Negociado</th>
+                  <th className="py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Estabilidade de Preço</th>
+                  <th className="py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">BuildSync Score</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {supplierRankingData.map((supplier) => (
+                  <tr key={supplier.id} className="group hover:bg-white/[0.02] transition-colors">
+                    <td className="py-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400">
+                          {supplier.name.substring(0, 2)}
+                        </div>
+                        <span className="text-sm font-semibold text-white">{supplier.name}</span>
+                        {supplier.score >= 4.8 && <ShieldCheck className="w-4 h-4 text-blue-400" />}
+                      </div>
+                    </td>
+                    <td className="py-4">
+                      <span className="px-2.5 py-1 rounded-full bg-slate-800 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                        {supplier.category}
+                      </span>
+                    </td>
+                    <td className="py-4 text-right">
+                      <span className="text-sm font-medium text-slate-300">{supplier.volume}</span>
+                    </td>
+                    <td className="py-4">
+                      <div className="flex items-center justify-center space-x-2">
+                        <div className="w-24 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-blue-500 rounded-full" 
+                            style={{ width: `${supplier.stability}%` }} 
+                          />
+                        </div>
+                        <span className="text-xs font-bold text-slate-400">{supplier.stability}%</span>
+                      </div>
+                    </td>
+                    <td className="py-4 text-right">
+                      <div className="flex items-center justify-end space-x-1">
+                        <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                        <span className="text-sm font-bold text-white">{supplier.score}</span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </motion.div>
       </motion.div>
