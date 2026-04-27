@@ -82,13 +82,19 @@ export default function ProjectFormDrawer({ isOpen, onClose }: ProjectFormDrawer
       case 3:
         return (
           <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-2">
-            <InputField label="Área Total Construída (m²)" placeholder="0 m²" type="number" />
+            <div className="grid grid-cols-2 gap-4">
+              <InputField label="Área Construída (m²)" placeholder="0 m²" type="number" />
+              <InputField label="Área do Terreno (m²)" placeholder="0 m²" type="number" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <InputField label="Área da Piscina (m²)" placeholder="0 m²" type="number" />
+              <InputField label="Engenheiro Resp." placeholder="Nome Completo" />
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <InputField label="Data de Início" placeholder="DD/MM/AAAA" type="date" />
               <InputField label="Previsão de Entrega" placeholder="DD/MM/AAAA" type="date" />
             </div>
-            <InputField label="Engenheiro Responsável" placeholder="Nome Completo" />
-            <InputField label="CREA" placeholder="Registro CREA" />
+            <InputField label="CREA / Registro Profissional" placeholder="Ex: CREA-SP 123456" />
           </motion.div>
         );
       case 4:
