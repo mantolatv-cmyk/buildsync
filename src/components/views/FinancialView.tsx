@@ -16,12 +16,12 @@ const cashflowData = [
 ];
 
 const waterfallData = [
-  { name: 'VGV', bottom: 0, value: 50, fill: '#10b981' },
-  { name: 'Terreno', bottom: 42, value: 8, fill: '#ef4444' },
-  { name: 'Obras', bottom: 20, value: 22, fill: '#ef4444' },
-  { name: 'Impostos', bottom: 16, value: 4, fill: '#ef4444' },
-  { name: 'Comercial', bottom: 14, value: 2, fill: '#ef4444' },
-  { name: 'Margem', bottom: 0, value: 14, fill: '#3b82f6' },
+  { name: 'VGV', bottom: 0, value: 50, fill: '#10b981', percent: 100 },
+  { name: 'Terreno', bottom: 42, value: 8, fill: '#ef4444', percent: 16 },
+  { name: 'Obras', bottom: 20, value: 22, fill: '#ef4444', percent: 44 },
+  { name: 'Impostos', bottom: 16, value: 4, fill: '#ef4444', percent: 8 },
+  { name: 'Comercial', bottom: 14, value: 2, fill: '#ef4444', percent: 4 },
+  { name: 'Margem', bottom: 0, value: 14, fill: '#3b82f6', percent: 28 },
 ];
 
 const costDistributionData = [
@@ -122,8 +122,21 @@ export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
           {/* Gráfico Waterfall (DRE) */}
           <motion.div variants={itemVariants} className="lg:col-span-2 bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 relative overflow-hidden">
             <div className="absolute -right-20 -bottom-20 w-48 h-48 bg-blue-500/10 blur-[60px] rounded-full pointer-events-none" />
-            <h3 className="text-lg font-semibold text-white mb-1">DRE Dinâmico (Waterfall)</h3>
-            <p className="text-sm text-slate-400 mb-6">Da Receita Bruta (VGV) à Margem Líquida (R$ Milhões)</p>
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-1">DRE Dinâmico (Waterfall)</h3>
+                <p className="text-sm text-slate-400">Análise de Composição do VGV</p>
+              </div>
+              <div className="flex space-x-2">
+                <div className="px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-full">
+                  <span className="text-[10px] font-bold text-green-400 uppercase tracking-wider">Margem: 28%</span>
+                </div>
+                <div className="px-3 py-1 bg-red-500/10 border border-red-500/20 rounded-full">
+                  <span className="text-[10px] font-bold text-red-400 uppercase tracking-wider">Custos: 72%</span>
+                </div>
+              </div>
+            </div>
+
             <div className="h-72 w-full relative z-10">
               <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                 <BarChart data={waterfallData} margin={{ top: 20, right: 20, left: 70, bottom: 0 }}>
@@ -138,11 +151,17 @@ export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
                   />
                   <Tooltip 
                     cursor={{fill: '#1e293b', opacity: 0.4}} 
-                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}
+                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', padding: '12px' }}
                     itemStyle={{ color: '#f8fafc', fontWeight: 'bold' }}
                     formatter={(value: any, name: any, props: any) => {
                       if (name === 'bottom') return null;
-                      return [`R$ ${value}M`, props.payload.name];
+                      return [
+                        <div key={props.payload.name} className="flex flex-col">
+                          <span className="text-white text-lg">R$ {value}M</span>
+                          <span className="text-slate-400 text-xs font-medium">{props.payload.percent}% do VGV</span>
+                        </div>,
+                        null
+                      ];
                     }}
                     labelStyle={{ display: 'none' }}
                   />
