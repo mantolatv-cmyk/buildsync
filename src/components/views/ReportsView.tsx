@@ -2,12 +2,12 @@
 
 import React from "react";
 import { motion, Variants } from "framer-motion";
-import { FileText, Download, Calendar, Filter, FileBarChart, Presentation, PieChart } from "lucide-react";
+import { FileText, Download, Calendar, Filter, FileBarChart, Presentation, PieChart, Loader2, CheckCircle2, TrendingUp, AlertTriangle, DollarSign, Target, ChevronLeft, Printer } from "lucide-react";
 
 const reportTemplates = [
-  { id: 1, title: "Resumo Executivo YTD", icon: Presentation, desc: "Avanço físico, financeiro e principais milestones.", color: "text-blue-400", bg: "bg-blue-500/10" },
-  { id: 2, title: "Fechamento de Caixa", icon: FileBarChart, desc: "Fluxo de caixa detalhado, DRE e mapa de pagamentos.", color: "text-emerald-400", bg: "bg-emerald-500/10" },
-  { id: 3, title: "Análise de Portfólio", icon: PieChart, desc: "Comparativo de ROI, YOC e alocação de capital entre obras.", color: "text-purple-400", bg: "bg-purple-500/10" }
+  { id: 1, type: 'exec', title: "Resumo Executivo YTD", icon: Presentation, desc: "Avanço físico, financeiro e principais milestones.", color: "text-blue-400", bg: "bg-blue-500/10" },
+  { id: 2, type: 'cash', title: "Fechamento de Caixa", icon: FileBarChart, desc: "Fluxo de caixa detalhado, DRE e mapa de pagamentos.", color: "text-emerald-400", bg: "bg-emerald-500/10" },
+  { id: 3, type: 'portfolio', title: "Análise de Portfólio", icon: PieChart, desc: "Comparativo de ROI, YOC e alocação de capital entre obras.", color: "text-purple-400", bg: "bg-purple-500/10" }
 ];
 
 const historicalReports = [
@@ -18,6 +18,11 @@ const historicalReports = [
 ];
 
 export default function ReportsView() {
+  const [isGenerating, setIsGenerating] = React.useState(false);
+  const [activeReport, setActiveReport] = React.useState<string | null>(null);
+  const [genProgress, setGenProgress] = React.useState(0);
+  const [genText, setGenText] = React.useState("");
+
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: { opacity: 1, transition: { staggerChildren: 0.1 } }
@@ -27,6 +32,181 @@ export default function ReportsView() {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
   };
+
+  const handleGenerate = (type: string) => {
+    setIsGenerating(true);
+    setGenProgress(0);
+    
+    const texts = [
+      "Coletando dados financeiros do ERP...",
+      "Processando avanços físicos das obras...",
+      "Calculando ROI e VPL projetado...",
+      "Cruzando dados de suprimentos e inflação...",
+      "Consolidando inteligência BuildSync...",
+      "Finalizando relatório executivo..."
+    ];
+
+    let currentTextIdx = 0;
+    const interval = setInterval(() => {
+      setGenProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            setIsGenerating(false);
+            setActiveReport(type);
+          }, 800);
+          return 100;
+        }
+        
+        // Update text every 20%
+        const textIdx = Math.floor(prev / 20);
+        if (textIdx !== currentTextIdx && texts[textIdx]) {
+          setGenText(texts[textIdx]);
+          currentTextIdx = textIdx;
+        }
+        
+        return prev + 2;
+      });
+    }, 40);
+  };
+
+  if (isGenerating) {
+    return (
+      <div className="h-[600px] flex flex-col items-center justify-center text-center px-4">
+        <motion.div 
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="relative mb-8"
+        >
+          <div className="absolute inset-0 bg-blue-500/20 blur-3xl rounded-full animate-pulse" />
+          <Loader2 className="w-16 h-16 text-blue-500 animate-spin relative z-10" />
+        </motion.div>
+        
+        <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">Gerando Inteligência de Portfólio</h2>
+        <p className="text-slate-400 mb-8 max-w-xs">{genText || "Iniciando motores de análise..."}</p>
+        
+        <div className="w-64 h-1.5 bg-slate-800 rounded-full overflow-hidden relative border border-white/5">
+          <motion.div 
+            className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-600 to-blue-400"
+            style={{ width: `${genProgress}%` }}
+          />
+        </div>
+        <span className="mt-4 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">{genProgress}% COMPLETO</span>
+      </div>
+    );
+  }
+
+  if (activeReport === 'portfolio') {
+    return (
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 pb-20">
+        <div className="flex items-center justify-between border-b border-white/10 pb-6">
+          <div className="flex items-center space-x-4">
+            <button onClick={() => setActiveReport(null)} className="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-400 transition-colors">
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <div>
+              <h2 className="text-2xl font-bold text-white">Relatório: Análise de Portfólio</h2>
+              <p className="text-sm text-slate-400">Consolidado Geral BuildSync • Outubro 2026</p>
+            </div>
+          </div>
+          <div className="flex space-x-3">
+            <button className="px-4 py-2 bg-slate-800 text-white rounded-xl text-sm font-semibold flex items-center hover:bg-slate-700 transition-colors border border-white/5">
+              <Printer className="w-4 h-4 mr-2" /> Imprimir
+            </button>
+            <button className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold flex items-center hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20">
+              <Download className="w-4 h-4 mr-2" /> PDF Export
+            </button>
+          </div>
+        </div>
+
+        {/* Report Content */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {/* Executive Health Score */}
+          <div className="md:col-span-1 bg-slate-900/60 backdrop-blur-xl border border-white/5 p-6 rounded-3xl flex flex-col items-center justify-center text-center">
+            <div className="relative mb-4">
+              <svg className="w-32 h-32 transform -rotate-90">
+                <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-800" />
+                <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="8" fill="transparent" strokeDasharray="364" strokeDashoffset="44" className="text-blue-500" />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-3xl font-black text-white">88</span>
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Score Global</span>
+              </div>
+            </div>
+            <h4 className="text-sm font-bold text-white mb-1">Saúde Excelente</h4>
+            <p className="text-xs text-slate-500">O portfólio apresenta desvio financeiro controlado e margem em expansão.</p>
+          </div>
+
+          {/* Quick Metrics */}
+          <div className="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-slate-900/40 border border-white/5 p-6 rounded-3xl">
+              <TrendingUp className="w-6 h-6 text-green-400 mb-4" />
+              <p className="text-xs text-slate-500 uppercase font-bold tracking-wider mb-1">ROI Projetado</p>
+              <h3 className="text-2xl font-bold text-white">24.8%</h3>
+              <p className="text-[10px] text-green-400 mt-2 font-medium">+1.2% vs. mês anterior</p>
+            </div>
+            <div className="bg-slate-900/40 border border-white/5 p-6 rounded-3xl">
+              <DollarSign className="w-6 h-6 text-blue-400 mb-4" />
+              <p className="text-xs text-slate-500 uppercase font-bold tracking-wider mb-1">Capital em Risco</p>
+              <h3 className="text-2xl font-bold text-white">R$ 1.4M</h3>
+              <p className="text-[10px] text-blue-400 mt-2 font-medium">Equivale a 3.2% do total</p>
+            </div>
+            <div className="bg-slate-900/40 border border-white/5 p-6 rounded-3xl">
+              <Target className="w-6 h-6 text-purple-400 mb-4" />
+              <p className="text-xs text-slate-500 uppercase font-bold tracking-wider mb-1">Taxa de Ocupação</p>
+              <h3 className="text-2xl font-bold text-white">92.5%</h3>
+              <p className="text-[10px] text-purple-400 mt-2 font-medium">Acima da média do setor (85%)</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Detailed Insights */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="bg-slate-900/40 border border-white/5 p-8 rounded-3xl">
+            <h3 className="text-lg font-bold text-white mb-6">Pontos de Atenção (AI Insights)</h3>
+            <ul className="space-y-4">
+              <li className="flex items-start space-x-3 p-4 bg-red-500/5 border border-red-500/10 rounded-2xl">
+                <AlertTriangle className="w-5 h-5 text-red-400 mt-0.5" />
+                <div>
+                  <h5 className="text-sm font-bold text-red-400">Torre Horizonte: Atraso Crítico</h5>
+                  <p className="text-xs text-slate-400 mt-1">Gargalo identificado na entrega de elevadores. Impacto projetado de 15 dias no cronograma final.</p>
+                </div>
+              </li>
+              <li className="flex items-start space-x-3 p-4 bg-amber-500/5 border border-amber-500/10 rounded-2xl">
+                <TrendingUp className="w-5 h-5 text-amber-400 mt-0.5" />
+                <div>
+                  <h5 className="text-sm font-bold text-amber-400">Inflação de Insumos: Aço</h5>
+                  <p className="text-xs text-slate-400 mt-1">Aumento de 5.2% no custo de armação. Recomenda-se antecipação de compras do Q4.</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-slate-900/40 border border-white/5 p-8 rounded-3xl flex flex-col justify-center">
+            <h3 className="text-lg font-bold text-white mb-2">BuildSync Vision</h3>
+            <p className="text-sm text-slate-400 mb-6">Análise preditiva para os próximos 90 dias.</p>
+            <div className="space-y-6">
+              {[
+                { label: "Probabilidade de Entrega no Prazo", value: 92 },
+                { label: "Margem de Lucro Estável", value: 88 },
+                { label: "Capacidade de Investimento (Novas Obras)", value: 65 }
+              ].map((item, idx) => (
+                <div key={idx}>
+                  <div className="flex justify-between text-xs mb-2">
+                    <span className="text-slate-300">{item.label}</span>
+                    <span className="text-white font-bold">{item.value}%</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="h-full bg-blue-500 rounded-full" style={{ width: `${item.value}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
@@ -53,6 +233,7 @@ export default function ReportsView() {
                 variants={itemVariants}
                 whileHover={{ y: -4, scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
+                onClick={() => handleGenerate(template.type)}
                 className="bg-slate-900/40 backdrop-blur-xl border border-white/5 p-6 rounded-2xl flex flex-col items-start cursor-pointer hover:bg-slate-800/60 transition-colors group relative overflow-hidden shadow-lg"
               >
                 <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-10 transition-opacity">
