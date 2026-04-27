@@ -208,6 +208,180 @@ export default function ReportsView() {
     );
   }
 
+  if (activeReport === 'exec') {
+    return (
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 pb-20">
+        <div className="flex items-center justify-between border-b border-white/10 pb-6">
+          <div className="flex items-center space-x-4">
+            <button onClick={() => setActiveReport(null)} className="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-400 transition-colors">
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <div>
+              <h2 className="text-2xl font-bold text-white">Resumo Executivo YTD</h2>
+              <p className="text-sm text-slate-400">Year to Date • Performance Consolidada 2026</p>
+            </div>
+          </div>
+          <div className="flex space-x-3">
+            <button className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold flex items-center hover:bg-blue-500 transition-colors">
+              <Download className="w-4 h-4 mr-2" /> Exportar Relatório
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-slate-900/40 border border-white/5 p-8 rounded-3xl">
+              <h3 className="text-lg font-bold text-white mb-6">Destaques do Período</h3>
+              <div className="space-y-6">
+                {[
+                  { title: "Avanço Físico Global", plan: 65, real: 62, status: "warning" },
+                  { title: "Desembolso Financeiro", plan: 85, real: 88, status: "on_track" },
+                  { title: "Eficiência de Suprimentos", plan: 100, real: 94, status: "delayed" }
+                ].map((m, i) => (
+                  <div key={i} className="space-y-2">
+                    <div className="flex justify-between items-end">
+                      <span className="text-sm font-medium text-slate-300">{m.title}</span>
+                      <div className="text-right">
+                        <span className="text-xs text-slate-500 block">Real vs. Plan</span>
+                        <span className={`text-sm font-bold ${m.real >= m.plan ? 'text-green-400' : 'text-amber-400'}`}>{m.real}% / {m.plan}%</span>
+                      </div>
+                    </div>
+                    <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                      <div className={`h-full rounded-full ${m.real >= m.plan ? 'bg-green-500' : 'bg-amber-500'}`} style={{ width: `${m.real}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-slate-900/40 border border-white/5 p-8 rounded-3xl">
+              <h3 className="text-lg font-bold text-white mb-6">Milestones Alcançados</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  { date: "Mar 2026", task: "Conclusão Estrutura Alpha", status: "done" },
+                  { date: "Jun 2026", task: "Início Revestimento Alpha", status: "done" },
+                  { date: "Ago 2026", task: "Lançamento Torre Horizonte", status: "done" },
+                  { date: "Out 2026", task: "Habite-se Condomínio Norte", status: "done" }
+                ].map((m, i) => (
+                  <div key={i} className="flex items-center space-x-3 p-3 bg-slate-800/40 rounded-xl border border-white/5">
+                    <CheckCircle2 className="w-5 h-5 text-green-500" />
+                    <div>
+                      <p className="text-xs text-slate-500 font-bold">{m.date}</p>
+                      <p className="text-sm text-slate-200">{m.task}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div className="bg-blue-600 p-8 rounded-3xl text-white shadow-xl shadow-blue-900/20">
+              <h4 className="text-lg font-bold mb-2">Veredito Executivo</h4>
+              <p className="text-blue-100 text-sm leading-relaxed mb-6">
+                "O ano de 2026 segue com forte tração operacional. Apesar da inflação de materiais no Q2, a estratégia de antecipação de compras protegeu a margem líquida em 2.4% acima do benchmark."
+              </p>
+              <div className="pt-6 border-t border-blue-400/30 flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-blue-200 uppercase font-bold">Performance</p>
+                  <p className="text-2xl font-black">+14%</p>
+                </div>
+                <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-white" />
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-slate-900/40 border border-white/5 p-8 rounded-3xl">
+              <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wider text-slate-500">Principais KPIs YTD</h4>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-slate-400">VGV Consolidado</span>
+                  <span className="text-sm font-bold text-white">R$ 850M</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-slate-400">Custo de Obra</span>
+                  <span className="text-sm font-bold text-white">R$ 242M</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-slate-400">Unidades Vendidas</span>
+                  <span className="text-sm font-bold text-white">412 unid.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
+
+  if (activeReport === 'cash') {
+    return (
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 pb-20">
+        <div className="flex items-center justify-between border-b border-white/10 pb-6">
+          <div className="flex items-center space-x-4">
+            <button onClick={() => setActiveReport(null)} className="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-400 transition-colors">
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <div>
+              <h2 className="text-2xl font-bold text-white">Fechamento de Caixa</h2>
+              <p className="text-sm text-slate-400">Fluxo de Disponibilidades • Outubro 2026</p>
+            </div>
+          </div>
+          <button className="px-4 py-2 bg-emerald-600 text-white rounded-xl text-sm font-semibold flex items-center hover:bg-emerald-500 transition-colors">
+            <Download className="w-4 h-4 mr-2" /> Conciliação Bancária
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-slate-900/40 border border-white/5 p-6 rounded-3xl">
+            <p className="text-xs text-slate-500 font-bold uppercase mb-1">Saldo em Conta</p>
+            <h3 className="text-2xl font-black text-white">R$ 18.42M</h3>
+          </div>
+          <div className="bg-slate-900/40 border border-white/5 p-6 rounded-3xl">
+            <p className="text-xs text-slate-500 font-bold uppercase mb-1">Entradas (Out)</p>
+            <h3 className="text-2xl font-black text-emerald-400">+ R$ 4.10M</h3>
+          </div>
+          <div className="bg-slate-900/40 border border-white/5 p-6 rounded-3xl">
+            <p className="text-xs text-slate-500 font-bold uppercase mb-1">Saídas (Out)</p>
+            <h3 className="text-2xl font-black text-red-400">- R$ 2.85M</h3>
+          </div>
+        </div>
+
+        <div className="bg-slate-900/40 border border-white/5 rounded-3xl overflow-hidden">
+          <div className="p-6 border-b border-white/5 flex justify-between items-center">
+            <h3 className="font-bold text-white">Principais Desembolsos da Semana</h3>
+            <span className="text-xs text-slate-500 font-medium">Próximos 7 dias</span>
+          </div>
+          <div className="divide-y divide-white/5">
+            {[
+              { prov: "Gerdau S.A.", desc: "Aço Vergalhão CA-50", val: "R$ 412.000", date: "05 Nov", status: "scheduled" },
+              { prov: "Votorantim", desc: "Concreto Usinado 30MPa", val: "R$ 185.200", date: "06 Nov", status: "pending" },
+              { prov: "Enel SP", desc: "Instalação Cabine Primária", val: "R$ 54.100", date: "08 Nov", status: "pending" },
+              { prov: "Folha Pagto", desc: "Mão de Obra Própria + Encargos", val: "R$ 1.2M", date: "05 Nov", status: "scheduled" }
+            ].map((p, i) => (
+              <div key={i} className="p-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+                <div className="flex items-center space-x-4">
+                  <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center">
+                    <DollarSign className="w-5 h-5 text-slate-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-white">{p.prov}</p>
+                    <p className="text-xs text-slate-500">{p.desc}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-black text-white">{p.val}</p>
+                  <p className="text-xs text-slate-500">{p.date}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
+
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
       <div className="flex justify-between items-end">
