@@ -42,7 +42,7 @@ export default function ReportsView() {
       "Processando avanços físicos das obras...",
       "Calculando ROI e VPL projetado...",
       "Cruzando dados de suprimentos e inflação...",
-      "Consolidando inteligência BuildSync...",
+      "Consolidando dados BuildSync...",
       "Finalizando relatório executivo..."
     ];
 
@@ -82,7 +82,7 @@ export default function ReportsView() {
           <Loader2 className="w-16 h-16 text-blue-500 animate-spin relative z-10" />
         </motion.div>
         
-        <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">Gerando Inteligência de Portfólio</h2>
+        <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">Gerando Análise de Portfólio</h2>
         <p className="text-slate-400 mb-8 max-w-xs">{genText || "Iniciando motores de análise..."}</p>
         
         <div className="w-64 h-1.5 bg-slate-800 rounded-full overflow-hidden relative border border-white/5">
@@ -163,7 +163,7 @@ export default function ReportsView() {
         {/* Detailed Insights */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-slate-900/40 border border-white/5 p-8 rounded-3xl">
-            <h3 className="text-lg font-bold text-white mb-6">Pontos de Atenção (AI Insights)</h3>
+            <h3 className="text-lg font-bold text-white mb-6">Pontos de Atenção (Insights Executivos)</h3>
             <ul className="space-y-4">
               <li className="flex items-start space-x-3 p-4 bg-red-500/5 border border-red-500/10 rounded-2xl">
                 <AlertTriangle className="w-5 h-5 text-red-400 mt-0.5" />

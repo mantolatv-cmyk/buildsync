@@ -12,7 +12,6 @@ import ProjectsView from "@/components/views/ProjectsView";
 import FinancialView from "@/components/views/FinancialView";
 import ReportsView from "@/components/views/ReportsView";
 import SupplyView from "@/components/views/SupplyView";
-import ReportDrawer from "@/components/ReportDrawer";
 import Preloader from "@/components/Preloader";
 
 export default function InvestorDashboard() {
@@ -20,7 +19,6 @@ export default function InvestorDashboard() {
   const [timeFilter, setTimeFilter] = useState("ytd");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [activeKpiDetail, setActiveKpiDetail] = useState<any>(null); // State for Drill-down Drawer
-  const [isReportDrawerOpen, setIsReportDrawerOpen] = useState(false); // State for Report AI
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // State for Mobile Sidebar
   const [isLoading, setIsLoading] = useState(true); // State for Initial Preloader
 
@@ -164,15 +162,6 @@ export default function InvestorDashboard() {
           </motion.h1>
           </div>
           <div className="flex items-center space-x-2 lg:space-x-5">
-            <button 
-              onClick={() => setIsReportDrawerOpen(true)}
-              className="group relative px-3 lg:px-5 py-2 lg:py-2.5 bg-white text-slate-950 text-xs lg:text-sm font-semibold rounded-xl overflow-hidden shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_25px_rgba(255,255,255,0.25)] transition-all flex items-center"
-            >
-              <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full group-hover:animate-shimmer" />
-              <Sparkles className="w-4 h-4 mr-1 lg:mr-2 text-blue-600 group-hover:text-blue-700 transition-colors" />
-              <span className="hidden sm:inline">Gerar Relatório IA</span>
-              <span className="sm:hidden">Relatório IA</span>
-            </button>
           </div>
         </header>
 
@@ -281,8 +270,7 @@ export default function InvestorDashboard() {
         )}
       </AnimatePresence>
 
-      {/* AI Report Drawer */}
-      <ReportDrawer isOpen={isReportDrawerOpen} onClose={() => setIsReportDrawerOpen(false)} />
+
     </div>
   );
 }
