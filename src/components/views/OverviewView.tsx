@@ -10,6 +10,8 @@ import {
   PieChart, Pie, Cell, BarChart, Bar, Legend, ComposedChart, Area
 } from "recharts";
 import { useDashboardStore } from "../../store/useDashboardStore";
+import CriticalPathDrawer from "../CriticalPathDrawer";
+import { Loader2, Zap } from "lucide-react";
 
 // --- Extended Mock Data for Time Filters ---
 const mockDataSets: any = {
@@ -166,6 +168,8 @@ function KpiCard({ title, value, trend, trendUp, subtitle, icon, neutral = false
 
 export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeFilter: string, setActiveKpiDetail: (kpi: any) => void }) {
   const store = useDashboardStore();
+  const [isCriticalPathOpen, setIsCriticalPathOpen] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   
   // No mundo real, teríamos conjuntos diferentes por filtro. 
   // Para este MVP, usaremos a store e aplicaremos variações simples baseadas no filtro.
@@ -425,9 +429,34 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
             </div>
           </div>
 
-          <button className="w-full mt-6 py-3 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-500 transition-all shadow-lg shadow-blue-500/20">
-            ANALISAR CAMINHO CRÍTICO
+          <button 
+            onClick={() => {
+              setIsAnalyzing(true);
+              setTimeout(() => {
+                setIsAnalyzing(false);
+                setIsCriticalPathOpen(true);
+              }, 1500);
+            }}
+            disabled={isAnalyzing}
+            className="w-full mt-6 py-3 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-500 transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center disabled:opacity-70"
+          >
+            {isAnalyzing ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                RECALCULANDO CPM...
+              </>
+            ) : (
+              <>
+                <Zap className="w-4 h-4 mr-2" />
+                ANALISAR CAMINHO CRÍTICO
+              </>
+            )}
           </button>
+          
+          <CriticalPathDrawer 
+            isOpen={isCriticalPathOpen} 
+            onClose={() => setIsCriticalPathOpen(false)} 
+          />
         </motion.div>
       </div>
     </motion.div>
