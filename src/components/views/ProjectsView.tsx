@@ -7,6 +7,7 @@ import { ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip as Recha
 import ProjectFormDrawer from "../ProjectFormDrawer";
 import ProjectDetailView from "./ProjectDetailView";
 import { GlossaryTooltip } from "../GlossaryTooltip";
+import { useDashboardStore } from "../../store/useDashboardStore";
 
 const projectsData = [
   {
@@ -59,6 +60,7 @@ const sCurveData = [
 export default function ProjectsView() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<any>(null);
+  const { projects } = useDashboardStore();
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -142,7 +144,7 @@ export default function ProjectsView() {
               animate="show"
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             >
-              {projectsData.map(project => (
+              {projects.map(project => (
                 <motion.div 
                   key={project.id}
                   variants={itemVariants}

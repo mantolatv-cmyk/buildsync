@@ -64,23 +64,7 @@ const mockDataSets: any = {
   }
 };
 
-const roiData = [
-  { ano: "2024", projetado: 12.5, realizado: 12.5 },
-  { ano: "2025", projetado: 14.0, realizado: 14.2 },
-  { ano: "2026", projetado: 15.5, realizado: 16.1 },
-  { ano: "2027", projetado: 17.0, realizado: null },
-];
-
-const spiData = [
-  { etapa: "Fundação", spi: 1.05, cpi: 1.02, status: "Adiantado" },
-  { etapa: "Alvenaria", spi: 0.95, cpi: 0.98, status: "Atraso Leve" },
-  { etapa: "Cobertura", spi: 1.10, cpi: 1.05, status: "Eficiente" },
-  { etapa: "Instalações", spi: 0.88, cpi: 0.92, status: "Crítico" },
-  { etapa: "Acabamento", spi: 1.00, cpi: 1.00, status: "No Prazo" },
-];
-
-// --- Sub-components ---
-
+// Helper components for charts
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (

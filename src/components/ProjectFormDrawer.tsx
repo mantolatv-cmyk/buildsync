@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronRight, ChevronLeft, Building2, Wallet, HardHat, Camera, UploadCloud, CheckCircle2 } from "lucide-react";
+import { useDashboardStore } from "../store/useDashboardStore";
 
 interface ProjectFormDrawerProps {
   isOpen: boolean;
@@ -13,6 +14,15 @@ export default function ProjectFormDrawer({ isOpen, onClose }: ProjectFormDrawer
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const addProject = useDashboardStore(state => state.addProject);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    location: "",
+    budget: "",
+    deadline: "2027",
+    image: "https://images.unsplash.com/photo-1541888946425-d81bb19480c5?auto=format&fit=crop&q=80&w=1000",
+  });
 
   // Reset state when opening
   useEffect(() => {
@@ -33,8 +43,21 @@ export default function ProjectFormDrawer({ isOpen, onClose }: ProjectFormDrawer
 
   const handleSubmit = () => {
     setIsSubmitting(true);
-    // Simulate API call
+    
+    const newProject = {
+      name: formData.name || "Novo Empreendimento",
+      location: formData.location || "Local não informado",
+      progress: 0,
+      status: "on_track",
+      image: formData.image,
+      deadline: formData.deadline || "2027",
+      projectedDeadline: formData.deadline || "2027",
+      budget: formData.budget ? `R$ ${parseFloat(formData.budget).toLocaleString('pt-BR')}M` : "R$ 0M",
+      eac: formData.budget ? `R$ ${parseFloat(formData.budget).toLocaleString('pt-BR')}M` : "R$ 0M"
+    };
+
     setTimeout(() => {
+      addProject(newProject);
       setIsSubmitting(false);
       setIsSuccess(true);
       setTimeout(() => {
@@ -43,11 +66,13 @@ export default function ProjectFormDrawer({ isOpen, onClose }: ProjectFormDrawer
     }, 1500);
   };
 
-  const InputField = ({ label, placeholder, type = "text" }: any) => (
+  const InputField = ({ label, placeholder, name, type = "text" }: any) => (
     <div className="flex flex-col mb-4">
-      <label className="text-sm font-medium text-slate-300 mb-1.5">{label} <span className="text-slate-600 font-normal text-xs">(Opcional)</span></label>
+      <label className="text-sm font-medium text-slate-300 mb-1.5">{label}</label>
       <input 
         type={type} 
+        value={(formData as any)[name] || ""}
+        onChange={(e) => setFormData({...formData, [name]: e.target.value})}
         placeholder={placeholder}
         className="bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
       />
@@ -59,24 +84,16 @@ export default function ProjectFormDrawer({ isOpen, onClose }: ProjectFormDrawer
       case 1:
         return (
           <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-2">
-            <InputField label="Nome do Empreendimento" placeholder="Ex: Residencial Alpha" />
+            <InputField label="Nome do Empreendimento" name="name" placeholder="Ex: Residencial Alpha" />
+            <InputField label="Endereço / Cidade" name="location" placeholder="Rua, Número, Bairro, Cidade - UF" />
             <InputField label="CNPJ da SPE" placeholder="00.000.000/0000-00" />
-            <div className="grid grid-cols-2 gap-4">
-              <InputField label="Tipologia" placeholder="Ex: Alto Padrão" />
-              <InputField label="CEP" placeholder="00000-000" />
-            </div>
-            <InputField label="Endereço Completo" placeholder="Rua, Número, Bairro, Cidade - UF" />
           </motion.div>
         );
       case 2:
         return (
           <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-2">
-            <InputField label="VGV Estimado (R$)" placeholder="R$ 0,00" type="number" />
-            <InputField label="Orçamento Direto da Obra (R$)" placeholder="R$ 0,00" type="number" />
-            <div className="grid grid-cols-2 gap-4">
-              <InputField label="Custo do Terreno (R$)" placeholder="R$ 0,00" type="number" />
-              <InputField label="BDI Previsto (%)" placeholder="0%" type="number" />
-            </div>
+            <InputField label="Orçamento Direto (Milhões R$)" name="budget" placeholder="Ex: 12.5" type="number" />
+            <InputField label="Data de Entrega" name="deadline" placeholder="Ex: Nov 2026" />
           </motion.div>
         );
       case 3:
@@ -110,6 +127,8 @@ export default function ProjectFormDrawer({ isOpen, onClose }: ProjectFormDrawer
             </div>
           </motion.div>
         );
+      default:
+        return null;
     }
   };
 

@@ -6,6 +6,11 @@ import {
   TrendingUp, Clock, Sparkles, ChevronDown, X, PieChart as PieChartIcon, BarChart3, Menu, Package, Landmark
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, 
+  ResponsiveContainer, Cell, PieChart, Pie
+} from "recharts";
+import { useDashboardStore } from "@/store/useDashboardStore";
 
 import OverviewView from "@/components/views/OverviewView";
 import ProjectsView from "@/components/views/ProjectsView";
@@ -228,38 +233,53 @@ export default function InvestorDashboard() {
                 
                 {/* Main Value Highlight */}
                 <div className="bg-gradient-to-br from-blue-500/20 to-indigo-600/20 border border-blue-500/20 rounded-2xl p-6 text-center">
-                  <div className="text-sm text-blue-200 mb-2">Valor Total Atual</div>
-                  <div className="text-4xl font-bold text-white">{activeKpiDetail.value}</div>
-                </div>
-
-                {/* Breakdown Chart Placeholder */}
-                <div>
-                  <h4 className="text-sm font-medium text-slate-300 mb-4 flex items-center">
-                    <PieChartIcon className="w-4 h-4 mr-2" /> Distribuição / Composição
-                  </h4>
-                  <div className="h-48 bg-slate-800/50 rounded-xl border border-white/5 flex items-center justify-center text-slate-500 text-sm">
-                    {/* Placeholder for actual drill-down chart */}
-                    [Gráfico Detalhado de Composição]
+                  <div className="text-sm text-blue-200 mb-2">Valor Atual</div>
+                  <div className="text-4xl font-bold text-white">
+                    {typeof activeKpiDetail.value === 'number' ? 
+                      (activeKpiDetail.id === 'yoc' ? `${activeKpiDetail.value}%` : `R$ ${activeKpiDetail.value.toLocaleString('pt-BR')}`) : 
+                      activeKpiDetail.value}
                   </div>
                 </div>
 
-                {/* Sub-metrics List */}
+                {/* Dynamic Chart based on KPI */}
                 <div>
                   <h4 className="text-sm font-medium text-slate-300 mb-4 flex items-center">
-                    <BarChart3 className="w-4 h-4 mr-2" /> Detalhamento Operacional
+                    <BarChart3 className="w-4 h-4 mr-2" /> Composição por Projeto
                   </h4>
-                  <div className="space-y-3">
-                    {['Material', 'Mão de Obra', 'Administrativo', 'Equipamentos'].map((item, idx) => (
-                      <div key={item} className="bg-slate-800/30 p-4 rounded-xl border border-white/5 flex justify-between items-center">
-                        <span className="text-slate-300">{item}</span>
-                        <span className="font-semibold text-white">
-                          {25 - idx * 2}%
-                        </span>
+                  <div className="h-64 bg-slate-800/50 rounded-xl border border-white/5 p-4">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={useDashboardStore.getState().projects.map(p => ({
+                        name: p.name,
+                        value: activeKpiDetail.id === 'yoc' ? parseFloat(p.progress) || 12 : parseFloat(p.budget.replace(/[^0-9.]/g, ''))
+                      }))}>
+                        <XAxis dataKey="name" hide />
+                        <Tooltip 
+                          contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}
+                          itemStyle={{ color: '#fff' }}
+                        />
+                        <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* Detailed Breakdown List */}
+                <div className="space-y-4">
+                  <h4 className="text-sm font-medium text-slate-300 flex items-center">
+                    <LayoutDashboard className="w-4 h-4 mr-2" /> Ranking de Alocação
+                  </h4>
+                  {useDashboardStore.getState().projects.map((p, idx) => (
+                    <div key={idx} className="bg-slate-800/30 p-4 rounded-xl border border-white/5 flex justify-between items-center transition-all hover:bg-slate-800/50">
+                      <div>
+                        <p className="text-sm font-bold text-white">{p.name}</p>
+                        <p className="text-[10px] text-slate-500 uppercase">{p.location}</p>
                       </div>
-                    ))}
-                  </div>
+                      <span className="font-bold text-blue-400">
+                        {activeKpiDetail.id === 'yoc' ? `${(12 + idx * 1.5).toFixed(1)}%` : p.budget}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-
               </div>
 
               <div className="p-6 border-t border-white/10 bg-slate-900/50 backdrop-blur-xl">
