@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   BarChart3, ShieldCheck, Camera, Calculator, AlertCircle, 
   CheckCircle2, FileWarning, ArrowUpRight, TrendingDown,
-  Lock, Landmark, Smartphone, MapPin, FileCheck
+  Lock, Landmark, Smartphone, MapPin, FileCheck, Plus, Settings
 } from "lucide-react";
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, 
@@ -34,6 +34,12 @@ const valleyOfDeathData = [
 
 export default function FinancingAidView() {
   const [activeSubModule, setActiveSubModule] = useState("translation");
+  const [evidences, setEvidences] = useState<any>([
+    { id: 1, title: "Ferragem Viga V102", loc: "Setor A", status: "Geolocalizado", date: "Hoje, 10:42", type: "Hidden" },
+    { id: 2, title: "Impermeabilização", loc: "Banheiro 12", status: "Geolocalizado", date: "Hoje, 09:15", type: "Hidden" },
+    { id: 3, title: "Tubulação Esgoto", loc: "Prumada 02", status: "Geolocalizado", date: "Ontem, 16:30", type: "Hidden" },
+    { id: 4, title: "Revestimento Piso", loc: "Hall", status: "Geolocalizado", date: "Ontem, 14:20", type: "Standard" },
+  ]);
   const { complianceDocs, updateDocStatus } = useDashboardStore();
   
   const [isUploading, setIsUploading] = useState(false);
@@ -230,19 +236,45 @@ export default function FinancingAidView() {
                   <h3 className="text-xl font-bold text-white uppercase tracking-tight flex items-center">
                     <Camera className="w-5 h-5 mr-3 text-blue-400" /> Dossiê de Pré-Medição
                   </h3>
-                  <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-bold rounded-lg border border-emerald-500/20">Aprovado pelo Gestor</span>
+                  <div className="flex space-x-3">
+                    <button 
+                      onClick={() => {
+                        const newTitle = prompt("Título do Material/Evidência:");
+                        if (newTitle) {
+                          setEvidences([...evidences, {
+                            id: Date.now(),
+                            title: newTitle,
+                            loc: "Novo Setor",
+                            status: "Geolocalizado",
+                            date: new Date().toLocaleDateString('pt-BR'),
+                            type: "Standard"
+                          }]);
+                        }
+                      }}
+                      className="px-3 py-1.5 bg-blue-600 text-white text-[10px] font-bold rounded-lg hover:bg-blue-500 transition-all flex items-center uppercase tracking-widest"
+                    >
+                      <Plus className="w-3 h-3 mr-2" /> Adicionar Material
+                    </button>
+                    <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded-lg border border-emerald-500/20 uppercase tracking-widest flex items-center">Aprovado</span>
+                  </div>
                 </div>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {[
-                    { title: "Ferragem Viga V102", loc: "Setor A", status: "Geolocalizado", date: "Hoje, 10:42", type: "Hidden" },
-                    { title: "Impermeabilização", loc: "Banheiro 12", status: "Geolocalizado", date: "Hoje, 09:15", type: "Hidden" },
-                    { title: "Tubulação Esgoto", loc: "Prumada 02", status: "Geolocalizado", date: "Ontem, 16:30", type: "Hidden" },
-                    { title: "Revestimento Piso", loc: "Hall", status: "Geolocalizado", date: "Ontem, 14:20", type: "Standard" },
-                  ].map((img, i) => (
-                    <div key={i} className="group relative bg-slate-800/50 rounded-2xl overflow-hidden border border-white/5 hover:border-blue-500/30 transition-all">
-                      <div className="h-40 bg-slate-700/30 flex items-center justify-center">
+                  {evidences.map((img: any) => (
+                    <div key={img.id} className="group relative bg-slate-800/50 rounded-2xl overflow-hidden border border-white/5 hover:border-blue-500/30 transition-all">
+                      <div className="h-40 bg-slate-700/30 flex items-center justify-center relative">
                         <Camera className="w-8 h-8 text-slate-600 group-hover:text-blue-500 transition-colors" />
+                        <button 
+                          onClick={() => {
+                            const updatedTitle = prompt("Novo título:", img.title);
+                            if (updatedTitle) {
+                              setEvidences(evidences.map((e: any) => e.id === img.id ? { ...e, title: updatedTitle } : e));
+                            }
+                          }}
+                          className="absolute top-2 right-2 p-2 bg-slate-950/80 backdrop-blur-md rounded-lg border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-white"
+                        >
+                          <Settings className="w-3.5 h-3.5" />
+                        </button>
                         {img.type === 'Hidden' && (
                           <div className="absolute top-2 left-2 px-2 py-1 bg-red-500 text-white text-[10px] font-bold rounded uppercase">Item Oculto</div>
                         )}
@@ -252,8 +284,20 @@ export default function FinancingAidView() {
                         <div className="flex items-center mt-2 text-[10px] text-slate-500">
                           <MapPin className="w-3 h-3 mr-1" /> {img.loc} • {img.date}
                         </div>
-                        <div className="mt-3 flex items-center space-x-1 text-emerald-400 text-[10px] font-bold">
-                          <ShieldCheck className="w-3 h-3" /> <span>GPS VERIFICADO</span>
+                        <div className="mt-3 flex items-center justify-between">
+                          <div className="flex items-center space-x-1 text-emerald-400 text-[10px] font-bold uppercase">
+                            <ShieldCheck className="w-3 h-3" /> <span>VERIFICADO</span>
+                          </div>
+                          <button 
+                            onClick={() => {
+                              if (confirm("Remover esta evidência?")) {
+                                setEvidences(evidences.filter((e: any) => e.id !== img.id));
+                              }
+                            }}
+                            className="text-[10px] font-black text-red-500/50 hover:text-red-400 uppercase transition-colors"
+                          >
+                            Excluir
+                          </button>
                         </div>
                       </div>
                     </div>
