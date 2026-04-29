@@ -73,19 +73,21 @@ export default function Preloader() {
               <text x="180" y="400" fill="currentColor" fontSize="10" className="font-mono opacity-40">48.12m</text>
             </g>
 
-            {/* RIGHT SIDE: Skyscraper Structure (Prédio) */}
+            {/* RIGHT SIDE: Detailed Skyscraper Structure */}
             <g transform="translate(850, 100) scale(0.9)">
               <motion.path 
                 d="M 50,700 L 50,100 L 200,50 L 200,700"
                 fill="none" stroke="currentColor" strokeWidth="2.5"
                 initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 1 }} transition={{ duration: 2.2, ease: "easeInOut" }}
               />
-              {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                <motion.path 
-                  key={i} d={`M 50,${150 + i*60} L 200,${150 + i*60}`}
-                  fill="none" stroke="currentColor" strokeWidth="0.8"
-                  initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 0.5 }} transition={{ duration: 1.2, delay: 0.5 + i*0.1 }}
-                />
+              {/* Entrance Gate */}
+              <motion.path d="M 100,700 L 100,660 L 150,660 L 150,700" fill="none" stroke="currentColor" strokeWidth="1.5" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 1.5 }} />
+              {/* Windows Grid */}
+              {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+                <g key={i} transform={`translate(0, ${150 + i*65})`}>
+                  <motion.rect x="75" y="10" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="0.5" initial={{ opacity: 0 }} animate={{ opacity: 0.3 }} transition={{ delay: 1 + i*0.1 }} />
+                  <motion.rect x="145" y="10" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="0.5" initial={{ opacity: 0 }} animate={{ opacity: 0.3 }} transition={{ delay: 1 + i*0.1 }} />
+                </g>
               ))}
               <motion.path 
                 d="M 200,150 L 350,150 L 300,100 M 320,150 L 320,300"
@@ -94,7 +96,7 @@ export default function Preloader() {
               />
             </g>
             
-            {/* Main Central Structure (House) */}
+            {/* Main Central Structure (Detailed House) */}
             <g transform="translate(0, 0)">
               <motion.path 
                 d="M 600 150 L 350 400 L 850 400 Z" 
@@ -106,6 +108,15 @@ export default function Preloader() {
                 fill="none" stroke="currentColor" strokeWidth="2"
                 initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 1 }} transition={{ duration: 1.8, delay: 0.6, ease: "easeInOut" }}
               />
+              {/* Central Door */}
+              <motion.path 
+                d="M 575 750 L 575 640 L 625 640 L 625 750" 
+                fill="none" stroke="currentColor" strokeWidth="1.5"
+                initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 1.2, duration: 1 }}
+              />
+              {/* Windows */}
+              <motion.path d="M 460 500 L 530 500 L 530 580 L 460 580 Z M 670 500 L 740 500 L 740 580 L 670 580 Z" fill="none" stroke="currentColor" strokeWidth="1" initial={{ opacity: 0 }} animate={{ opacity: 0.5 }} transition={{ delay: 1.5 }} />
+              <motion.path d="M 495 500 L 495 580 M 460 540 L 530 540 M 705 500 L 705 580 M 670 540 L 740 540" stroke="currentColor" strokeWidth="0.5" initial={{ opacity: 0 }} animate={{ opacity: 0.3 }} transition={{ delay: 1.8 }} />
             </g>
 
             {/* Perspective Lines */}
