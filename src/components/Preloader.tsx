@@ -58,57 +58,59 @@ export default function Preloader() {
           <div className="absolute inset-0 bg-indigo-500/5 blur-[120px] pointer-events-none" />
         </motion.div>
 
-        {/* Technical Visuals Overlay */}
+        {/* Technical Visuals Overlay - Enhanced Visibility */}
         <motion.div 
+          key="technical-blueprint"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.5 }}
           exit={{ opacity: 0, transition: { duration: 0.4 } }}
-          className="absolute inset-0 z-0 flex items-center justify-center opacity-30 pointer-events-none"
+          className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none"
         >
-          <svg viewBox="0 0 1200 900" className="w-full h-full text-blue-400" preserveAspectRatio="xMidYMid slice">
+          <svg viewBox="0 0 1200 900" className="w-full h-full text-blue-500/60" preserveAspectRatio="xMidYMid slice">
             {/* Horizon & Perspective Grid */}
             <motion.path 
               d="M0,750 L1200,750 M600,0 L600,900 M0,450 L1200,450 M0,150 L1200,150" 
-              stroke="currentColor" strokeWidth="0.5" strokeDasharray="4 12" 
-              initial={{ opacity: 0 }} animate={{ opacity: 0.2 }} transition={{ duration: 2 }} 
+              stroke="currentColor" strokeWidth="1" strokeDasharray="4 12" 
+              initial={{ opacity: 0 }} animate={{ opacity: 0.3 }} transition={{ duration: 2 }} 
             />
 
             {/* LEFT SIDE: Technical Floor Plan (Planta) */}
             <g transform="translate(100, 200) scale(0.8)">
               <motion.path 
                 d="M 50,50 L 350,50 L 350,350 L 50,350 Z M 150,50 L 150,200 L 350,200"
-                fill="none" stroke="currentColor" strokeWidth="2"
+                fill="none" stroke="currentColor" strokeWidth="2.5"
                 initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 1 }} transition={{ duration: 2, ease: "easeInOut" }}
               />
               <motion.path 
                 d="M 50,150 L 120,150 M 200,350 L 200,280 M 350,250 L 280,250"
-                fill="none" stroke="currentColor" strokeWidth="1"
-                initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 0.6 }} transition={{ duration: 1.5, delay: 0.5 }}
+                fill="none" stroke="currentColor" strokeWidth="1.5"
+                initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 0.8 }} transition={{ duration: 1.5, delay: 0.5 }}
               />
               <motion.path 
-                d="M 30,50 L 30,350 M 20,50 L 40,50 M 20,350 L 40,350 M 50,370 L 350,370 M 50,360 L 50,380 M 350,360 L 350,380"
-                fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="4 4"
-                initial={{ opacity: 0 }} animate={{ opacity: 0.4 }} transition={{ duration: 1, delay: 1 }}
+                d="M 30,50 L 30,350 M 20,50 L 40,50 M 20,350 L 40,350 M 50,370 L 350,370"
+                fill="none" stroke="currentColor" strokeWidth="0.8" strokeDasharray="4 4"
+                initial={{ opacity: 0 }} animate={{ opacity: 0.5 }} transition={{ duration: 1, delay: 1 }}
               />
-              <text x="180" y="400" fill="currentColor" fontSize="10" className="font-mono opacity-40">48.12m</text>
             </g>
 
             {/* RIGHT SIDE: Skyscraper Structure (Prédio) */}
             <g transform="translate(850, 100) scale(0.9)">
               <motion.path 
                 d="M 50,700 L 50,100 L 200,50 L 200,700"
-                fill="none" stroke="currentColor" strokeWidth="2.5"
+                fill="none" stroke="currentColor" strokeWidth="3"
                 initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 1 }} transition={{ duration: 2.2, ease: "easeInOut" }}
               />
               {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                 <motion.path 
                   key={i} d={`M 50,${150 + i*60} L 200,${150 + i*60}`}
-                  fill="none" stroke="currentColor" strokeWidth="0.8"
-                  initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 0.5 }} transition={{ duration: 1.2, delay: 0.5 + i*0.1 }}
+                  fill="none" stroke="currentColor" strokeWidth="1"
+                  initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 0.6 }} transition={{ duration: 1.2, delay: 0.5 + i*0.1 }}
                 />
               ))}
               <motion.path 
                 d="M 200,150 L 350,150 L 300,100 M 320,150 L 320,300"
-                fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="5 5"
-                initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 0.6 }} transition={{ duration: 1.5, delay: 1.2 }}
+                fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="5 5"
+                initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 0.8 }} transition={{ duration: 1.5, delay: 1.2 }}
               />
             </g>
             
@@ -116,12 +118,12 @@ export default function Preloader() {
             <g transform="translate(0, 0)">
               <motion.path 
                 d="M 600 150 L 350 400 L 850 400 Z" 
-                fill="none" stroke="currentColor" strokeWidth="1.5"
-                initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 0.8 }} transition={{ duration: 1.8, ease: "easeInOut" }}
+                fill="none" stroke="currentColor" strokeWidth="2"
+                initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 1 }} transition={{ duration: 1.8, ease: "easeInOut" }}
               />
               <motion.path 
                 d="M 400 400 L 400 750 L 800 750 L 800 400" 
-                fill="none" stroke="currentColor" strokeWidth="2"
+                fill="none" stroke="currentColor" strokeWidth="2.5"
                 initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 1 }} transition={{ duration: 1.8, delay: 0.6, ease: "easeInOut" }}
               />
             </g>
@@ -129,8 +131,8 @@ export default function Preloader() {
             {/* Perspective Lines */}
             <motion.path 
               d="M 0 900 L 400 750 M 1200 900 L 800 750 M 600 150 L 600 0" 
-              fill="none" stroke="currentColor" strokeWidth="0.5"
-              initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 0.2 }} transition={{ duration: 2.5, delay: 0.2, ease: "easeInOut" }}
+              fill="none" stroke="currentColor" strokeWidth="1"
+              initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 0.4 }} transition={{ duration: 2.5, delay: 0.2, ease: "easeInOut" }}
             />
           </svg>
         </motion.div>
