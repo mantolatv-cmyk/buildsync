@@ -43,13 +43,16 @@ const glossary: Record<string, string> = {
 const GlossaryTooltip = ({ term, children }: { term: string, children: React.ReactNode }) => {
   return (
     <div className="group relative inline-block">
-      <span className="cursor-help border-b border-dotted border-slate-500 hover:border-blue-400 transition-colors">
+      <span className="cursor-help border-b border-dotted border-blue-500/50 hover:border-blue-400 transition-colors">
         {children}
       </span>
-      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-slate-900 border border-white/10 rounded-lg text-[10px] text-slate-300 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 shadow-2xl backdrop-blur-xl">
-        <p className="font-bold text-white mb-1 uppercase tracking-tighter">{term}</p>
-        {glossary[term]}
-        <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-900" />
+      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-64 p-3 bg-slate-950 border border-white/20 rounded-xl text-[11px] text-slate-300 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 z-[100] shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+        <div className="flex items-center space-x-2 mb-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+          <p className="font-black text-white uppercase tracking-wider text-[10px]">{term}</p>
+        </div>
+        <p className="leading-relaxed">{glossary[term]}</p>
+        <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-950" />
       </div>
     </div>
   );
@@ -103,8 +106,8 @@ export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
               <h3 className="text-2xl font-bold text-white mt-1">R$ 1.250.000</h3>
             </div>
           </motion.div>
-          <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 flex items-center relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-500/10 to-transparent translate-x-[-100%] group-hover:animate-shimmer" />
+          <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 flex items-center relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-500/10 to-transparent translate-x-[-100%] group-hover:animate-shimmer rounded-2xl pointer-events-none" />
             <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mr-4">
               <ArrowRightLeft className="w-6 h-6 text-amber-400" />
             </div>
@@ -147,7 +150,7 @@ export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
         {/* Nova Seção: Rentabilidade e Custos */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Gráfico Waterfall (DRE) */}
-          <motion.div variants={itemVariants} className="lg:col-span-2 bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 relative overflow-hidden">
+          <motion.div variants={itemVariants} className="lg:col-span-2 bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 relative">
             <div className="absolute -right-20 -bottom-20 w-48 h-48 bg-blue-500/10 blur-[60px] rounded-full pointer-events-none" />
             <div className="flex justify-between items-start mb-6">
               <div>
