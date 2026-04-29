@@ -280,7 +280,10 @@ export default function FinancingAidView() {
                       <span className="text-emerald-400 font-bold">14 fotos</span>
                     </div>
                   </div>
-                  <button className="w-full mt-6 py-2 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-500 transition-all">
+                  <button 
+                    onClick={() => window.print()}
+                    className="w-full mt-6 py-2 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-500 transition-all shadow-lg shadow-blue-500/20"
+                  >
                     GERAR DOSSIÊ PDF (PADRÃO CEF)
                   </button>
                 </div>

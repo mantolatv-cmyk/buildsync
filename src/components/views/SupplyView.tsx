@@ -7,6 +7,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
 import { GlossaryTooltip } from "../GlossaryTooltip";
 import { useDashboardStore } from "../../store/useDashboardStore";
 import SupplyEntryModal from "../SupplyEntryModal";
+import PartnerManagementDrawer from "../PartnerManagementDrawer";
 import { exportToCSV } from "../../utils/exportUtils";
 
 const supplyPriceData = [
@@ -33,6 +34,7 @@ const supplierRankingData = [
 
 export default function SupplyView() {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [isPartnerDrawerOpen, setIsPartnerDrawerOpen] = React.useState(false);
   const { supplyData } = useDashboardStore();
   
   const containerVariants: Variants = {
@@ -69,6 +71,7 @@ export default function SupplyView() {
       </div>
 
       <SupplyEntryModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <PartnerManagementDrawer isOpen={isPartnerDrawerOpen} onClose={() => setIsPartnerDrawerOpen(false)} />
 
       {/* Market Intelligence Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -150,7 +153,10 @@ export default function SupplyView() {
                 <p className="text-sm text-slate-400">Avaliação por Volume, Estabilidade e Pontualidade</p>
               </div>
             </div>
-            <button className="text-sm font-medium text-blue-400 hover:text-blue-300 flex items-center transition-colors">
+            <button 
+              onClick={() => setIsPartnerDrawerOpen(true)}
+              className="text-sm font-medium text-blue-400 hover:text-blue-300 flex items-center transition-colors"
+            >
               Gerenciar Parceiros <ArrowRight className="w-4 h-4 ml-2" />
             </button>
           </div>

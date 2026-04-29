@@ -111,10 +111,16 @@ export default function ReportsView() {
             </div>
           </div>
           <div className="flex space-x-3">
-            <button className="px-4 py-2 bg-slate-800 text-white rounded-xl text-sm font-semibold flex items-center hover:bg-slate-700 transition-colors border border-white/5">
+            <button 
+              onClick={() => window.print()}
+              className="px-4 py-2 bg-slate-800 text-white rounded-xl text-sm font-semibold flex items-center hover:bg-slate-700 transition-colors border border-white/5"
+            >
               <Printer className="w-4 h-4 mr-2" /> Imprimir
             </button>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold flex items-center hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20">
+            <button 
+              onClick={() => window.print()}
+              className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold flex items-center hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20"
+            >
               <Download className="w-4 h-4 mr-2" /> PDF Export
             </button>
           </div>
