@@ -119,7 +119,13 @@ export default function CriticalPathDrawer({ isOpen, onClose }: CriticalPathDraw
             </div>
 
             <div className="p-6 border-t border-white/10 bg-slate-900/50 backdrop-blur-xl">
-              <button className="w-full py-3 bg-white text-slate-950 text-xs font-black rounded-xl hover:bg-slate-200 transition-all uppercase tracking-widest">
+              <button 
+                onClick={() => {
+                  // Aqui simulamos a abertura do PDF ou o print do navegador
+                  window.print();
+                }}
+                className="w-full py-3 bg-white text-slate-950 text-xs font-black rounded-xl hover:bg-slate-200 transition-all uppercase tracking-widest shadow-xl shadow-white/5"
+              >
                 Gerar Plano de Ação (PDF)
               </button>
             </div>

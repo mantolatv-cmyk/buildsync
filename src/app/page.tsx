@@ -21,6 +21,7 @@ import SupplyView from "@/components/views/SupplyView";
 import FinancingAidView from "@/components/views/FinancingAidView";
 import Preloader from "@/components/Preloader";
 import AdminCenterModal from "@/components/AdminCenterModal";
+import ActionPlanReport from "@/components/ActionPlanReport";
 
 export default function InvestorDashboard() {
   const [activeMenu, setActiveMenu] = useState("Visão Geral");
@@ -492,6 +493,11 @@ export default function InvestorDashboard() {
           <span className="text-[10px] font-bold uppercase tracking-tighter">Mais</span>
         </button>
       </nav>
+
+      {/* Reports hidden from screen, shown on print */}
+      <div className="hidden print:block">
+        <ActionPlanReport />
+      </div>
 
     </div>
   );
