@@ -325,34 +325,33 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
             </ResponsiveContainer>
           </div>
         </motion.div>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Retorno do Investidor (ROI) */}
-        <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 relative">
-          <div className="absolute -right-10 -top-10 w-32 h-32 bg-emerald-500/10 blur-[50px] rounded-full pointer-events-none" />
-          <div>
-            <h2 className="text-lg font-semibold text-white">Retorno sobre Investimento (ROI)</h2>
-            <p className="text-sm text-slate-400">Projetado vs. Realizado ao ano (%)</p>
+        <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 relative group hover:bg-slate-900/50 transition-colors">
+          <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity duration-500 pointer-events-none" />
+          <div className="relative z-10">
+            <h2 className="text-lg font-semibold text-white">Retorno (ROI)</h2>
+            <p className="text-sm text-slate-400">Projetado vs. Realizado</p>
           </div>
-          <div className="h-56 w-full mt-4 relative z-10">
+          <div className="h-72 w-full mt-4 relative z-10">
             <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-              <BarChart data={roiData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+              <BarChart data={roiData} margin={{ top: 10, right: 0, left: -25, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
-                <XAxis dataKey="ano" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} tickFormatter={(val) => `${val}%`} />
+                <XAxis dataKey="ano" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 11 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 11 }} tickFormatter={(val) => `${val}%`} />
                 <RechartsTooltip 
                   cursor={{fill: '#1e293b'}} 
                   contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc' }}
                 />
-                <Legend iconType="circle" wrapperStyle={{ paddingTop: '10px', fontSize: '12px' }} />
-                <Bar dataKey="projetado" name="Projetado" fill="#475569" radius={[4, 4, 0, 0]} barSize={12} />
-                <Bar dataKey="realizado" name="Realizado" fill="#10b981" radius={[4, 4, 0, 0]} barSize={12} />
+                <Bar dataKey="projetado" name="Proj." fill="#475569" radius={[4, 4, 0, 0]} barSize={8} />
+                <Bar dataKey="realizado" name="Real." fill="#10b981" radius={[4, 4, 0, 0]} barSize={8} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </motion.div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {/* Gráfico Composto - SPI & CPI */}
         <motion.div variants={itemVariants} className="lg:col-span-2 bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6">
