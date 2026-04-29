@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, Variants } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { MapPin, Calendar, ArrowRight, Camera } from "lucide-react";
 import { ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from "recharts";
 import ProjectFormDrawer from "../ProjectFormDrawer";
+import ProjectDetailView from "./ProjectDetailView";
 
 const projectsData = [
   {
@@ -56,6 +57,7 @@ const sCurveData = [
 
 export default function ProjectsView() {
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -69,164 +71,131 @@ export default function ProjectsView() {
 
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
-      <div className="flex justify-between items-end mb-8">
-        <div>
-          <h2 className="text-2xl font-semibold text-white tracking-tight">Portfólio de Obras</h2>
-          <p className="text-sm text-slate-400 mt-1">Gestão de múltiplos empreendimentos ativos</p>
-        </div>
-        <div className="flex space-x-3">
-          <button className="px-4 py-2 bg-slate-800 text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors border border-white/5">
-            Filtrar por Status
-          </button>
-          <button 
-            onClick={() => setIsFormOpen(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20"
+      <AnimatePresence mode="wait">
+        {selectedProject ? (
+          <ProjectDetailView 
+            project={selectedProject} 
+            onBack={() => setSelectedProject(null)} 
+          />
+        ) : (
+          <motion.div
+            key="project-list"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="space-y-8"
           >
-            Adicionar Obra
-          </button>
-        </div>
-      </div>
-
-      {/* Curva S do Portfólio (Engenharia) */}
-      <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl border border-white/5 rounded-2xl p-6 mb-8 shadow-xl relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-[80px] rounded-full pointer-events-none" />
-        <div className="flex justify-between items-center mb-6 relative z-10">
-          <div>
-            <h3 className="text-xl font-semibold text-white">Curva S de Engenharia (Consolidada)</h3>
-            <p className="text-sm text-slate-400">Avanço Físico (%) x Desembolso Financeiro (R$ mil)</p>
-          </div>
-        </div>
-        
-        <div className="h-80 w-full relative z-10">
-          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-            <ComposedChart data={sCurveData} margin={{ top: 20, right: 20, bottom: 0, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
-              <XAxis dataKey="mes" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
-              
-              {/* Eixo Esquerdo: Financeiro (R$) */}
-              <YAxis 
-                yAxisId="left" 
-                orientation="left" 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fill: '#64748b', fontSize: 12 }} 
-                tickFormatter={(val) => `R$${val}k`}
-              />
-              
-              {/* Eixo Direito: Físico (%) */}
-              <YAxis 
-                yAxisId="right" 
-                orientation="right" 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fill: '#64748b', fontSize: 12 }} 
-                tickFormatter={(val) => `${val}%`}
-                domain={[0, 100]}
-              />
-              
-              <RechartsTooltip 
-                cursor={{ fill: '#1e293b', opacity: 0.4 }}
-                contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)' }}
-                itemStyle={{ color: '#f8fafc', fontSize: '14px', fontWeight: 500 }}
-                labelStyle={{ color: '#94a3b8', marginBottom: '8px' }}
-                formatter={(value: any, name: any) => {
-                  if (name && typeof name === 'string' && name.includes('Custo')) return [`R$ ${value}k`, name];
-                  return [`${value}%`, name];
-                }}
-              />
-              <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '13px' }} iconType="circle" />
-              
-              {/* Barras: Financeiro */}
-              <Bar yAxisId="left" dataKey="custoPlan" name="Custo Planejado" fill="#334155" radius={[4, 4, 0, 0]} barSize={24} />
-              <Bar yAxisId="left" dataKey="custoReal" name="Custo Realizado" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={24} opacity={0.8} />
-              
-              {/* Linhas: Físico */}
-              <Line yAxisId="right" type="monotone" dataKey="fisPlan" name="Físico Planejado" stroke="#94a3b8" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 4, fill: '#0f172a', stroke: '#94a3b8', strokeWidth: 2 }} />
-              <Line yAxisId="right" type="monotone" dataKey="fisReal" name="Físico Realizado" stroke="#10b981" strokeWidth={3} dot={{ r: 6, fill: '#0f172a', stroke: '#10b981', strokeWidth: 2 }} activeDot={{ r: 8, fill: '#10b981', stroke: '#fff' }} />
-            </ComposedChart>
-          </ResponsiveContainer>
-        </div>
-      </motion.div>
-
-      <motion.div 
-        variants={containerVariants}
-        initial="hidden"
-        animate="show"
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-      >
-        {projectsData.map(project => (
-          <motion.div 
-            key={project.id}
-            variants={itemVariants}
-            whileHover={{ y: -5 }}
-            className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 overflow-hidden group cursor-pointer shadow-lg hover:shadow-xl hover:border-white/10 transition-all flex flex-col"
-          >
-            {/* Project Image Header */}
-            <div className="h-48 relative overflow-hidden">
-              <div className="absolute inset-0 bg-slate-900/20 group-hover:bg-transparent transition-colors z-10" />
-              <img src={project.image} alt={project.name} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
-              <div className="absolute top-4 right-4 z-20">
-                <span className={`px-2.5 py-1 text-xs font-semibold rounded-full backdrop-blur-md ${project.status === 'on_track' ? 'bg-green-500/80 text-white' : project.status === 'warning' ? 'bg-amber-500/80 text-white' : 'bg-red-500/80 text-white'}`}>
-                  {project.status === 'on_track' ? 'No Prazo' : project.status === 'warning' ? 'Atenção' : 'Atrasado'}
-                </span>
+            <div className="flex justify-between items-end mb-8">
+              <div>
+                <h2 className="text-2xl font-semibold text-white tracking-tight">Portfólio de Obras</h2>
+                <p className="text-sm text-slate-400 mt-1">Gestão de múltiplos empreendimentos ativos</p>
               </div>
-              {/* Photo Gallery Indicator */}
-              <div className="absolute bottom-4 left-4 z-20 flex items-center space-x-1 bg-black/50 backdrop-blur-md px-2 py-1 rounded-lg border border-white/10">
-                <Camera className="w-3 h-3 text-slate-300" />
-                <span className="text-xs text-slate-300">12 Fotos</span>
+              <div className="flex space-x-3">
+                <button className="px-4 py-2 bg-slate-800 text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors border border-white/5">
+                  Filtrar por Status
+                </button>
+                <button 
+                  onClick={() => setIsFormOpen(true)}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20"
+                >
+                  Adicionar Obra
+                </button>
               </div>
             </div>
 
-            {/* Project Details */}
-            <div className="p-5 flex-1 flex flex-col">
-              <h3 className="text-lg font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">{project.name}</h3>
-              <p className="text-sm text-slate-400 flex items-center mb-6">
-                <MapPin className="w-3.5 h-3.5 mr-1" /> {project.location}
-              </p>
-
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-slate-800/50 p-3 rounded-xl border border-white/5">
-                  <p className="text-xs text-slate-500 mb-1">Orçamento</p>
-                  <p className="text-sm font-semibold text-white">{project.budget}</p>
-                  <p className={`text-[10px] mt-1 font-medium ${project.eac > project.budget ? 'text-red-400' : 'text-green-400'}`}>
-                    EAC: {project.eac}
-                  </p>
-                </div>
-                <div className="bg-slate-800/50 p-3 rounded-xl border border-white/5">
-                  <p className="text-xs text-slate-500 mb-1">Entrega</p>
-                  <p className="text-sm font-semibold text-white flex items-center">
-                    <Calendar className="w-3.5 h-3.5 mr-1 text-slate-400" /> {project.deadline}
-                  </p>
-                  <p className={`text-[10px] mt-1 font-medium ${project.projectedDeadline !== project.deadline ? 'text-red-400' : 'text-slate-400'}`}>
-                    Proj: {project.projectedDeadline}
-                  </p>
+            {/* Curva S do Portfólio (Engenharia) */}
+            <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl border border-white/5 rounded-2xl p-6 mb-8 shadow-xl relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-[80px] rounded-full pointer-events-none" />
+              <div className="flex justify-between items-center mb-6 relative z-10">
+                <div>
+                  <h3 className="text-xl font-semibold text-white">Curva S de Engenharia (Consolidada)</h3>
+                  <p className="text-sm text-slate-400">Avanço Físico (%) x Desembolso Financeiro (R$ mil)</p>
                 </div>
               </div>
-
-              {/* Progress Bar */}
-              <div className="mt-auto">
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="font-medium text-slate-300">Avanço Físico</span>
-                  <span className="font-bold text-white">{project.progress}%</span>
-                </div>
-                <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
-                  <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: `${project.progress}%` }}
-                    transition={{ duration: 1, delay: 0.2 }}
-                    className="h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
-                  />
-                </div>
+              
+              <div className="h-80 w-full relative z-10">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                  <ComposedChart data={sCurveData} margin={{ top: 20, right: 20, bottom: 0, left: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
+                    <XAxis dataKey="mes" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
+                    <YAxis yAxisId="left" orientation="left" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} tickFormatter={(val) => `R$${val}k`} />
+                    <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} tickFormatter={(val) => `${val}%`} domain={[0, 100]} />
+                    <RechartsTooltip 
+                      cursor={{ fill: '#1e293b', opacity: 0.4 }}
+                      contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px' }}
+                      formatter={(value: any, name: any) => name.includes('Custo') ? [`R$ ${value}k`, name] : [`${value}%`, name]}
+                    />
+                    <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '13px' }} iconType="circle" />
+                    <Bar yAxisId="left" dataKey="custoPlan" name="Custo Planejado" fill="#334155" radius={[4, 4, 0, 0]} barSize={24} />
+                    <Bar yAxisId="left" dataKey="custoReal" name="Custo Realizado" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={24} opacity={0.8} />
+                    <Line yAxisId="right" type="monotone" dataKey="fisPlan" name="Físico Planejado" stroke="#94a3b8" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 4, fill: '#0f172a', stroke: '#94a3b8', strokeWidth: 2 }} />
+                    <Line yAxisId="right" type="monotone" dataKey="fisReal" name="Físico Realizado" stroke="#10b981" strokeWidth={3} dot={{ r: 6, fill: '#0f172a', stroke: '#10b981', strokeWidth: 2 }} />
+                  </ComposedChart>
+                </ResponsiveContainer>
               </div>
-            </div>
-            
-            <div className="px-5 py-3 border-t border-white/5 flex justify-between items-center text-sm text-slate-400 group-hover:text-white transition-colors bg-white/5">
-              <span>Abrir dashboard da obra</span>
-              <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
-            </div>
+            </motion.div>
+
+            <motion.div 
+              variants={containerVariants}
+              initial="hidden"
+              animate="show"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              {projectsData.map(project => (
+                <motion.div 
+                  key={project.id}
+                  variants={itemVariants}
+                  whileHover={{ y: -5 }}
+                  onClick={() => setSelectedProject(project)}
+                  className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 overflow-hidden group cursor-pointer shadow-lg hover:shadow-xl hover:border-white/10 transition-all flex flex-col"
+                >
+                  <div className="h-48 relative overflow-hidden">
+                    <img src={project.image} alt={project.name} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
+                    <div className="absolute top-4 right-4 z-20">
+                      <span className={`px-2.5 py-1 text-xs font-semibold rounded-full backdrop-blur-md ${project.status === 'on_track' ? 'bg-green-500/80 text-white' : project.status === 'warning' ? 'bg-amber-500/80 text-white' : 'bg-red-500/80 text-white'}`}>
+                        {project.status === 'on_track' ? 'No Prazo' : project.status === 'warning' ? 'Atenção' : 'Atrasado'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-5 flex-1 flex flex-col">
+                    <h3 className="text-lg font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">{project.name}</h3>
+                    <p className="text-sm text-slate-400 flex items-center mb-6">
+                      <MapPin className="w-3.5 h-3.5 mr-1" /> {project.location}
+                    </p>
+
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      <div className="bg-slate-800/50 p-3 rounded-xl border border-white/5">
+                        <p className="text-xs text-slate-500 mb-1">Orçamento</p>
+                        <p className="text-sm font-semibold text-white">{project.budget}</p>
+                      </div>
+                      <div className="bg-slate-800/50 p-3 rounded-xl border border-white/5">
+                        <p className="text-xs text-slate-500 mb-1">Entrega</p>
+                        <p className="text-sm font-semibold text-white">{project.deadline}</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-auto">
+                      <div className="flex justify-between text-sm mb-2">
+                        <span className="font-medium text-slate-300">Avanço Físico</span>
+                        <span className="font-bold text-white">{project.progress}%</span>
+                      </div>
+                      <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                        <motion.div initial={{ width: 0 }} animate={{ width: `${project.progress}%` }} className="h-2 rounded-full bg-blue-500" />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="px-5 py-3 border-t border-white/5 flex justify-between items-center text-sm text-slate-400 group-hover:text-white transition-colors bg-white/5">
+                    <span>Abrir dashboard da obra</span>
+                    <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
           </motion.div>
-        ))}
-      </motion.div>
+        )}
+      </AnimatePresence>
 
       <ProjectFormDrawer isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} />
     </div>
