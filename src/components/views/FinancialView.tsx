@@ -32,6 +32,29 @@ const costDistributionData = [
   { name: 'Projetos', value: 7, color: '#64748b' },
 ];
 
+const glossary: Record<string, string> = {
+  "VGV": "Valor Geral de Vendas: Soma do valor potencial de venda de todas as unidades do empreendimento.",
+  "Burn Rate": "Taxa de Queima: Ritmo mensal de consumo do capital disponível para cobrir despesas operacionais e de obra.",
+  "Runway": "Autonomia: Estimativa de quantos meses o caixa atual suporta mantendo o ritmo de gastos atual.",
+  "DRE": "Demonstração do Resultado do Exercício: Relatório que resume receitas e custos para calcular o lucro líquido.",
+  "Waterfall": "Gráfico de Cascata: Visualização que mostra a progressão dos custos retirados do VGV até a margem final."
+};
+
+const GlossaryTooltip = ({ term, children }: { term: string, children: React.ReactNode }) => {
+  return (
+    <div className="group relative inline-block">
+      <span className="cursor-help border-b border-dotted border-slate-500 hover:border-blue-400 transition-colors">
+        {children}
+      </span>
+      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-slate-900 border border-white/10 rounded-lg text-[10px] text-slate-300 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 shadow-2xl backdrop-blur-xl">
+        <p className="font-bold text-white mb-1 uppercase tracking-tighter">{term}</p>
+        {glossary[term]}
+        <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-900" />
+      </div>
+    </div>
+  );
+};
+
 export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -65,7 +88,9 @@ export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
               <TrendingDown className="w-6 h-6 text-red-400" />
             </div>
             <div>
-              <p className="text-sm text-slate-400 font-medium">Burn Rate Mensal Médio</p>
+              <p className="text-sm text-slate-400 font-medium">
+                <GlossaryTooltip term="Burn Rate">Burn Rate</GlossaryTooltip> Mensal Médio
+              </p>
               <h3 className="text-2xl font-bold text-white mt-1">R$ 225.000</h3>
             </div>
           </motion.div>
@@ -84,7 +109,9 @@ export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
               <ArrowRightLeft className="w-6 h-6 text-amber-400" />
             </div>
             <div>
-              <p className="text-sm text-slate-400 font-medium">Runway Estimado</p>
+              <p className="text-sm text-slate-400 font-medium">
+                <GlossaryTooltip term="Runway">Runway</GlossaryTooltip> Estimado
+              </p>
               <h3 className="text-2xl font-bold text-white mt-1">5.5 Meses</h3>
             </div>
           </motion.div>
@@ -124,8 +151,10 @@ export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
             <div className="absolute -right-20 -bottom-20 w-48 h-48 bg-blue-500/10 blur-[60px] rounded-full pointer-events-none" />
             <div className="flex justify-between items-start mb-6">
               <div>
-                <h3 className="text-lg font-semibold text-white mb-1">DRE Dinâmico (Waterfall)</h3>
-                <p className="text-sm text-slate-400">Análise de Composição do VGV</p>
+                <h3 className="text-lg font-semibold text-white mb-1">
+                  <GlossaryTooltip term="DRE">DRE</GlossaryTooltip> Dinâmico (<GlossaryTooltip term="Waterfall">Waterfall</GlossaryTooltip>)
+                </h3>
+                <p className="text-sm text-slate-400">Análise de Composição do <GlossaryTooltip term="VGV">VGV</GlossaryTooltip></p>
               </div>
               <div className="flex space-x-2">
                 <div className="px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-full">
