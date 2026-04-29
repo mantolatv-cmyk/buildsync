@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { 
-  LayoutDashboard, FolderKanban, Wallet, FileText, ShieldCheck, Headset,
+  LayoutDashboard, FolderKanban, Wallet, FileText, ShieldCheck,
   TrendingUp, Clock, Sparkles, ChevronDown, X, PieChart as PieChartIcon, BarChart3, Menu, Package
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -36,7 +36,6 @@ export default function InvestorDashboard() {
     { name: "Financeiro", icon: Wallet },
     { name: "Suprimentos", icon: Package },
     { name: "Relatórios", icon: FileText },
-    { name: "Suporte", icon: Headset },
   ];
 
   return (
