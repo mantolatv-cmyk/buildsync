@@ -12,6 +12,7 @@ import {
   ResponsiveContainer, Cell, LineChart, Line, AreaChart, Area
 } from "recharts";
 import { GlossaryTooltip } from "../GlossaryTooltip";
+import { useDashboardStore } from "../../store/useDashboardStore";
 
 // --- Mock Data for the PCI Translation Engine ---
 const pciComparisonData = [
@@ -33,6 +34,17 @@ const valleyOfDeathData = [
 
 export default function FinancingAidView() {
   const [activeSubModule, setActiveSubModule] = useState("translation");
+  const { complianceDocs, updateDocStatus } = useDashboardStore();
+  
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleUpload = (id: string) => {
+    setIsUploading(true);
+    setTimeout(() => {
+      updateDocStatus(id, "Validado");
+      setIsUploading(false);
+    }, 1500);
+  };
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -297,13 +309,8 @@ export default function FinancingAidView() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {[
-                    { doc: "Guia de INSS (GPS)", status: "Validado", date: "30/04/2024", type: "Mensal" },
-                    { doc: "Recolhimento FGTS", status: "Validado", date: "30/04/2024", type: "Mensal" },
-                    { doc: "Alvará de Construção", status: "Validado", date: "Vence em 2026", type: "Permanente" },
-                    { doc: "Certidão <GlossaryTooltip term='CNO'>CNO</GlossaryTooltip>", status: "Pendente", date: "Atrasado 2 dias", type: "Mensal" },
-                  ].map((doc, i) => (
-                    <div key={i} className={`p-5 rounded-2xl border ${doc.status === 'Pendente' ? 'bg-red-500/5 border-red-500/20' : 'bg-white/5 border-white/5'} flex items-center justify-between`}>
+                  {complianceDocs.map((doc, i) => (
+                    <div key={i} className={`p-5 rounded-2xl border ${doc.status === 'Pendente' ? 'bg-red-500/5 border-red-500/20' : 'bg-white/5 border-white/5'} flex items-center justify-between transition-all`}>
                       <div className="flex items-center space-x-4">
                         <div className={`p-2 rounded-lg ${doc.status === 'Pendente' ? 'bg-red-500/20' : 'bg-emerald-500/20'}`}>
                           {doc.status === 'Pendente' ? <FileWarning className="w-5 h-5 text-red-400" /> : <FileCheck className="w-5 h-5 text-emerald-400" />}
@@ -328,9 +335,15 @@ export default function FinancingAidView() {
                       A Certidão CNO do mês de Maio não foi anexada. O sistema **bloqueou** o envio da medição #05 para o banco. 
                       A conformidade contínua evita o bloqueio da última parcela (5% do valor total do contrato).
                     </p>
-                    <button className="mt-4 px-6 py-2 bg-white text-slate-950 text-xs font-bold rounded-lg hover:bg-slate-200 transition-colors">
-                      ANEXAR DOCUMENTAÇÃO AGORA
-                    </button>
+                    {complianceDocs.some(d => d.status === "Pendente") && (
+                      <button 
+                        onClick={() => handleUpload(complianceDocs.find(d => d.status === "Pendente")?.id || "4")}
+                        disabled={isUploading}
+                        className="mt-4 px-6 py-2 bg-white text-slate-950 text-xs font-bold rounded-lg hover:bg-slate-200 transition-colors shadow-lg disabled:opacity-50"
+                      >
+                        {isUploading ? "VALIDANDO ARQUIVO..." : "ANEXAR DOCUMENTAÇÃO AGORA"}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

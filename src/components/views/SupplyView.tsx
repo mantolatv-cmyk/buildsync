@@ -3,8 +3,10 @@
 import React from "react";
 import { motion, Variants } from "framer-motion";
 import { Package, ArrowRight, Star, Award, TrendingUp, ShieldCheck } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, Cell, ResponsiveContainer } from "recharts";
 import { GlossaryTooltip } from "../GlossaryTooltip";
+import { useDashboardStore } from "../../store/useDashboardStore";
+import SupplyEntryModal from "../SupplyEntryModal";
 
 const supplyPriceData = [
   { item: 'Aço (Ton)', orcado: 4200, atual: 5100, market: 5350 },
@@ -29,6 +31,9 @@ const supplierRankingData = [
 ];
 
 export default function SupplyView() {
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const { supplyData } = useDashboardStore();
+  
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: { opacity: 1, transition: { staggerChildren: 0.1 } }
@@ -50,11 +55,16 @@ export default function SupplyView() {
           <button className="px-4 py-2 bg-blue-600/10 text-blue-400 border border-blue-500/20 rounded-xl text-sm font-semibold hover:bg-blue-600/20 transition-colors">
             Gerar Relatório ABC
           </button>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20">
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20"
+          >
             Adicionar Insumo
           </button>
         </div>
       </div>
+
+      <SupplyEntryModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
 
       {/* Market Intelligence Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -101,7 +111,7 @@ export default function SupplyView() {
           
           <div className="h-80 w-full relative z-10">
             <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-              <BarChart data={supplyPriceData} margin={{ top: 20, right: 20, bottom: 0, left: -10 }}>
+              <BarChart data={supplyData} margin={{ top: 20, right: 20, bottom: 0, left: -10 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
                 <XAxis dataKey="item" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} tickFormatter={(val) => `R$${val}`} />
@@ -115,7 +125,7 @@ export default function SupplyView() {
                 <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '13px' }} iconType="circle" />
                 <Bar dataKey="orcado" name="Orçado" fill="#334155" radius={[4, 4, 0, 0]} barSize={30} />
                 <Bar dataKey="atual" name="Preço Atual" radius={[4, 4, 0, 0]} barSize={30}>
-                  {supplyPriceData.map((entry, index) => (
+                  {supplyData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.atual > entry.orcado ? '#ef4444' : '#10b981'} />
                   ))}
                 </Bar>
