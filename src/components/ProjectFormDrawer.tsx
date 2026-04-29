@@ -8,13 +8,15 @@ import { useDashboardStore } from "../store/useDashboardStore";
 interface ProjectFormDrawerProps {
   isOpen: boolean;
   onClose: () => void;
+  editProject?: any;
 }
 
-export default function ProjectFormDrawer({ isOpen, onClose }: ProjectFormDrawerProps) {
+export default function ProjectFormDrawer({ isOpen, onClose, editProject }: ProjectFormDrawerProps) {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const addProject = useDashboardStore(state => state.addProject);
+  const updateProject = useDashboardStore(state => state.updateProject);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -23,6 +25,26 @@ export default function ProjectFormDrawer({ isOpen, onClose }: ProjectFormDrawer
     deadline: "2027",
     image: "https://images.unsplash.com/photo-1541888946425-d81bb19480c5?auto=format&fit=crop&q=80&w=1000",
   });
+
+  useEffect(() => {
+    if (editProject) {
+      setFormData({
+        name: editProject.name,
+        location: editProject.location,
+        budget: editProject.budget.replace(/[^0-9.]/g, ''),
+        deadline: editProject.deadline,
+        image: editProject.image
+      });
+    } else {
+      setFormData({
+        name: "",
+        location: "",
+        budget: "",
+        deadline: "2027",
+        image: "https://images.unsplash.com/photo-1541888946425-d81bb19480c5?auto=format&fit=crop&q=80&w=1000",
+      });
+    }
+  }, [editProject, isOpen]);
 
   // Reset state when opening
   useEffect(() => {
@@ -44,11 +66,11 @@ export default function ProjectFormDrawer({ isOpen, onClose }: ProjectFormDrawer
   const handleSubmit = () => {
     setIsSubmitting(true);
     
-    const newProject = {
+    const projectData = {
       name: formData.name || "Novo Empreendimento",
       location: formData.location || "Local não informado",
-      progress: 0,
-      status: "on_track",
+      progress: editProject ? editProject.progress : 0,
+      status: editProject ? editProject.status : "on_track",
       image: formData.image,
       deadline: formData.deadline || "2027",
       projectedDeadline: formData.deadline || "2027",
@@ -57,7 +79,11 @@ export default function ProjectFormDrawer({ isOpen, onClose }: ProjectFormDrawer
     };
 
     setTimeout(() => {
-      addProject(newProject);
+      if (editProject) {
+        updateProject(editProject.id, projectData);
+      } else {
+        addProject(projectData);
+      }
       setIsSubmitting(false);
       setIsSuccess(true);
       setTimeout(() => {
@@ -156,8 +182,8 @@ export default function ProjectFormDrawer({ isOpen, onClose }: ProjectFormDrawer
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-white/10 bg-[#020617]/50 backdrop-blur-md">
               <div>
-                <h2 className="text-xl font-bold text-white tracking-tight">Registro de Nova Obra</h2>
-                <p className="text-sm text-slate-400">Preencha os dados (todos os campos são opcionais)</p>
+                <h2 className="text-xl font-bold text-white tracking-tight">{editProject ? 'Editar Obra' : 'Registro de Nova Obra'}</h2>
+                <p className="text-sm text-slate-400">{editProject ? 'Atualize os dados do empreendimento' : 'Preencha os dados (todos os campos são opcionais)'}</p>
               </div>
               <button 
                 onClick={onClose}
@@ -196,7 +222,7 @@ export default function ProjectFormDrawer({ isOpen, onClose }: ProjectFormDrawer
                   <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-6">
                     <CheckCircle2 className="w-10 h-10 text-green-500" />
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-2">Obra Registrada!</h3>
+                   <h3 className="text-2xl font-bold text-white mb-2">{editProject ? 'Obra Atualizada!' : 'Obra Registrada!'}</h3>
                   <p className="text-slate-400 text-center max-w-sm">O portfólio foi atualizado e os KPIs já estão sincronizados.</p>
                 </motion.div>
               ) : (

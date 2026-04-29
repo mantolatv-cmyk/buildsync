@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { 
   LayoutDashboard, FolderKanban, Wallet, FileText, ShieldCheck,
-  TrendingUp, Clock, Sparkles, ChevronDown, X, PieChart as PieChartIcon, BarChart3, Menu, Package, Landmark
+  TrendingUp, Clock, Sparkles, ChevronDown, X, PieChart as PieChartIcon, BarChart3, Menu, Package, Landmark, Bell, AlertCircle, CheckCircle2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -27,6 +27,10 @@ export default function InvestorDashboard() {
   const [activeKpiDetail, setActiveKpiDetail] = useState<any>(null); // State for Drill-down Drawer
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // State for Mobile Sidebar
   const [isLoading, setIsLoading] = useState(true); // State for Initial Preloader
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  
+  const { notifications, markNotificationRead } = useDashboardStore();
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   useEffect(() => {
     // Keep preloader for 2.6 seconds to allow animation to complete
@@ -168,6 +172,79 @@ export default function InvestorDashboard() {
           </motion.h1>
           </div>
           <div className="flex items-center space-x-2 lg:space-x-5">
+            {/* Notification Bell */}
+            <div className="relative">
+              <button 
+                onClick={() => setIsNotifOpen(!isNotifOpen)}
+                className="p-2.5 bg-slate-800/50 hover:bg-slate-700/50 border border-white/10 rounded-xl text-slate-400 hover:text-white transition-all relative group"
+              >
+                <Bell className="w-5 h-5" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 border-2 border-[#020617] rounded-full" />
+                )}
+              </button>
+
+              <AnimatePresence>
+                {isNotifOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute top-full right-0 mt-3 w-80 bg-slate-900 border border-white/10 rounded-3xl shadow-2xl z-50 overflow-hidden"
+                  >
+                    <div className="p-4 border-b border-white/5 bg-slate-800/30 flex justify-between items-center">
+                      <span className="text-xs font-bold text-white uppercase tracking-widest">Alertas Inteligentes</span>
+                      <span className="text-[10px] text-blue-400 font-bold">{unreadCount} novos</span>
+                    </div>
+                    <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
+                      {notifications.length === 0 ? (
+                        <div className="p-8 text-center text-slate-500 text-sm italic">Nenhum alerta pendente</div>
+                      ) : (
+                        notifications.map(n => (
+                          <div 
+                            key={n.id} 
+                            onClick={() => markNotificationRead(n.id)}
+                            className={`p-4 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer relative ${!n.read ? 'bg-blue-500/5' : ''}`}
+                          >
+                            {!n.read && <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500" />}
+                            <div className="flex items-start space-x-3">
+                              <div className={`p-2 rounded-lg mt-0.5 ${
+                                n.type === 'warning' ? 'bg-red-500/20 text-red-400' : 
+                                n.type === 'success' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-blue-500/20 text-blue-400'
+                              }`}>
+                                {n.type === 'warning' ? <AlertCircle className="w-4 h-4" /> : n.type === 'success' ? <CheckCircle2 className="w-4 h-4" /> : <Bell className="w-4 h-4" />}
+                              </div>
+                              <div>
+                                <h4 className="text-xs font-bold text-white mb-0.5">{n.title}</h4>
+                                <p className="text-[11px] text-slate-400 leading-relaxed mb-1">{n.message}</p>
+                                <span className="text-[9px] text-slate-500 font-medium uppercase">{n.date}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                    <div className="p-3 bg-slate-800/30 text-center">
+                      <button className="text-[10px] font-black text-slate-500 hover:text-white uppercase tracking-tighter transition-colors">
+                        Ver todo o histórico
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+            
+            <div className="w-px h-8 bg-white/5 hidden sm:block" />
+            
+            <div className="hidden sm:flex items-center space-x-3">
+              <div className="text-right">
+                <p className="text-sm font-bold text-white">Eng. Martins</p>
+                <p className="text-[10px] text-slate-500 uppercase font-black tracking-tighter">Super Admin</p>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-slate-800 border border-white/10 flex items-center justify-center text-blue-400 font-black">
+                M
+              </div>
+            </div>
           </div>
         </header>
 

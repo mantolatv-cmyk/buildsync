@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
-import { MapPin, Calendar, ArrowRight, Camera } from "lucide-react";
+import { MapPin, Calendar, ArrowRight, Camera, Plus, Edit2 } from "lucide-react";
 import { ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from "recharts";
 import ProjectFormDrawer from "../ProjectFormDrawer";
 import ProjectDetailView from "./ProjectDetailView";
@@ -60,6 +60,7 @@ const sCurveData = [
 export default function ProjectsView() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [editingProject, setEditingProject] = useState<any>(null);
   const { projects } = useDashboardStore();
 
   const containerVariants: Variants = {
@@ -98,10 +99,10 @@ export default function ProjectsView() {
                   Filtrar por Status
                 </button>
                 <button 
-                  onClick={() => setIsFormOpen(true)}
+                  onClick={() => { setEditingProject(null); setIsFormOpen(true); }}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20"
                 >
-                  Adicionar Obra
+                  <Plus className="w-4 h-4 mr-2" /> Adicionar Obra
                 </button>
               </div>
             </div>
@@ -154,7 +155,18 @@ export default function ProjectsView() {
                 >
                   <div className="h-48 relative overflow-hidden">
                     <img src={project.image} alt={project.name} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
-                    <div className="absolute top-4 right-4 z-20">
+                    <div className="absolute top-4 right-4 z-20 flex space-x-2">
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingProject(project);
+                          setIsFormOpen(true);
+                        }}
+                        className="p-1.5 bg-slate-900/60 backdrop-blur-md rounded-lg text-white hover:text-blue-400 transition-colors"
+                        title="Editar Obra"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
                       <span className={`px-2.5 py-1 text-xs font-semibold rounded-full backdrop-blur-md ${project.status === 'on_track' ? 'bg-green-500/80 text-white' : project.status === 'warning' ? 'bg-amber-500/80 text-white' : 'bg-red-500/80 text-white'}`}>
                         {project.status === 'on_track' ? 'No Prazo' : project.status === 'warning' ? 'Atenção' : 'Atrasado'}
                       </span>
@@ -200,7 +212,11 @@ export default function ProjectsView() {
         )}
       </AnimatePresence>
 
-      <ProjectFormDrawer isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} />
+      <ProjectFormDrawer 
+        isOpen={isFormOpen} 
+        onClose={() => setIsFormOpen(false)} 
+        editProject={editingProject}
+      />
     </div>
   );
 }

@@ -18,6 +18,7 @@ interface DashboardState {
   projects: Array<any>;
   suppliers: Array<any>;
   marketIndices: Array<{ name: string; value: string; status: string; desc: string }>;
+  notifications: Array<{ id: string; title: string; message: string; type: 'warning' | 'info' | 'success'; date: string; read: boolean }>;
   
   // Actions
   updateKpi: (key: keyof DashboardState['kpis'], value: number | string) => void;
@@ -29,6 +30,8 @@ interface DashboardState {
   updateProject: (id: number, updates: any) => void;
   updateMarketIndex: (name: string, value: string, status: string) => void;
   updateSupplier: (id: number, updates: any) => void;
+  addNotification: (notification: any) => void;
+  markNotificationRead: (id: string) => void;
 }
 
 export const useDashboardStore = create<DashboardState>()(
@@ -124,6 +127,11 @@ export const useDashboardStore = create<DashboardState>()(
         { name: "SINAPI (SC)", value: "R$ 1.720,40", status: "stable", desc: "Custo médio m²" },
         { name: "CUB-SP", value: "R$ 1.942,12", status: "up", desc: "Padrão Médio R8-N" },
       ],
+      notifications: [
+        { id: '1', title: 'Alerta de Insumo', message: 'O preço do Aço (Ton) subiu 12% acima do orçado.', type: 'warning', date: 'Hoje, 10:30', read: false },
+        { id: '2', title: 'Avanço de Obra', message: 'Torre Horizonte atingiu 42% de conclusão física.', type: 'info', date: 'Hoje, 09:15', read: false },
+        { id: '3', title: 'Compliance OK', message: 'Certidão CNO validada para Residencial Alpha.', type: 'success', date: 'Ontem', read: true },
+      ],
 
       updateKpi: (key, value) => set((state) => ({
         kpis: { ...state.kpis, [key]: value }
@@ -139,11 +147,27 @@ export const useDashboardStore = create<DashboardState>()(
         )
       })),
 
-      updateSupplyItem: (item, novoPreco) => set((state) => ({
-        supplyData: state.supplyData.map(s => 
-          s.item === item ? { ...s, atual: novoPreco } : s
-        )
-      })),
+      updateSupplyItem: (item, novoPreco) => set((state) => {
+        const itemData = state.supplyData.find(s => s.item === item);
+        const threshold = itemData ? itemData.orcado * 1.1 : 0;
+        
+        const newNotifications = [...state.notifications];
+        if (novoPreco > threshold) {
+          newNotifications.unshift({
+            id: Date.now().toString(),
+            title: 'Alerta de Preço',
+            message: `O item ${item} ultrapassou o limite de 10% de desvio.`,
+            type: 'warning',
+            date: 'Agora',
+            read: false
+          });
+        }
+
+        return {
+          supplyData: state.supplyData.map(s => s.item === item ? { ...s, atual: novoPreco } : s),
+          notifications: newNotifications
+        };
+      }),
 
       updateDocStatus: (id, status) => set((state) => ({
         complianceDocs: state.complianceDocs.map(d => 
@@ -165,6 +189,14 @@ export const useDashboardStore = create<DashboardState>()(
 
       updateSupplier: (id, updates) => set((state) => ({
         suppliers: state.suppliers.map(s => s.id === id ? { ...s, ...updates } : s)
+      })),
+
+      addNotification: (n) => set((state) => ({
+        notifications: [{ ...n, id: Date.now().toString(), read: false, date: 'Agora' }, ...state.notifications]
+      })),
+
+      markNotificationRead: (id) => set((state) => ({
+        notifications: state.notifications.map(n => n.id === id ? { ...n, read: true } : n)
       })),
     }),
     {
