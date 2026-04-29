@@ -131,7 +131,7 @@ const AnimatedCounter = ({ value, prefix = "", suffix = "", isCurrency = false }
 };
 
 // Helper Component for KPI Cards (Interactive)
-function KpiCard({ title, value, trend, trendUp, subtitle, icon, neutral = false, onClick }: any) {
+function KpiCard({ title, value, trend, trendUp, subtitle, icon, neutral = false, onClick, children }: any) {
   const cardVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
@@ -143,31 +143,34 @@ function KpiCard({ title, value, trend, trendUp, subtitle, icon, neutral = false
       variants={cardVariants}
       whileHover={{ y: -4, scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 flex flex-col justify-center transition-all hover:bg-slate-900/70 hover:border-blue-500/30 relative overflow-hidden group cursor-pointer shadow-lg w-full text-left"
+      className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 flex flex-col justify-between transition-all hover:bg-slate-900/70 hover:border-blue-500/30 relative overflow-hidden group cursor-pointer shadow-lg w-full text-left min-h-[160px]"
     >
       <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-30 group-hover:text-blue-400 transition-all pointer-events-none">
         {icon || <ArrowUpRight className="w-8 h-8" />}
       </div>
-      <div className="flex justify-between items-start mb-2 relative z-10 w-full">
-        <h3 className="text-sm font-medium text-slate-400 group-hover:text-slate-300 transition-colors">{title}</h3>
-        {!icon && (
-          <div className={`flex items-center text-xs font-semibold px-2 py-1 rounded-md bg-opacity-20 backdrop-blur-sm ${
-            neutral ? 'bg-slate-500 text-slate-300' : 
-            trendUp ? 'bg-green-500/20 text-green-400 border border-green-500/20' : 'bg-red-500/20 text-red-400 border border-red-500/20'
-          }`}>
-            {trendUp ? <ArrowUpRight className="w-3 h-3 mr-1" /> : <ArrowDownRight className="w-3 h-3 mr-1" />}
-            {trend}
-          </div>
-        )}
-      </div>
-      <div className="mt-1 relative z-10">
-        <span className="text-3xl font-bold text-white tracking-tight">{value}</span>
-      </div>
-      <p className="text-sm text-slate-500 mt-2 relative z-10">{subtitle}</p>
       
-      {/* Interaction hint */}
-      <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex items-center text-xs font-medium text-blue-400">
-        Ver detalhes
+      <div>
+        <div className="flex justify-between items-start mb-2 relative z-10 w-full">
+          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-300 transition-colors">{title}</h3>
+          {!icon && (
+            <div className={`flex items-center text-[10px] font-black px-2 py-0.5 rounded-full border ${
+              neutral ? 'bg-slate-500/10 text-slate-400 border-slate-500/20' : 
+              trendUp ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'
+            }`}>
+              {trendUp ? <ArrowUpRight className="w-3 h-3 mr-1" /> : <ArrowDownRight className="w-3 h-3 mr-1" />}
+              {trend}
+            </div>
+          )}
+        </div>
+        <div className="mt-1 relative z-10">
+          <span className="text-3xl font-black text-white tracking-tight leading-none">{value}</span>
+        </div>
+        <p className="text-[11px] text-slate-500 mt-2 font-medium relative z-10">{subtitle}</p>
+      </div>
+
+      {/* Extra content (Charts/Progress) */}
+      <div className="mt-4 relative z-10">
+        {children}
       </div>
       
       {/* Subtle bottom glow line */}
@@ -205,36 +208,81 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
           value={<AnimatedCounter value={currentData.kpis.capital} />}
           trend={currentData.kpis.capitalTrend} 
           trendUp={true} 
-          subtitle="vs. período anterior"
+          subtitle="Composto por 3 obras ativas"
           onClick={() => setActiveKpiDetail({ id: 'capital', title: 'Composição de Capital Investido', value: currentData.kpis.capital })}
-        />
+        >
+          <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+            <motion.div 
+              initial={{ width: 0 }}
+              animate={{ width: '68%' }}
+              className="h-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"
+            />
+          </div>
+          <div className="flex justify-between mt-2 text-[10px] font-bold">
+            <span className="text-slate-500 uppercase">Utilizado</span>
+            <span className="text-blue-400">68% do CAPEX</span>
+          </div>
+        </KpiCard>
+
         <KpiCard 
           id="yoc"
           title="YOC Projetado" 
-          value={<AnimatedCounter value={currentData.kpis.yoc} />}
+          value={<AnimatedCounter value={currentData.kpis.yoc} suffix="%" />}
           trend={currentData.kpis.yocTrend} 
           trendUp={true} 
-          subtitle="Yield on Cost"
+          subtitle="Rendimento médio anual"
           onClick={() => setActiveKpiDetail({ id: 'yoc', title: 'Análise de Yield on Cost', value: currentData.kpis.yoc })}
-        />
+        >
+          <div className="flex items-center space-x-2">
+            <div className="flex-1 h-1 bg-slate-800 rounded-full relative">
+              <div className="absolute left-0 top-0 h-full bg-emerald-500 rounded-full w-[85%]" />
+              <div className="absolute left-[60%] top-[-4px] h-3 w-0.5 bg-white/20" title="Benchmark Mercado" />
+            </div>
+          </div>
+          <div className="flex justify-between mt-2 text-[10px] font-bold">
+            <span className="text-slate-500 uppercase">vs. Mercado (9.5%)</span>
+            <span className="text-emerald-400">+5.3% Alpha</span>
+          </div>
+        </KpiCard>
+
         <KpiCard 
           id="cost"
           title="Custo por m² Atual" 
-          value={<AnimatedCounter value={currentData.kpis.costPerSqm} />} 
+          value={<AnimatedCounter value={currentData.kpis.costPerSqm} prefix="R$ " />} 
           trend={currentData.kpis.costTrend} 
-          trendUp={true} 
-          subtitle="Abaixo da média"
+          trendUp={false} 
+          subtitle="Média ponderada portfólio"
           onClick={() => setActiveKpiDetail({ id: 'cost', title: 'Detalhamento de Custo por m²', value: currentData.kpis.costPerSqm })}
-        />
+        >
+          <div className="flex items-center justify-between bg-blue-500/5 rounded-lg p-2 border border-blue-500/10">
+            <div className="flex items-center space-x-2">
+              <ShieldCheck className="w-3 h-3 text-blue-400" />
+              <span className="text-[10px] font-bold text-blue-400 uppercase">Eficiência SINAPI</span>
+            </div>
+            <span className="text-[10px] font-black text-white">-4.2%</span>
+          </div>
+        </KpiCard>
+
         <KpiCard 
           id="status"
           title="Status do Prazo" 
           value="No Prazo" 
           icon={<Clock className="w-8 h-8 text-indigo-400 opacity-80" />}
-          subtitle="142 dias para entrega"
+          subtitle="Entrega: Nov 2026"
           neutral={true}
           onClick={() => setActiveKpiDetail({ id: 'status', title: 'Cronograma Detalhado', value: '142 Dias' })}
-        />
+        >
+          <div className="flex -space-x-2">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="w-6 h-6 rounded-full bg-slate-800 border-2 border-[#020617] flex items-center justify-center text-[8px] font-bold text-slate-400">
+                OB{i}
+              </div>
+            ))}
+            <div className="w-6 h-6 rounded-full bg-blue-600 border-2 border-[#020617] flex items-center justify-center text-[8px] font-bold text-white">
+              +2
+            </div>
+          </div>
+        </KpiCard>
       </div>
 
       {/* Middle Layer (Gráficos Principais) */}
