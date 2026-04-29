@@ -45,13 +45,13 @@ export const GlossaryTooltip = ({ term, children }: GlossaryTooltipProps) => {
       <span className="cursor-help border-b border-dotted border-blue-500/50 hover:border-blue-400 transition-colors">
         {children}
       </span>
-      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-64 p-3 bg-slate-950 border border-white/20 rounded-xl text-[11px] text-slate-300 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 z-[100] shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-64 p-4 bg-[#0f172a] border border-white/20 rounded-2xl text-[11px] text-slate-300 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 z-[9999] shadow-[0_20px_80px_rgba(0,0,0,0.8)] backdrop-blur-2xl ring-1 ring-white/10">
         <div className="flex items-center space-x-2 mb-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+          <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
           <p className="font-black text-white uppercase tracking-wider text-[10px]">{term}</p>
         </div>
-        <p className="leading-relaxed font-medium">{explanation}</p>
-        <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-950" />
+        <p className="leading-relaxed font-semibold text-slate-300 antialiased">{explanation}</p>
+        <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-[#0f172a]" />
       </div>
     </div>
   );

@@ -92,7 +92,7 @@ export default function InvestorDashboard() {
       </AnimatePresence>
 
       {/* Sidebar */}
-      <aside className={`w-64 bg-slate-900/90 lg:bg-slate-900/50 backdrop-blur-2xl border-r border-white/5 flex flex-col z-40 fixed lg:relative h-full transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      <aside className={`w-64 bg-slate-900/90 lg:bg-slate-900/50 backdrop-blur-2xl border-r border-white/5 flex flex-col z-10 fixed lg:relative h-full transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         <div className="h-20 flex items-center justify-between px-6 border-b border-white/5">
           <div className="flex items-center">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mr-3 shadow-lg shadow-blue-500/20">
@@ -132,7 +132,7 @@ export default function InvestorDashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto overflow-x-hidden relative scroll-smooth custom-scrollbar flex flex-col w-full lg:w-auto">
+      <main className="flex-1 overflow-y-auto overflow-x-visible relative scroll-smooth custom-scrollbar flex flex-col w-full lg:w-auto z-20">
         <header className="h-20 flex items-center justify-between px-4 lg:px-8 bg-[#020617]/60 backdrop-blur-xl border-b border-white/5 sticky top-0 z-20">
           <div className="flex items-center">
             <button 
