@@ -6,19 +6,25 @@ import { Package, ArrowRight, Star, Award, TrendingUp, ShieldCheck } from "lucid
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend, Cell } from "recharts";
 
 const supplyPriceData = [
-  { item: 'Aço (Ton)', orcado: 4200, atual: 5100 },
-  { item: 'Concreto (m³)', orcado: 350, atual: 380 },
-  { item: 'Cimento (Sc)', orcado: 28, atual: 32 },
-  { item: 'Cobre (kg)', orcado: 45, atual: 52 },
-  { item: 'Esquadrias (m²)', orcado: 800, atual: 780 },
+  { item: 'Aço (Ton)', orcado: 4200, atual: 5100, market: 5350 },
+  { item: 'Concreto (m³)', orcado: 350, atual: 380, market: 375 },
+  { item: 'Cimento (Sc)', orcado: 28, atual: 32, market: 35 },
+  { item: 'Cobre (kg)', orcado: 45, atual: 52, market: 58 },
+  { item: 'Esquadrias (m²)', orcado: 800, atual: 780, market: 850 },
+];
+
+const marketIndices = [
+  { name: "INCC-M", value: "4.85%", status: "up", desc: "Acumulado 12 meses" },
+  { name: "SINAPI (SC)", value: "R$ 1.720,40", status: "stable", desc: "Custo médio m²" },
+  { name: "CUB-SP", value: "R$ 1.942,12", status: "up", desc: "Padrão Médio R8-N" },
 ];
 
 const supplierRankingData = [
-  { id: 1, name: "Gerdau S.A.", category: "Aço & Estrutura", volume: "R$ 1.2M", stability: 98, score: 4.9 },
-  { id: 2, name: "Votorantim Cimentos", category: "Concreto & Agregados", volume: "R$ 850k", stability: 95, score: 4.8 },
-  { id: 3, name: "Tigre Tubos", category: "Instalações Hidrosanitárias", volume: "R$ 420k", stability: 92, score: 4.7 },
-  { id: 4, name: "Amanco Wavin", category: "Instalações Hidrosanitárias", volume: "R$ 380k", stability: 89, score: 4.5 },
-  { id: 5, name: "Portobello", category: "Acabamentos & Pisos", volume: "R$ 610k", stability: 85, score: 4.6 },
+  { id: 1, name: "Gerdau S.A.", category: "Aço & Estrutura", volume: "R$ 1.2M", stability: 98, score: 4.9, benchmark: -4.2 },
+  { id: 2, name: "Votorantim Cimentos", category: "Concreto & Agregados", volume: "R$ 850k", stability: 95, score: 4.8, benchmark: -2.1 },
+  { id: 3, name: "Tigre Tubos", category: "Instalações Hidrosanitárias", volume: "R$ 420k", stability: 92, score: 4.7, benchmark: +0.5 },
+  { id: 4, name: "Amanco Wavin", category: "Instalações Hidrosanitárias", volume: "R$ 380k", stability: 89, score: 4.5, benchmark: -1.2 },
+  { id: 5, name: "Portobello", category: "Acabamentos & Pisos", volume: "R$ 610k", stability: 85, score: 4.6, benchmark: -5.8 },
 ];
 
 export default function SupplyView() {
@@ -47,6 +53,29 @@ export default function SupplyView() {
             Adicionar Insumo
           </button>
         </div>
+      </div>
+
+      {/* Market Intelligence Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {marketIndices.map((idx, i) => (
+          <motion.div 
+            key={i}
+            variants={itemVariants}
+            className="bg-slate-900/40 backdrop-blur-xl border border-white/5 p-5 rounded-2xl relative overflow-hidden group hover:bg-slate-800/50 transition-colors"
+          >
+            <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
+              <TrendingUp className="w-12 h-12 text-white" />
+            </div>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{idx.name}</p>
+            <div className="flex items-end justify-between">
+              <h4 className="text-xl font-bold text-white">{idx.value}</h4>
+              <div className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${idx.status === 'up' ? 'text-amber-400 bg-amber-500/10' : 'text-emerald-400 bg-emerald-500/10'}`}>
+                {idx.status === 'up' ? 'ALTA' : 'ESTÁVEL'}
+              </div>
+            </div>
+            <p className="text-xs text-slate-400 mt-2">{idx.desc}</p>
+          </motion.div>
+        ))}
       </div>
 
       <motion.div 
@@ -119,6 +148,7 @@ export default function SupplyView() {
                   <th className="py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Macro Categoria</th>
                   <th className="py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Volume Negociado</th>
                   <th className="py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Estabilidade de Preço</th>
+                  <th className="py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">vs. Mercado</th>
                   <th className="py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">BuildSync Score</th>
                 </tr>
               </thead>
@@ -152,6 +182,11 @@ export default function SupplyView() {
                         </div>
                         <span className="text-xs font-bold text-slate-400">{supplier.stability}%</span>
                       </div>
+                    </td>
+                    <td className="py-4 text-right">
+                      <span className={`text-xs font-bold px-2 py-1 rounded-lg ${supplier.benchmark < 0 ? 'text-emerald-400 bg-emerald-500/10' : 'text-red-400 bg-red-500/10'}`}>
+                        {supplier.benchmark > 0 ? '+' : ''}{supplier.benchmark}%
+                      </span>
                     </td>
                     <td className="py-4 text-right">
                       <div className="flex items-center justify-end space-x-1">
