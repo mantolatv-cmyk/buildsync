@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, BarChart, Bar, Legend
+  PieChart, Pie, Cell, BarChart, Bar, Legend, ComposedChart, Area
 } from "recharts";
 
 // --- Extended Mock Data for Time Filters ---
@@ -71,11 +71,11 @@ const roiData = [
 ];
 
 const spiData = [
-  { etapa: "Fundação", spi: 1.05 },
-  { etapa: "Alvenaria", spi: 0.95 },
-  { etapa: "Cobertura", spi: 1.10 },
-  { etapa: "Instalações", spi: 0.88 },
-  { etapa: "Acabamento", spi: 1.00 },
+  { etapa: "Fundação", spi: 1.05, cpi: 1.02, status: "Adiantado" },
+  { etapa: "Alvenaria", spi: 0.95, cpi: 0.98, status: "Atraso Leve" },
+  { etapa: "Cobertura", spi: 1.10, cpi: 1.05, status: "Eficiente" },
+  { etapa: "Instalações", spi: 0.88, cpi: 0.92, status: "Crítico" },
+  { etapa: "Acabamento", spi: 1.00, cpi: 1.00, status: "No Prazo" },
 ];
 
 // --- Sub-components ---
@@ -325,10 +325,12 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
             </ResponsiveContainer>
           </div>
         </motion.div>
+      </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Retorno do Investidor (ROI) */}
         <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 relative">
-            <div className="absolute -right-10 -top-10 w-32 h-32 bg-emerald-500/10 blur-[50px] rounded-full pointer-events-none" />
+          <div className="absolute -right-10 -top-10 w-32 h-32 bg-emerald-500/10 blur-[50px] rounded-full pointer-events-none" />
           <div>
             <h2 className="text-lg font-semibold text-white">Retorno sobre Investimento (ROI)</h2>
             <p className="text-sm text-slate-400">Projetado vs. Realizado ao ano (%)</p>
@@ -351,30 +353,86 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
             </ResponsiveContainer>
           </div>
         </motion.div>
-      </div>
 
-      {/* Bottom Section (Métricas Operacionais) */}
-      <div className="grid grid-cols-1 gap-6">
-        {/* Gráfico de Barras - SPI */}
-        <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6">
-          <h2 className="text-lg font-semibold text-white mb-1">Índice de Desempenho (SPI)</h2>
-          <p className="text-sm text-slate-400 mb-4">SPI por etapa (&gt; 1 = Adiantado)</p>
+        {/* Gráfico Composto - SPI & CPI */}
+        <motion.div variants={itemVariants} className="lg:col-span-2 bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6">
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <h2 className="text-lg font-semibold text-white mb-1">Análise de Eficiência Operacional</h2>
+              <p className="text-sm text-slate-400">Comparativo entre Prazo (SPI) e Custo (CPI)</p>
+            </div>
+            <div className="flex space-x-4">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full bg-blue-500" />
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">SPI</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">CPI</span>
+              </div>
+            </div>
+          </div>
           
-          <div className="h-64 w-full">
+          <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-              <BarChart data={spiData} margin={{ top: 10, right: 30, left: 70, bottom: 0 }} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#1e293b" />
-                <XAxis type="number" domain={[0, 1.2]} axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
-                <YAxis dataKey="etapa" type="category" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
-                <RechartsTooltip cursor={{fill: '#1e293b'}} content={<CustomTooltip />} />
-                <Bar dataKey="spi" radius={[0, 4, 4, 0]} barSize={24}>
+              <ComposedChart data={spiData} margin={{ top: 20, right: 20, bottom: 20, left: -20 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
+                <XAxis dataKey="etapa" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 11 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 11 }} domain={[0.8, 1.2]} />
+                <RechartsTooltip 
+                  cursor={{ fill: '#1e293b', opacity: 0.4 }}
+                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px' }}
+                />
+                <Bar dataKey="spi" name="SPI" radius={[4, 4, 0, 0]} barSize={40}>
                   {spiData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.spi >= 1 ? '#3b82f6' : '#f59e0b'} />
+                    <Cell key={`cell-${index}`} fill={entry.spi >= 1 ? '#3b82f6' : '#ef4444'} fillOpacity={0.8} />
                   ))}
                 </Bar>
-              </BarChart>
+                <Line type="monotone" dataKey="cpi" name="CPI" stroke="#10b981" strokeWidth={3} dot={{ fill: '#10b981', r: 4 }} />
+                <Area type="monotone" dataKey="cpi" fill="#10b981" fillOpacity={0.05} stroke="none" />
+              </ComposedChart>
             </ResponsiveContainer>
           </div>
+        </motion.div>
+
+        {/* Predictive Impact Panel */}
+        <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 flex flex-col relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-10">
+            <Clock className="w-12 h-12 text-blue-400" />
+          </div>
+          
+          <h3 className="text-lg font-semibold text-white mb-6">Projeção de Impacto</h3>
+          
+          <div className="space-y-6 flex-1">
+            <div className="p-4 bg-red-500/5 border border-red-500/20 rounded-2xl">
+              <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1">Atraso Estimado</p>
+              <div className="flex items-baseline space-x-2">
+                <span className="text-3xl font-black text-white">+18</span>
+                <span className="text-sm font-bold text-slate-400">Dias Corridos</span>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-2 italic">Cálculo baseado no SPI acumulado de 0.94</p>
+            </div>
+
+            <div className="space-y-4">
+              <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Gargalos Críticos</h4>
+              {[
+                { label: "Instalações Elétricas", impact: "Forte", delay: "+12d" },
+                { label: "Vedações Internas", impact: "Médio", delay: "+6d" }
+              ].map((gargalo, i) => (
+                <div key={i} className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/5 group-hover:bg-white/10 transition-colors">
+                  <div>
+                    <p className="text-sm font-bold text-white">{gargalo.label}</p>
+                    <p className="text-[10px] text-slate-500 uppercase font-black tracking-tighter">Impacto: {gargalo.impact}</p>
+                  </div>
+                  <span className="text-xs font-black text-red-400">{gargalo.delay}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <button className="w-full mt-6 py-3 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-500 transition-all shadow-lg shadow-blue-500/20">
+            ANALISAR CAMINHO CRÍTICO
+          </button>
         </motion.div>
       </div>
     </motion.div>
