@@ -7,6 +7,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
 import { GlossaryTooltip } from "../GlossaryTooltip";
 import { useDashboardStore } from "../../store/useDashboardStore";
 import SupplyEntryModal from "../SupplyEntryModal";
+import { exportToCSV } from "../../utils/exportUtils";
 
 const supplyPriceData = [
   { item: 'Aço (Ton)', orcado: 4200, atual: 5100, market: 5350 },
@@ -52,7 +53,10 @@ export default function SupplyView() {
           <p className="text-sm text-slate-400 mt-1">Gestão de insumos críticos (<GlossaryTooltip term="Curva ABC">Curva ABC</GlossaryTooltip>)</p>
         </div>
         <div className="flex space-x-3">
-          <button className="px-4 py-2 bg-blue-600/10 text-blue-400 border border-blue-500/20 rounded-xl text-sm font-semibold hover:bg-blue-600/20 transition-colors">
+          <button 
+            onClick={() => exportToCSV(supplyData, 'Relatorio_ABC_Insumos')}
+            className="px-4 py-2 bg-blue-600/10 text-blue-400 border border-blue-500/20 rounded-xl text-sm font-semibold hover:bg-blue-600/20 transition-colors"
+          >
             Gerar Relatório ABC
           </button>
           <button 

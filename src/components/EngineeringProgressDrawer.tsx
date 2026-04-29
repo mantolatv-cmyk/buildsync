@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle2, HardHat, Ruler, Calendar, Image as ImageIcon, Camera, ChevronRight, ChevronLeft } from "lucide-react";
 import { useDashboardStore } from "../store/useDashboardStore";
+import { GlossaryTooltip } from "./GlossaryTooltip";
 
 interface EngineeringProgressDrawerProps {
   isOpen: boolean;
@@ -28,11 +29,13 @@ export default function EngineeringProgressDrawer({ isOpen, onClose }: Engineeri
   const handlePrev = () => { if (step > 1) setStep(step - 1); };
 
   const handleSubmit = () => {
+    if (!formData.progresso) return alert("Por favor, informe o progresso.");
+    
     setIsSubmitting(true);
     setTimeout(() => {
       // Cálculo simplificado de SPI/CPI para o MVP
-      const progressoNum = parseFloat(formData.progresso) / 100;
-      const spiNovo = 0.8 + (progressoNum * 0.4); // Gera algo entre 0.8 e 1.2
+      const progressoNum = parseFloat(formData.progresso);
+      const spiNovo = 0.8 + ((progressoNum/100) * 0.4); 
       const cpiNovo = 0.9 + (Math.random() * 0.2);
       
       updateSpiEtapa(formData.etapa, spiNovo, cpiNovo);
@@ -43,6 +46,7 @@ export default function EngineeringProgressDrawer({ isOpen, onClose }: Engineeri
         onClose();
         setIsSuccess(false);
         setStep(1);
+        setFormData({ ...formData, progresso: "" });
       }, 2000);
     }, 1500);
   };
@@ -160,6 +164,4 @@ export default function EngineeringProgressDrawer({ isOpen, onClose }: Engineeri
   );
 }
 
-// Pequena correção: GlossaryTooltip não está disponível aqui sem import. 
-// Mas assumindo que está no escopo global ou importado.
-import { GlossaryTooltip } from "./GlossaryTooltip";
+

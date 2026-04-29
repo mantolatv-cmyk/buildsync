@@ -19,6 +19,7 @@ interface DashboardState {
   suppliers: Array<any>;
   marketIndices: Array<{ name: string; value: string; status: string; desc: string }>;
   notifications: Array<{ id: string; title: string; message: string; type: 'warning' | 'info' | 'success'; date: string; read: boolean }>;
+  activityLog: Array<{ id: number; action: string; time: string; icon: string }>;
   
   // Actions
   updateKpi: (key: keyof DashboardState['kpis'], value: number | string) => void;
@@ -32,6 +33,8 @@ interface DashboardState {
   updateSupplier: (id: number, updates: any) => void;
   addNotification: (notification: any) => void;
   markNotificationRead: (id: string) => void;
+  addSupplyItem: (item: any) => void;
+  addMeasurement: (projectId: number, measurement: any) => void;
 }
 
 export const useDashboardStore = create<DashboardState>()(
@@ -132,6 +135,9 @@ export const useDashboardStore = create<DashboardState>()(
         { id: '2', title: 'Avanço de Obra', message: 'Torre Horizonte atingiu 42% de conclusão física.', type: 'info', date: 'Hoje, 09:15', read: false },
         { id: '3', title: 'Compliance OK', message: 'Certidão CNO validada para Residencial Alpha.', type: 'success', date: 'Ontem', read: true },
       ],
+      activityLog: [
+        { id: 1, action: 'Sistema BuildSync Iniciado', time: 'Há 1 hora', icon: 'Settings' }
+      ],
 
       updateKpi: (key, value) => set((state) => ({
         kpis: { ...state.kpis, [key]: value }
@@ -193,6 +199,37 @@ export const useDashboardStore = create<DashboardState>()(
 
       addNotification: (n) => set((state) => ({
         notifications: [{ ...n, id: Date.now().toString(), read: false, date: 'Agora' }, ...state.notifications]
+      })),
+
+      addSupplyItem: (item) => set((state) => ({
+        supplyData: [...state.supplyData, { ...item, id: Date.now() }],
+        notifications: [
+          {
+            id: Date.now().toString(),
+            title: "Novo Pedido de Insumo",
+            message: `Pedido de ${item.item} registrado com sucesso.`,
+            type: "success",
+            date: "Agora",
+            read: false
+          },
+          ...state.notifications
+        ],
+        activityLog: [
+          { id: Date.now(), action: `Registrou pedido de ${item.item}`, time: "Agora", icon: "Package" },
+          ...state.activityLog
+        ]
+      })),
+
+      addMeasurement: (projectId, measurement) => set((state) => ({
+        projects: state.projects.map(p => p.id === projectId ? {
+          ...p,
+          progress: measurement.newProgress,
+          measurements: [...(p.measurements || []), { ...measurement, id: Date.now(), date: new Date().toLocaleDateString() }]
+        } : p),
+        activityLog: [
+          { id: Date.now(), action: `Nova medição registrada na obra ID ${projectId}`, time: "Agora", icon: "Activity" },
+          ...state.activityLog
+        ]
       })),
 
       markNotificationRead: (id) => set((state) => ({

@@ -11,6 +11,7 @@ import {
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip, 
   BarChart, Bar, XAxis, YAxis, CartesianGrid 
 } from "recharts";
+import { exportToCSV } from "../../utils/exportUtils";
 
 interface ProjectDetailViewProps {
   project: any;
@@ -86,10 +87,16 @@ export default function ProjectDetailView({ project, onBack }: ProjectDetailView
           </div>
           
           <div className="flex space-x-3">
-            <button className="p-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl text-white hover:bg-white/10 transition-all">
+            <button 
+              onClick={() => alert("Simulando abertura da Câmera do Canteiro (RTSP/IP)")}
+              className="p-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl text-white hover:bg-white/10 transition-all"
+            >
               <Camera className="w-6 h-6" />
             </button>
-            <button className="p-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl text-white hover:bg-white/10 transition-all">
+            <button 
+              onClick={() => alert("Gerenciador de Documentos: Carregando plantas e alvarás...")}
+              className="p-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl text-white hover:bg-white/10 transition-all"
+            >
               <FileText className="w-6 h-6" />
             </button>
             <button 
@@ -98,7 +105,10 @@ export default function ProjectDetailView({ project, onBack }: ProjectDetailView
             >
               <Plus className="w-5 h-5 mr-2" /> Nova Medição de Campo
             </button>
-            <button className="px-6 py-3 bg-white/10 text-white font-bold rounded-2xl hover:bg-white/20 transition-all flex items-center">
+            <button 
+              onClick={() => exportToCSV([project], `Status_${project.name}`)}
+              className="px-6 py-3 bg-white/10 text-white font-bold rounded-2xl hover:bg-white/20 transition-all flex items-center"
+            >
               <Download className="w-5 h-5 mr-2" /> Relatório
             </button>
           </div>

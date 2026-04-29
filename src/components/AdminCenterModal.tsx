@@ -6,6 +6,7 @@ import {
   X, User, Settings, Activity, CreditCard, LogOut, 
   Camera, Bell, Globe, Database, ShieldCheck, Check
 } from "lucide-react";
+import { useDashboardStore } from "../store/useDashboardStore";
 
 interface AdminCenterModalProps {
   isOpen: boolean;
@@ -15,6 +16,8 @@ interface AdminCenterModalProps {
 }
 
 export default function AdminCenterModal({ isOpen, onClose, activeTab, setActiveTab }: AdminCenterModalProps) {
+  const { activityLog } = useDashboardStore();
+  
   const tabs = [
     { id: 'Meu Perfil', icon: User },
     { id: 'Configurações', icon: Settings },
@@ -105,22 +108,21 @@ export default function AdminCenterModal({ isOpen, onClose, activeTab, setActive
               <h4 className="text-sm font-bold text-white">Log de Ações</h4>
               <button className="text-[10px] text-blue-400 font-bold uppercase hover:underline">Limpar Log</button>
             </div>
-            {[
-              { action: 'Edição de Obra', target: 'Residencial Alpha', date: 'Há 5 minutos', icon: Database },
-              { action: 'Geração de Relatório', target: 'One-Pager Executive', date: 'Há 2 horas', icon: ShieldCheck },
-              { action: 'Update de Insumo', target: 'Preço do Aço (Ton)', date: 'Ontem às 16:45', icon: Settings },
-            ].map((log, i) => (
-              <div key={i} className="flex items-center space-x-4 p-4 bg-white/5 rounded-2xl border border-white/5 hover:bg-white/10 transition-colors">
-                <div className="p-2 bg-blue-500/10 text-blue-400 rounded-xl">
-                  <log.icon className="w-4 h-4" />
+            {activityLog.length === 0 ? (
+              <div className="text-center py-10 opacity-20">Nenhuma atividade registrada</div>
+            ) : (
+              activityLog.slice(0, 5).map((log, i) => (
+                <div key={i} className="flex items-center space-x-4 p-4 bg-white/5 rounded-2xl border border-white/5 hover:bg-white/10 transition-colors">
+                  <div className="p-2 bg-blue-500/10 text-blue-400 rounded-xl">
+                    <Activity className="w-4 h-4" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs font-bold text-white">{log.action}</p>
+                    <p className="text-[11px] text-slate-500">{log.time}</p>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <p className="text-xs font-bold text-white">{log.action}</p>
-                  <p className="text-[11px] text-slate-500">{log.target}</p>
-                </div>
-                <span className="text-[10px] text-slate-600 font-bold uppercase">{log.date}</span>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         );
       case 'Faturamento':
