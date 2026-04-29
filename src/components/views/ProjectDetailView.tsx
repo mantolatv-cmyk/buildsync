@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { 
-  ChevronLeft, MapPin, Calendar, Clock, Users, AlertTriangle, 
-  TrendingUp, Camera, FileText, Download, CloudRain, ThermometerSun, Plus
+  ChevronLeft, MapPin, Calendar, Clock, 
+  TrendingUp, Camera, FileText, Download, Plus
 } from "lucide-react";
 import EngineeringProgressDrawer from "../EngineeringProgressDrawer";
 import { 
@@ -114,7 +114,6 @@ export default function ProjectDetailView({ project, onBack }: ProjectDetailView
             { id: 'overview', label: 'Visão Geral' },
             { id: 'schedule', label: 'Cronograma' },
             { id: 'finance', label: 'Financeiro' },
-            { id: 'team', label: 'Equipe & Canteiro' },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -144,14 +143,14 @@ export default function ProjectDetailView({ project, onBack }: ProjectDetailView
               >
                 {/* Left Column: Quick Stats */}
                 <div className="lg:col-span-2 space-y-8">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="bg-slate-900/40 border border-white/5 p-6 rounded-3xl">
                       <div className="flex items-center space-x-3 mb-4">
-                        <div className="p-2 bg-blue-500/10 rounded-lg"><Users className="w-5 h-5 text-blue-400" /></div>
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Efetivo Hoje</span>
+                        <div className="p-2 bg-blue-500/10 rounded-lg"><TrendingUp className="w-5 h-5 text-blue-400" /></div>
+                        <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Avanço Físico</span>
                       </div>
-                      <h3 className="text-3xl font-black text-white">42 <span className="text-sm font-normal text-slate-500">operários</span></h3>
-                      <p className="text-xs text-green-400 mt-2 font-medium">+5 vs. ontem</p>
+                      <h3 className="text-3xl font-black text-white">{project.progress}% <span className="text-sm font-normal text-slate-500">concluído</span></h3>
+                      <p className="text-xs text-green-400 mt-2 font-medium">No ritmo planejado</p>
                     </div>
                     <div className="bg-slate-900/40 border border-white/5 p-6 rounded-3xl">
                       <div className="flex items-center space-x-3 mb-4">
@@ -160,14 +159,6 @@ export default function ProjectDetailView({ project, onBack }: ProjectDetailView
                       </div>
                       <h3 className="text-3xl font-black text-white">184 <span className="text-sm font-normal text-slate-500">dias</span></h3>
                       <p className="text-xs text-slate-500 mt-2 font-medium">Início: 15 Jan 2026</p>
-                    </div>
-                    <div className="bg-slate-900/40 border border-white/5 p-6 rounded-3xl">
-                      <div className="flex items-center space-x-3 mb-4">
-                        <div className="p-2 bg-red-500/10 rounded-lg"><AlertTriangle className="w-5 h-5 text-red-400" /></div>
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Incidentes</span>
-                      </div>
-                      <h3 className="text-3xl font-black text-white">0 <span className="text-sm font-normal text-slate-500">críticos</span></h3>
-                      <p className="text-xs text-emerald-400 mt-2 font-medium">320 dias sem acidentes</p>
                     </div>
                   </div>
 
@@ -201,23 +192,6 @@ export default function ProjectDetailView({ project, onBack }: ProjectDetailView
 
                 {/* Right Column: Weather & Contacts */}
                 <div className="space-y-6">
-                  <div className="bg-gradient-to-br from-blue-600/20 to-indigo-600/20 border border-blue-500/20 p-6 rounded-3xl">
-                    <h4 className="text-sm font-bold text-white uppercase tracking-widest mb-4">Clima no Canteiro</h4>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <CloudRain className="w-10 h-10 text-blue-400" />
-                        <div>
-                          <p className="text-2xl font-black text-white">22°C</p>
-                          <p className="text-xs text-blue-200">Chuva Fraca Intermitente</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-[10px] font-bold text-blue-300 uppercase">Impacto Obra</p>
-                        <p className="text-sm font-bold text-amber-400">Moderado</p>
-                      </div>
-                    </div>
-                  </div>
-
                   <div className="bg-slate-900/40 border border-white/5 p-6 rounded-3xl">
                     <h4 className="text-sm font-bold text-white uppercase tracking-widest mb-4">Responsáveis Técnicos</h4>
                     <div className="space-y-4">
