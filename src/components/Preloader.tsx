@@ -43,7 +43,7 @@ export default function Preloader() {
       <div className="absolute inset-0 bg-blue-500/5 blur-[120px] pointer-events-none z-0" />
       
       {/* Background Animated SVG Blueprint (Complex Abstract House) */}
-      <div className="absolute inset-0 z-0 flex items-center justify-center opacity-25 pointer-events-none">
+      <div className="absolute inset-0 z-0 flex items-center justify-center opacity-30 pointer-events-none">
         <svg viewBox="0 0 1200 900" className="w-full h-full text-blue-400" preserveAspectRatio="xMidYMid slice">
           {/* Horizon & Perspective Grid - Expanded */}
           <motion.path 
@@ -55,123 +55,118 @@ export default function Preloader() {
             animate={{ opacity: 0.2 }} 
             transition={{ duration: 2 }} 
           />
+
+          {/* LEFT SIDE: Technical Floor Plan (Planta) */}
+          <g transform="translate(100, 200) scale(0.8)">
+            {/* Main Walls */}
+            <motion.path 
+              d="M 50,50 L 350,50 L 350,350 L 50,350 Z M 150,50 L 150,200 L 350,200"
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              transition={{ duration: 2, ease: "easeInOut" }}
+            />
+            {/* Internal Doors/Details */}
+            <motion.path 
+              d="M 50,150 L 120,150 M 200,350 L 200,280 M 350,250 L 280,250"
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="1"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 0.6 }}
+              transition={{ duration: 1.5, delay: 0.5 }}
+            />
+            {/* Measurement Lines */}
+            <motion.path 
+              d="M 30,50 L 30,350 M 20,50 L 40,50 M 20,350 L 40,350 M 50,370 L 350,370 M 50,360 L 50,380 M 350,360 L 350,380"
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="0.5"
+              strokeDasharray="4 4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.4 }}
+              transition={{ duration: 1, delay: 1 }}
+            />
+            <motion.text x="0" y="200" fill="currentColor" fontSize="10" className="font-mono opacity-40" style={{ rotate: -90 }}>32.45m</motion.text>
+            <motion.text x="180" y="400" fill="currentColor" fontSize="10" className="font-mono opacity-40">48.12m</motion.text>
+          </g>
+
+          {/* RIGHT SIDE: Skyscraper Structure (Prédio) */}
+          <g transform="translate(850, 100) scale(0.9)">
+            {/* Main Building Frame */}
+            <motion.path 
+              d="M 50,700 L 50,100 L 200,50 L 200,700"
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2.5"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              transition={{ duration: 2.2, ease: "easeInOut" }}
+            />
+            {/* Floors / Windows */}
+            {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <motion.path 
+                key={i}
+                d={`M 50,${150 + i*60} L 200,${150 + i*60}`}
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="0.8"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 0.5 }}
+                transition={{ duration: 1.2, delay: 0.5 + i*0.1 }}
+              />
+            ))}
+            {/* Crane / Construction Detail */}
+            <motion.path 
+              d="M 200,150 L 350,150 L 300,100 M 320,150 L 320,300"
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="1"
+              strokeDasharray="5 5"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 0.6 }}
+              transition={{ duration: 1.5, delay: 1.2 }}
+            />
+            <motion.circle cx="320" cy="300" r="3" fill="currentColor" className="opacity-60" />
+          </g>
           
-          {/* Main Structural Block (Larger) */}
-          {/* Multi-Level Roof Structure */}
-          <motion.path 
-            d="M 600 100 L 250 350 L 950 350 Z" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="1.5"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 1 }}
-            transition={{ duration: 1.8, ease: "easeInOut" }}
-          />
-          <motion.path 
-            d="M 400 250 L 150 450 L 400 450" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="1"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 0.7 }}
-            transition={{ duration: 1.5, delay: 0.3, ease: "easeInOut" }}
-          />
-          <motion.path 
-            d="M 800 250 L 1050 450 L 800 450" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="1"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 0.7 }}
-            transition={{ duration: 1.5, delay: 0.4, ease: "easeInOut" }}
-          />
-
-          {/* Foundation & Floors (Multi-level) */}
-          <motion.path 
-            d="M 300 350 L 300 750 M 900 350 L 900 750 M 300 750 L 900 750" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 1 }}
-            transition={{ duration: 1.8, delay: 0.6, ease: "easeInOut" }}
-          />
-          
-          {/* Intermediate Floor Levels */}
-          <motion.path 
-            d="M 300 550 L 900 550" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="0.8"
-            strokeDasharray="8 4"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 0.6 }}
-            transition={{ duration: 1.5, delay: 0.9, ease: "easeInOut" }}
-          />
-
-          {/* Internal Structural Grid (Columns) */}
-          <motion.path 
-            d="M 400 350 L 400 750 M 500 350 L 500 750 M 600 350 L 600 750 M 700 350 L 700 750 M 800 350 L 800 750" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="0.5"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 0.4 }}
-            transition={{ duration: 1.4, delay: 1.1, ease: "easeOut" }}
-          />
-
-          {/* Architectural Details - Window/Door Blocks */}
-          <motion.path 
-            d="M 350 400 L 450 400 L 450 500 L 350 500 Z" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="1"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 0.5 }}
-            transition={{ duration: 1, delay: 1.3 }}
-          />
-          <motion.path 
-            d="M 750 400 L 850 400 L 850 500 L 750 500 Z" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="1"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 0.5 }}
-            transition={{ duration: 1, delay: 1.4 }}
-          />
-          <motion.path 
-            d="M 550 600 L 650 600 L 650 750 L 550 750" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="1.2"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 0.8 }}
-            transition={{ duration: 1.2, delay: 1.5 }}
-          />
-
-          {/* Measurement / Reference Lines */}
-          <motion.path 
-            d="M 200 750 L 200 350 M 180 750 L 220 750 M 180 350 L 220 350" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="0.5"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 0.3 }}
-            transition={{ duration: 2, delay: 0.5 }}
-          />
-          <motion.path 
-            d="M 300 800 L 900 800 M 300 780 L 300 820 M 900 780 L 900 820" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="0.5"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 0.3 }}
-            transition={{ duration: 2, delay: 0.7 }}
-          />
+          {/* Main Central Structure (Existing House) */}
+          <g transform="translate(0, 0)">
+            <motion.path 
+              d="M 600 150 L 350 400 L 850 400 Z" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="1.5"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 0.8 }}
+              transition={{ duration: 1.8, ease: "easeInOut" }}
+            />
+            <motion.path 
+              d="M 400 400 L 400 750 L 800 750 L 800 400" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              transition={{ duration: 1.8, delay: 0.6, ease: "easeInOut" }}
+            />
+            <motion.path 
+              d="M 400 550 L 800 550 M 400 650 L 800 650" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="0.5"
+              strokeDasharray="8 4"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 0.4 }}
+              transition={{ duration: 1.5, delay: 1 }}
+            />
+          </g>
 
           {/* Deep Perspective Lines (Artistic) */}
           <motion.path 
-            d="M 0 900 L 300 750 M 1200 900 L 900 750 M 600 100 L 600 0 M 250 350 L 50 350 M 950 350 L 1150 350" 
+            d="M 0 900 L 400 750 M 1200 900 L 800 750 M 600 150 L 600 0" 
             fill="none" 
             stroke="currentColor" 
             strokeWidth="0.5"
