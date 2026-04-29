@@ -9,6 +9,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
   PieChart, Pie, Cell, BarChart, Bar, Legend, ComposedChart, Area
 } from "recharts";
+import { useDashboardStore } from "../../store/useDashboardStore";
 
 // --- Extended Mock Data for Time Filters ---
 const mockDataSets: any = {
@@ -180,7 +181,18 @@ function KpiCard({ title, value, trend, trendUp, subtitle, icon, neutral = false
 }
 
 export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeFilter: string, setActiveKpiDetail: (kpi: any) => void }) {
-  const currentData = mockDataSets[timeFilter];
+  const store = useDashboardStore();
+  
+  // No mundo real, teríamos conjuntos diferentes por filtro. 
+  // Para este MVP, usaremos a store e aplicaremos variações simples baseadas no filtro.
+  const currentKpis = {
+    ...store.kpis,
+    capital: timeFilter === 'month' ? store.kpis.capital : timeFilter === 'quarter' ? store.kpis.capital * 2.8 : store.kpis.capital * 5,
+  };
+
+  const costData = store.costData;
+  const spiData = store.spiData;
+  const roiData = store.roiData;
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -205,11 +217,11 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
         <KpiCard 
           id="capital"
           title="Capital Total Investido" 
-          value={<AnimatedCounter value={currentData.kpis.capital} prefix="R$ " isCurrency={true} />}
-          trend={currentData.kpis.capitalTrend} 
+          value={<AnimatedCounter value={currentKpis.capital.toString()} prefix="R$ " isCurrency={true} />}
+          trend={currentKpis.capitalTrend} 
           trendUp={true} 
           subtitle="Composto por 3 obras ativas"
-          onClick={() => setActiveKpiDetail({ id: 'capital', title: 'Composição de Capital Investido', value: currentData.kpis.capital })}
+          onClick={() => setActiveKpiDetail({ id: 'capital', title: 'Composição de Capital Investido', value: currentKpis.capital })}
         >
           <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
             <motion.div 
@@ -227,11 +239,11 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
         <KpiCard 
           id="yoc"
           title="YOC Projetado" 
-          value={<AnimatedCounter value={currentData.kpis.yoc} suffix="%" />}
-          trend={currentData.kpis.yocTrend} 
+          value={<AnimatedCounter value={currentKpis.yoc.toString()} suffix="%" />}
+          trend={currentKpis.yocTrend} 
           trendUp={true} 
           subtitle="Rendimento médio anual"
-          onClick={() => setActiveKpiDetail({ id: 'yoc', title: 'Análise de Yield on Cost', value: currentData.kpis.yoc })}
+          onClick={() => setActiveKpiDetail({ id: 'yoc', title: 'Análise de Yield on Cost', value: currentKpis.yoc })}
         >
           <div className="flex items-center space-x-2">
             <div className="flex-1 h-1 bg-slate-800 rounded-full relative">
@@ -248,11 +260,11 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
         <KpiCard 
           id="cost"
           title="Custo por m² Atual" 
-          value={<AnimatedCounter value={currentData.kpis.costPerSqm} prefix="R$ " isCurrency={true} />} 
-          trend={currentData.kpis.costTrend} 
+          value={<AnimatedCounter value={currentKpis.costPerSqm.toString()} prefix="R$ " isCurrency={true} />} 
+          trend={currentKpis.costTrend} 
           trendUp={false} 
           subtitle="Média ponderada portfólio"
-          onClick={() => setActiveKpiDetail({ id: 'cost', title: 'Detalhamento de Custo por m²', value: currentData.kpis.costPerSqm })}
+          onClick={() => setActiveKpiDetail({ id: 'cost', title: 'Detalhamento de Custo por m²', value: currentKpis.costPerSqm })}
         >
           <div className="flex items-center justify-between bg-blue-500/5 rounded-lg p-2 border border-blue-500/10">
             <div className="flex items-center space-x-2">
@@ -298,7 +310,7 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
           </div>
           <div className="h-72 w-full relative z-10">
             <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-              <LineChart data={currentData.costData} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
+              <LineChart data={costData} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
                 <defs>
                   <linearGradient id="colorRealizado" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>

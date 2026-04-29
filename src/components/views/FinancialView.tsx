@@ -1,11 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Variants } from "framer-motion";
 import { TrendingDown, ArrowRightLeft, Wallet, AlertCircle } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie, Legend } from "recharts";
 import { GlossaryTooltip } from "../GlossaryTooltip";
+import FinancialDataDrawer from "../FinancialDataDrawer";
+import { Plus } from "lucide-react";
 
 const cashflowData = [
   { month: "Jan", entrada: 0, saida: 150, acumulado: -150 },
@@ -36,6 +38,7 @@ const costDistributionData = [
 
 
 export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: { opacity: 1, transition: { staggerChildren: 0.1 } }
@@ -53,7 +56,16 @@ export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
           <h2 className="text-2xl font-semibold text-white tracking-tight">Financeiro & Fluxo de Caixa</h2>
           <p className="text-sm text-slate-400 mt-1">Análise aprofundada de capital e previsibilidade</p>
         </div>
+        <button 
+          onClick={() => setIsDrawerOpen(true)}
+          className="flex items-center px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-blue-500/20 active:scale-95"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          NOVO REGISTRO
+        </button>
       </div>
+
+      <FinancialDataDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
 
       <motion.div 
         variants={containerVariants}

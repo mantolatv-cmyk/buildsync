@@ -4,8 +4,9 @@ import React, { useState } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { 
   ChevronLeft, MapPin, Calendar, Clock, Users, AlertTriangle, 
-  TrendingUp, Camera, FileText, Download, CloudRain, ThermometerSun 
+  TrendingUp, Camera, FileText, Download, CloudRain, ThermometerSun, Plus
 } from "lucide-react";
+import EngineeringProgressDrawer from "../EngineeringProgressDrawer";
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip, 
   BarChart, Bar, XAxis, YAxis, CartesianGrid 
@@ -35,6 +36,7 @@ const timelineData = [
 
 export default function ProjectDetailView({ project, onBack }: ProjectDetailViewProps) {
   const [activeTab, setActiveTab] = useState("overview");
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const containerVariants: Variants = {
     hidden: { opacity: 0, x: 50 },
@@ -90,12 +92,20 @@ export default function ProjectDetailView({ project, onBack }: ProjectDetailView
             <button className="p-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl text-white hover:bg-white/10 transition-all">
               <FileText className="w-6 h-6" />
             </button>
-            <button className="px-6 py-3 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20 flex items-center">
-              <Download className="w-5 h-5 mr-2" /> Baixar Relatório Mensal
+            <button 
+              onClick={() => setIsDrawerOpen(true)}
+              className="px-6 py-3 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20 flex items-center"
+            >
+              <Plus className="w-5 h-5 mr-2" /> Nova Medição de Campo
+            </button>
+            <button className="px-6 py-3 bg-white/10 text-white font-bold rounded-2xl hover:bg-white/20 transition-all flex items-center">
+              <Download className="w-5 h-5 mr-2" /> Relatório
             </button>
           </div>
         </div>
       </div>
+
+      <EngineeringProgressDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
 
       {/* Navigation Tabs */}
       <div className="max-w-7xl mx-auto px-8 mt-8">
