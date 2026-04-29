@@ -4,6 +4,7 @@ import React from "react";
 import { motion, Variants } from "framer-motion";
 import { Package, ArrowRight, Star, Award, TrendingUp, ShieldCheck } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend, Cell } from "recharts";
+import { GlossaryTooltip } from "../GlossaryTooltip";
 
 const supplyPriceData = [
   { item: 'Aço (Ton)', orcado: 4200, atual: 5100, market: 5350 },
@@ -43,7 +44,7 @@ export default function SupplyView() {
       <div className="flex justify-between items-end mb-8">
         <div>
           <h2 className="text-2xl font-semibold text-white tracking-tight">Cadeia de Suprimentos</h2>
-          <p className="text-sm text-slate-400 mt-1">Gestão de insumos críticos (Curva ABC)</p>
+          <p className="text-sm text-slate-400 mt-1">Gestão de insumos críticos (<GlossaryTooltip term="Curva ABC">Curva ABC</GlossaryTooltip>)</p>
         </div>
         <div className="flex space-x-3">
           <button className="px-4 py-2 bg-blue-600/10 text-blue-400 border border-blue-500/20 rounded-xl text-sm font-semibold hover:bg-blue-600/20 transition-colors">
@@ -61,12 +62,12 @@ export default function SupplyView() {
           <motion.div 
             key={i}
             variants={itemVariants}
-            className="bg-slate-900/40 backdrop-blur-xl border border-white/5 p-5 rounded-2xl relative overflow-hidden group hover:bg-slate-800/50 transition-colors"
+            className="bg-slate-900/40 backdrop-blur-xl border border-white/5 p-5 rounded-2xl relative group hover:bg-slate-800/50 transition-colors"
           >
             <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
               <TrendingUp className="w-12 h-12 text-white" />
             </div>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{idx.name}</p>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{idx.name.includes('SINAPI') ? <GlossaryTooltip term="SINAPI">SINAPI</GlossaryTooltip> : idx.name}</p>
             <div className="flex items-end justify-between">
               <h4 className="text-xl font-bold text-white">{idx.value}</h4>
               <div className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${idx.status === 'up' ? 'text-amber-400 bg-amber-500/10' : 'text-emerald-400 bg-emerald-500/10'}`}>
@@ -85,11 +86,11 @@ export default function SupplyView() {
         className="grid grid-cols-1 gap-8"
       >
         {/* Gráfico de Variação de Preços (Inflação Interna) */}
-        <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 relative overflow-hidden">
+        <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 relative">
           <div className="absolute -right-10 -top-10 w-32 h-32 bg-amber-500/10 blur-[50px] rounded-full pointer-events-none" />
           <div className="mb-6 relative z-10 flex justify-between items-start">
             <div>
-              <h3 className="text-lg font-semibold text-white">Variação de Custo: Insumos Curva A</h3>
+              <h3 className="text-lg font-semibold text-white">Variação de Custo: Insumos <GlossaryTooltip term="Curva ABC">Curva A</GlossaryTooltip></h3>
               <p className="text-sm text-slate-400">Preço Orçado (Base) vs. Preço Atual de Mercado</p>
             </div>
             <div className="flex items-center space-x-2 px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded-lg">

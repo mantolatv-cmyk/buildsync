@@ -6,6 +6,7 @@ import { MapPin, Calendar, ArrowRight, Camera } from "lucide-react";
 import { ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from "recharts";
 import ProjectFormDrawer from "../ProjectFormDrawer";
 import ProjectDetailView from "./ProjectDetailView";
+import { GlossaryTooltip } from "../GlossaryTooltip";
 
 const projectsData = [
   {
@@ -104,11 +105,11 @@ export default function ProjectsView() {
             </div>
 
             {/* Curva S do Portfólio (Engenharia) */}
-            <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl border border-white/5 rounded-2xl p-6 mb-8 shadow-xl relative overflow-hidden group">
+            <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl border border-white/5 rounded-2xl p-6 mb-8 shadow-xl relative group">
               <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-[80px] rounded-full pointer-events-none" />
               <div className="flex justify-between items-center mb-6 relative z-10">
                 <div>
-                  <h3 className="text-xl font-semibold text-white">Curva S de Engenharia (Consolidada)</h3>
+                  <h3 className="text-xl font-semibold text-white"><GlossaryTooltip term="Curva S">Curva S</GlossaryTooltip> de Engenharia (Consolidada)</h3>
                   <p className="text-sm text-slate-400">Avanço Físico (%) x Desembolso Financeiro (R$ mil)</p>
                 </div>
               </div>

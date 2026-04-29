@@ -11,6 +11,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, 
   ResponsiveContainer, Cell, LineChart, Line, AreaChart, Area
 } from "recharts";
+import { GlossaryTooltip } from "../GlossaryTooltip";
 
 // --- Mock Data for the PCI Translation Engine ---
 const pciComparisonData = [
@@ -50,7 +51,7 @@ export default function FinancingAidView() {
         <div>
           <div className="flex items-center space-x-3 mb-2">
             <div className="p-2 bg-blue-500/20 rounded-lg"><Landmark className="text-blue-400 w-5 h-5" /></div>
-            <span className="text-xs font-bold text-blue-300 uppercase tracking-widest">Conciliação Bancária (PCI/PFUI)</span>
+            <span className="text-xs font-bold text-blue-300 uppercase tracking-widest">Conciliação Bancária (<GlossaryTooltip term="PCI">PCI</GlossaryTooltip>/<GlossaryTooltip term="PFUI">PFUI</GlossaryTooltip>)</span>
           </div>
           <h2 className="text-3xl font-black text-white">Auxílio Financiamento</h2>
           <p className="text-slate-400 mt-2 max-w-xl">
@@ -97,8 +98,8 @@ export default function FinancingAidView() {
               initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
               className="grid grid-cols-1 lg:grid-cols-2 gap-8"
             >
-              <div className="bg-slate-900/40 border border-white/5 p-8 rounded-3xl">
-                <h3 className="text-xl font-bold text-white mb-2">PCI Traduzida vs. Realidade</h3>
+              <div className="bg-slate-900/40 border border-white/5 p-8 rounded-3xl relative">
+                <h3 className="text-xl font-bold text-white mb-2"><GlossaryTooltip term="PCI">PCI</GlossaryTooltip> Traduzida vs. Realidade</h3>
                 <p className="text-sm text-slate-400 mb-8">Desvio entre o planejado no banco e o avanço físico real no canteiro.</p>
                 
                 <div className="h-72 w-full">
@@ -129,7 +130,7 @@ export default function FinancingAidView() {
                     ].map((item, i) => (
                       <div key={i} className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
                         <div>
-                          <p className="text-xs font-bold text-blue-400">{item.pci}</p>
+                          <p className="text-xs font-bold text-blue-400"><GlossaryTooltip term="PCI">PCI</GlossaryTooltip> {item.pci.split(' ')[1]}</p>
                           <p className="text-sm text-white font-medium">{item.task}</p>
                         </div>
                         <div className="text-right">
@@ -300,7 +301,7 @@ export default function FinancingAidView() {
                     { doc: "Guia de INSS (GPS)", status: "Validado", date: "30/04/2024", type: "Mensal" },
                     { doc: "Recolhimento FGTS", status: "Validado", date: "30/04/2024", type: "Mensal" },
                     { doc: "Alvará de Construção", status: "Validado", date: "Vence em 2026", type: "Permanente" },
-                    { doc: "Certidão CNO", status: "Pendente", date: "Atrasado 2 dias", type: "Mensal" },
+                    { doc: "Certidão <GlossaryTooltip term='CNO'>CNO</GlossaryTooltip>", status: "Pendente", date: "Atrasado 2 dias", type: "Mensal" },
                   ].map((doc, i) => (
                     <div key={i} className={`p-5 rounded-2xl border ${doc.status === 'Pendente' ? 'bg-red-500/5 border-red-500/20' : 'bg-white/5 border-white/5'} flex items-center justify-between`}>
                       <div className="flex items-center space-x-4">

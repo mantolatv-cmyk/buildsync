@@ -9,6 +9,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
   PieChart, Pie, Cell, BarChart, Bar, Legend
 } from "recharts";
+import { GlossaryTooltip } from "../GlossaryTooltip";
 
 // --- Extended Mock Data for Time Filters ---
 const mockDataSets: any = {
@@ -143,7 +144,7 @@ function KpiCard({ title, value, trend, trendUp, subtitle, icon, neutral = false
       variants={cardVariants}
       whileHover={{ y: -4, scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 flex flex-col justify-between transition-all hover:bg-slate-900/70 hover:border-blue-500/30 relative overflow-hidden group cursor-pointer shadow-lg w-full text-left min-h-[160px]"
+      className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 flex flex-col justify-between transition-all hover:bg-slate-900/70 hover:border-blue-500/30 relative group cursor-pointer shadow-lg w-full text-left min-h-[160px]"
     >
       <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-30 group-hover:text-blue-400 transition-all pointer-events-none">
         {icon || <ArrowUpRight className="w-8 h-8" />}
@@ -220,13 +221,13 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
           </div>
           <div className="flex justify-between mt-2 text-[10px] font-bold">
             <span className="text-slate-500 uppercase">Utilizado</span>
-            <span className="text-blue-400">68% do CAPEX</span>
+            <span className="text-blue-400">68% do <GlossaryTooltip term="CAPEX">CAPEX</GlossaryTooltip></span>
           </div>
         </KpiCard>
 
         <KpiCard 
           id="yoc"
-          title="YOC Projetado" 
+          title={<GlossaryTooltip term="YOC">YOC Projetado</GlossaryTooltip>} 
           value={<AnimatedCounter value={currentData.kpis.yoc} suffix="%" />}
           trend={currentData.kpis.yocTrend} 
           trendUp={true} 
@@ -257,7 +258,7 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
           <div className="flex items-center justify-between bg-blue-500/5 rounded-lg p-2 border border-blue-500/10">
             <div className="flex items-center space-x-2">
               <ShieldCheck className="w-3 h-3 text-blue-400" />
-              <span className="text-[10px] font-bold text-blue-400 uppercase">Eficiência SINAPI</span>
+              <span className="text-[10px] font-bold text-blue-400 uppercase">Eficiência <GlossaryTooltip term="SINAPI">SINAPI</GlossaryTooltip></span>
             </div>
             <span className="text-[10px] font-black text-white">-4.2%</span>
           </div>
@@ -327,10 +328,10 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
         </motion.div>
 
         {/* Retorno do Investidor (ROI) */}
-        <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 flex flex-col justify-between hover:bg-slate-900/50 transition-colors relative overflow-hidden">
+        <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 relative">
             <div className="absolute -right-10 -top-10 w-32 h-32 bg-emerald-500/10 blur-[50px] rounded-full pointer-events-none" />
           <div>
-            <h2 className="text-lg font-semibold text-white">Retorno sobre Investimento (ROI)</h2>
+            <h2 className="text-lg font-semibold text-white">Retorno sobre Investimento (<GlossaryTooltip term="ROI">ROI</GlossaryTooltip>)</h2>
             <p className="text-sm text-slate-400">Projetado vs. Realizado ao ano (%)</p>
           </div>
           <div className="h-56 w-full mt-4 relative z-10">
@@ -357,8 +358,8 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
       <div className="grid grid-cols-1 gap-6">
         {/* Gráfico de Barras - SPI */}
         <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6">
-          <h2 className="text-lg font-semibold text-white mb-1">Índice de Desempenho (SPI)</h2>
-          <p className="text-sm text-slate-400 mb-4">SPI por etapa (&gt; 1 = Adiantado)</p>
+          <h2 className="text-lg font-semibold text-white mb-1">Índice de Desempenho (<GlossaryTooltip term="SPI">SPI</GlossaryTooltip>)</h2>
+          <p className="text-sm text-slate-400 mb-4"><GlossaryTooltip term="SPI">SPI</GlossaryTooltip> por etapa (&gt; 1 = Adiantado)</p>
           
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%" minWidth={0}>

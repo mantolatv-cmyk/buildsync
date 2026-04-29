@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Variants } from "framer-motion";
 import { TrendingDown, ArrowRightLeft, Wallet, AlertCircle } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie, Legend } from "recharts";
+import { GlossaryTooltip } from "../GlossaryTooltip";
 
 const cashflowData = [
   { month: "Jan", entrada: 0, saida: 150, acumulado: -150 },
@@ -32,31 +33,7 @@ const costDistributionData = [
   { name: 'Projetos', value: 7, color: '#64748b' },
 ];
 
-const glossary: Record<string, string> = {
-  "VGV": "Valor Geral de Vendas: Soma do valor potencial de venda de todas as unidades do empreendimento.",
-  "Burn Rate": "Taxa de Queima: Ritmo mensal de consumo do capital disponível para cobrir despesas operacionais e de obra.",
-  "Runway": "Autonomia: Estimativa de quantos meses o caixa atual suporta mantendo o ritmo de gastos atual.",
-  "DRE": "Demonstração do Resultado do Exercício: Relatório que resume receitas e custos para calcular o lucro líquido.",
-  "Waterfall": "Gráfico de Cascata: Visualização que mostra a progressão dos custos retirados do VGV até a margem final."
-};
 
-const GlossaryTooltip = ({ term, children }: { term: string, children: React.ReactNode }) => {
-  return (
-    <div className="group relative inline-block">
-      <span className="cursor-help border-b border-dotted border-blue-500/50 hover:border-blue-400 transition-colors">
-        {children}
-      </span>
-      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-64 p-3 bg-slate-950 border border-white/20 rounded-xl text-[11px] text-slate-300 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 z-[100] shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl">
-        <div className="flex items-center space-x-2 mb-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-          <p className="font-black text-white uppercase tracking-wider text-[10px]">{term}</p>
-        </div>
-        <p className="leading-relaxed">{glossary[term]}</p>
-        <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-950" />
-      </div>
-    </div>
-  );
-};
 
 export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
   const containerVariants: Variants = {
