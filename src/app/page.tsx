@@ -472,6 +472,27 @@ export default function InvestorDashboard() {
         setActiveTab={setAdminTab}
       />
 
+      {/* Bottom Navigation (Mobile Only) */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-slate-900/80 backdrop-blur-xl border-t border-white/5 flex items-center justify-around px-2 pb-safe z-40">
+        {menuItems.slice(0, 4).map((item) => (
+          <button
+            key={item.name}
+            onClick={() => setActiveMenu(item.name)}
+            className={`flex flex-col items-center justify-center space-y-1 w-16 transition-colors ${activeMenu === item.name ? "text-blue-400" : "text-slate-500"}`}
+          >
+            <item.icon className="w-5 h-5" />
+            <span className="text-[10px] font-bold uppercase tracking-tighter">{item.name.split(' ')[0]}</span>
+          </button>
+        ))}
+        <button
+          onClick={() => setIsMobileMenuOpen(true)}
+          className="flex flex-col items-center justify-center space-y-1 w-16 text-slate-500"
+        >
+          <Menu className="w-5 h-5" />
+          <span className="text-[10px] font-bold uppercase tracking-tighter">Mais</span>
+        </button>
+      </nav>
+
     </div>
   );
 }
