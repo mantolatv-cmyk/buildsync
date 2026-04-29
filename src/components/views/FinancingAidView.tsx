@@ -147,20 +147,25 @@ export default function FinancingAidView() {
                         width={80}
                       />
                       <Tooltip 
-                        cursor={{ fill: 'rgba(255,255,255,0.03)' }}
+                        cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                        allowEscapeViewBox={{ x: true, y: true }}
                         content={({ active, payload, label }) => {
                           if (active && payload && payload.length) {
                             return (
-                              <div className="bg-slate-950/90 backdrop-blur-xl border border-white/10 p-3 rounded-xl shadow-2xl">
-                                <p className="text-[10px] font-bold text-slate-500 uppercase mb-2 tracking-widest">{label}</p>
-                                <div className="space-y-1.5">
-                                  <div className="flex justify-between items-center space-x-4">
+                              <div className="bg-[#0f172a] border border-blue-500/30 p-4 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative z-[100] min-w-[200px]">
+                                <div className="absolute inset-0 bg-blue-500/5 rounded-xl pointer-events-none" />
+                                <p className="text-[10px] font-black text-blue-400 uppercase mb-3 tracking-widest border-b border-white/5 pb-2">{label}</p>
+                                <div className="space-y-2">
+                                  <div className="flex justify-between items-center">
                                     <span className="text-xs text-slate-400">Planejado (PCI):</span>
                                     <span className="text-xs font-bold text-white">{payload[0].value}%</span>
                                   </div>
-                                  <div className="flex justify-between items-center space-x-4">
+                                  <div className="flex justify-between items-center">
                                     <span className="text-xs text-blue-400">Realizado (Campo):</span>
-                                    <span className="text-xs font-bold text-blue-400">{payload[1].value}%</span>
+                                    <div className="flex items-center space-x-2">
+                                      <span className="text-xs font-black text-blue-400">{payload[1].value}%</span>
+                                      <div className={`w-2 h-2 rounded-full ${Number(payload[1].value) >= Number(payload[0].value) ? 'bg-emerald-500' : 'bg-red-500'} shadow-sm`} />
+                                    </div>
                                   </div>
                                 </div>
                               </div>
