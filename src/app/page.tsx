@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { 
   LayoutDashboard, FolderKanban, Wallet, FileText, ShieldCheck,
-  TrendingUp, Clock, Sparkles, ChevronDown, X, PieChart as PieChartIcon, BarChart3, Menu, Package, Landmark, Bell, AlertCircle, CheckCircle2
+  TrendingUp, Clock, Sparkles, ChevronDown, X, PieChart as PieChartIcon, BarChart3, Menu, Package, Landmark, Bell, AlertCircle, CheckCircle2,
+  Settings, LogOut, User, Activity as ActivityIcon, CreditCard, Filter
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -28,8 +29,15 @@ export default function InvestorDashboard() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // State for Mobile Sidebar
   const [isLoading, setIsLoading] = useState(true); // State for Initial Preloader
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [notifFilter, setNotifFilter] = useState<'all' | 'warning' | 'success'>('all');
   
   const { notifications, markNotificationRead } = useDashboardStore();
+  
+  const filteredNotifications = notifications.filter(n => 
+    notifFilter === 'all' ? true : n.type === notifFilter
+  );
+  
   const unreadCount = notifications.filter(n => !n.read).length;
 
   useEffect(() => {
@@ -192,16 +200,38 @@ export default function InvestorDashboard() {
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
                     className="absolute top-full right-0 mt-3 w-80 bg-slate-900 border border-white/10 rounded-3xl shadow-2xl z-50 overflow-hidden"
                   >
-                    <div className="p-4 border-b border-white/5 bg-slate-800/30 flex justify-between items-center">
-                      <span className="text-xs font-bold text-white uppercase tracking-widest">Alertas Inteligentes</span>
-                      <span className="text-[10px] text-blue-400 font-bold">{unreadCount} novos</span>
+                    <div className="p-4 border-b border-white/5 bg-slate-800/30">
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="text-xs font-bold text-white uppercase tracking-widest">Alertas Inteligentes</span>
+                        <button 
+                          onClick={() => notifications.forEach(n => markNotificationRead(n.id))}
+                          className="text-[10px] text-blue-400 font-bold hover:text-blue-300 transition-colors uppercase"
+                        >
+                          Marcar tudo como lido
+                        </button>
+                      </div>
+                      <div className="flex space-x-2">
+                        {['all', 'warning', 'success'].map((f) => (
+                          <button
+                            key={f}
+                            onClick={() => setNotifFilter(f as any)}
+                            className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase transition-all ${notifFilter === f ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-500 hover:bg-slate-700'}`}
+                          >
+                            {f === 'all' ? 'Todos' : f === 'warning' ? 'Avisos' : 'Sucesso'}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                     <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
-                      {notifications.length === 0 ? (
-                        <div className="p-8 text-center text-slate-500 text-sm italic">Nenhum alerta pendente</div>
+                      {filteredNotifications.length === 0 ? (
+                        <div className="p-12 text-center text-slate-500">
+                          <ActivityIcon className="w-8 h-8 mx-auto mb-3 opacity-20" />
+                          <p className="text-xs italic">Sem alertas para este filtro</p>
+                        </div>
                       ) : (
-                        notifications.map(n => (
-                          <div 
+                        filteredNotifications.map(n => (
+                          <motion.div 
+                            layout
                             key={n.id} 
                             onClick={() => markNotificationRead(n.id)}
                             className={`p-4 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer relative ${!n.read ? 'bg-blue-500/5' : ''}`}
@@ -220,14 +250,9 @@ export default function InvestorDashboard() {
                                 <span className="text-[9px] text-slate-500 font-medium uppercase">{n.date}</span>
                               </div>
                             </div>
-                          </div>
+                          </motion.div>
                         ))
                       )}
-                    </div>
-                    <div className="p-3 bg-slate-800/30 text-center">
-                      <button className="text-[10px] font-black text-slate-500 hover:text-white uppercase tracking-tighter transition-colors">
-                        Ver todo o histórico
-                      </button>
                     </div>
                   </motion.div>
                 )}
@@ -236,14 +261,66 @@ export default function InvestorDashboard() {
             
             <div className="w-px h-8 bg-white/5 hidden sm:block" />
             
-            <div className="hidden sm:flex items-center space-x-3">
-              <div className="text-right">
-                <p className="text-sm font-bold text-white">Eng. Martins</p>
-                <p className="text-[10px] text-slate-500 uppercase font-black tracking-tighter">Super Admin</p>
-              </div>
-              <div className="w-10 h-10 rounded-xl bg-slate-800 border border-white/10 flex items-center justify-center text-blue-400 font-black">
-                M
-              </div>
+            {/* Refined User Menu */}
+            <div className="relative">
+              <button 
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                className="flex items-center space-x-3 p-1.5 hover:bg-white/5 rounded-2xl transition-all group"
+              >
+                <div className="text-right hidden sm:block">
+                  <p className="text-sm font-bold text-white">Eng. Martins</p>
+                  <p className="text-[10px] text-slate-500 uppercase font-black tracking-tighter">Super Admin</p>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 p-0.5 shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
+                  <div className="w-full h-full bg-[#020617] rounded-[10px] flex items-center justify-center text-blue-400 font-black">
+                    M
+                  </div>
+                </div>
+                <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              <AnimatePresence>
+                {isUserMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute top-full right-0 mt-3 w-56 bg-slate-900 border border-white/10 rounded-3xl shadow-2xl z-50 overflow-hidden"
+                  >
+                    <div className="p-4 border-b border-white/5 bg-slate-800/30">
+                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Assinatura</p>
+                      <div className="flex items-center text-emerald-400">
+                        <Sparkles className="w-3 h-3 mr-1.5" />
+                        <span className="text-xs font-bold uppercase">Plano Enterprise</span>
+                      </div>
+                    </div>
+                    
+                    <div className="p-2">
+                      {[
+                        { label: 'Meu Perfil', icon: User },
+                        { label: 'Configurações', icon: Settings },
+                        { label: 'Atividade', icon: ActivityIcon },
+                        { label: 'Faturamento', icon: CreditCard },
+                      ].map((item) => (
+                        <button 
+                          key={item.label}
+                          className="w-full flex items-center px-4 py-2.5 text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+                        >
+                          <item.icon className="w-4 h-4 mr-3 opacity-60" />
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="p-2 border-t border-white/5">
+                      <button className="w-full flex items-center px-4 py-2.5 text-xs font-bold text-red-400 hover:bg-red-500/10 rounded-xl transition-all">
+                        <LogOut className="w-4 h-4 mr-3" />
+                        Encerrar Sessão
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </header>
