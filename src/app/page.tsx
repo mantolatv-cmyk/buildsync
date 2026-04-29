@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { 
   LayoutDashboard, FolderKanban, Wallet, FileText, ShieldCheck,
-  TrendingUp, Clock, Sparkles, ChevronDown, X, PieChart as PieChartIcon, BarChart3, Menu, Package
+  TrendingUp, Clock, Sparkles, ChevronDown, X, PieChart as PieChartIcon, BarChart3, Menu, Package, Landmark
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -12,6 +12,7 @@ import ProjectsView from "@/components/views/ProjectsView";
 import FinancialView from "@/components/views/FinancialView";
 import ReportsView from "@/components/views/ReportsView";
 import SupplyView from "@/components/views/SupplyView";
+import FinancingAidView from "@/components/views/FinancingAidView";
 import Preloader from "@/components/Preloader";
 
 export default function InvestorDashboard() {
@@ -36,6 +37,7 @@ export default function InvestorDashboard() {
     { name: "Financeiro", icon: Wallet },
     { name: "Suprimentos", icon: Package },
     { name: "Relatórios", icon: FileText },
+    { name: "Auxílio Financiamento", icon: Landmark },
   ];
 
   return (
@@ -178,7 +180,8 @@ export default function InvestorDashboard() {
             {activeMenu === "Financeiro" && <FinancialView timeFilter={timeFilter} />}
             {activeMenu === "Suprimentos" && <SupplyView />}
             {activeMenu === "Relatórios" && <ReportsView />}
-            {activeMenu !== "Visão Geral" && activeMenu !== "Projetos" && activeMenu !== "Financeiro" && activeMenu !== "Suprimentos" && activeMenu !== "Relatórios" && (
+            {activeMenu === "Auxílio Financiamento" && <FinancingAidView />}
+            {activeMenu !== "Visão Geral" && activeMenu !== "Projetos" && activeMenu !== "Financeiro" && activeMenu !== "Suprimentos" && activeMenu !== "Relatórios" && activeMenu !== "Auxílio Financiamento" && (
               <div className="flex flex-col items-center justify-center h-[60vh] text-slate-500">
                 <ShieldCheck className="w-16 h-16 mb-4 opacity-20" />
                 <p>Módulo {activeMenu} em desenvolvimento</p>
