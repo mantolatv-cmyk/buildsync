@@ -20,6 +20,7 @@ import ReportsView from "@/components/views/ReportsView";
 import SupplyView from "@/components/views/SupplyView";
 import FinancingAidView from "@/components/views/FinancingAidView";
 import Preloader from "@/components/Preloader";
+import AdminCenterModal from "@/components/AdminCenterModal";
 
 export default function InvestorDashboard() {
   const [activeMenu, setActiveMenu] = useState("Visão Geral");
@@ -30,9 +31,19 @@ export default function InvestorDashboard() {
   const [isLoading, setIsLoading] = useState(true); // State for Initial Preloader
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isAdminCenterOpen, setIsAdminCenterOpen] = useState(false);
+  const [adminTab, setAdminTab] = useState("Meu Perfil");
   const [notifFilter, setNotifFilter] = useState<'all' | 'warning' | 'success'>('all');
   
   const { notifications, markNotificationRead } = useDashboardStore();
+  
+  const handleLogout = () => {
+    setIsUserMenuOpen(false);
+    setIsLoading(true);
+    setTimeout(() => {
+      window.location.reload(); // Simple simulation of logout/reset
+    }, 2000);
+  };
   
   const filteredNotifications = notifications.filter(n => 
     notifFilter === 'all' ? true : n.type === notifFilter
@@ -304,6 +315,11 @@ export default function InvestorDashboard() {
                       ].map((item) => (
                         <button 
                           key={item.label}
+                          onClick={() => {
+                            setAdminTab(item.label);
+                            setIsAdminCenterOpen(true);
+                            setIsUserMenuOpen(false);
+                          }}
                           className="w-full flex items-center px-4 py-2.5 text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
                         >
                           <item.icon className="w-4 h-4 mr-3 opacity-60" />
@@ -313,7 +329,10 @@ export default function InvestorDashboard() {
                     </div>
 
                     <div className="p-2 border-t border-white/5">
-                      <button className="w-full flex items-center px-4 py-2.5 text-xs font-bold text-red-400 hover:bg-red-500/10 rounded-xl transition-all">
+                      <button 
+                        onClick={handleLogout}
+                        className="w-full flex items-center px-4 py-2.5 text-xs font-bold text-red-400 hover:bg-red-500/10 rounded-xl transition-all"
+                      >
                         <LogOut className="w-4 h-4 mr-3" />
                         Encerrar Sessão
                       </button>
@@ -446,6 +465,12 @@ export default function InvestorDashboard() {
         )}
       </AnimatePresence>
 
+      <AdminCenterModal 
+        isOpen={isAdminCenterOpen} 
+        onClose={() => setIsAdminCenterOpen(false)} 
+        activeTab={adminTab}
+        setActiveTab={setAdminTab}
+      />
 
     </div>
   );
