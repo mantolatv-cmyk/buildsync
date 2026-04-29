@@ -14,9 +14,9 @@ import {
 const mockDataSets: any = {
   month: {
     kpis: {
-      capital: "R$ 850.000",
-      yoc: "14.2%",
-      costPerSqm: "R$ 3.900",
+      capital: "850000.00",
+      yoc: "14.2",
+      costPerSqm: "3900.00",
       capitalTrend: "+2%",
       yocTrend: "+0.1%",
       costTrend: "-0.5%"
@@ -30,9 +30,9 @@ const mockDataSets: any = {
   },
   quarter: {
     kpis: {
-      capital: "R$ 2.450.000",
-      yoc: "14.5%",
-      costPerSqm: "R$ 3.880",
+      capital: "2450000.00",
+      yoc: "14.5",
+      costPerSqm: "3880.00",
       capitalTrend: "+8%",
       yocTrend: "+0.3%",
       costTrend: "-1.2%"
@@ -45,9 +45,9 @@ const mockDataSets: any = {
   },
   ytd: {
     kpis: {
-      capital: "R$ 4.250.000",
-      yoc: "14.8%",
-      costPerSqm: "R$ 3.850",
+      capital: "4250000.00",
+      yoc: "14.8",
+      costPerSqm: "3850.00",
       capitalTrend: "+12%",
       yocTrend: "+0.5%",
       costTrend: "-2.1%"
@@ -124,8 +124,8 @@ const AnimatedCounter = ({ value, prefix = "", suffix = "", isCurrency = false }
   }, [value]);
 
   const displayValue = isCurrency 
-    ? count.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
-    : count.toFixed(1);
+    ? count.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    : count.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
   return <span>{prefix}{displayValue}{suffix}</span>;
 };
@@ -205,7 +205,7 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
         <KpiCard 
           id="capital"
           title="Capital Total Investido" 
-          value={<AnimatedCounter value={currentData.kpis.capital} />}
+          value={<AnimatedCounter value={currentData.kpis.capital} prefix="R$ " isCurrency={true} />}
           trend={currentData.kpis.capitalTrend} 
           trendUp={true} 
           subtitle="Composto por 3 obras ativas"
@@ -248,7 +248,7 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
         <KpiCard 
           id="cost"
           title="Custo por m² Atual" 
-          value={<AnimatedCounter value={currentData.kpis.costPerSqm} prefix="R$ " />} 
+          value={<AnimatedCounter value={currentData.kpis.costPerSqm} prefix="R$ " isCurrency={true} />} 
           trend={currentData.kpis.costTrend} 
           trendUp={false} 
           subtitle="Média ponderada portfólio"
