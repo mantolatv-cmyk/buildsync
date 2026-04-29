@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, BarChart, Bar, Legend, ScatterChart, Scatter, ZAxis, ReferenceArea
+  PieChart, Pie, Cell, BarChart, Bar, Legend
 } from "recharts";
 
 // --- Extended Mock Data for Time Filters ---
@@ -76,15 +76,6 @@ const spiData = [
   { etapa: "Cobertura", spi: 1.10 },
   { etapa: "Instalações", spi: 0.88 },
   { etapa: "Acabamento", spi: 1.00 },
-];
-
-
-const riskMatrixData = [
-  { name: 'Residencial Alpha', delayDays: -5, costOverrun: -2, status: 'on_track' },
-  { name: 'Torre Horizonte', delayDays: 45, costOverrun: 15, status: 'delayed' },
-  { name: 'Condomínio Reserva', delayDays: 10, costOverrun: 5, status: 'warning' },
-  { name: 'Villa Serena', delayDays: -2, costOverrun: 1, status: 'on_track' },
-  { name: 'Corporate Plaza', delayDays: 60, costOverrun: 8, status: 'delayed' },
 ];
 
 // --- Sub-components ---
@@ -315,53 +306,20 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
       </div>
 
       {/* Bottom Section (Métricas Operacionais) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Matriz de Risco do Portfólio */}
-        <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 relative overflow-hidden">
-          <h2 className="text-lg font-semibold text-white mb-1">Matriz de Risco</h2>
-          <p className="text-sm text-slate-400 mb-4">Atraso (Dias) x Desvio de Custo (%)</p>
-          
-          <div className="h-56 w-full relative z-10">
-            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-              <ScatterChart margin={{ top: 10, right: 10, bottom: 0, left: -20 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                <XAxis type="number" dataKey="costOverrun" name="Desvio de Custo" unit="%" stroke="#64748b" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
-                <YAxis type="number" dataKey="delayDays" name="Atraso" unit=" dias" stroke="#64748b" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
-                <ZAxis type="category" dataKey="name" name="Obra" />
-                <RechartsTooltip 
-                  cursor={{ strokeDasharray: '3 3', stroke: '#334155' }}
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '13px' }}
-                  labelStyle={{ display: 'none' }}
-                  formatter={(value: any, name: any, props: any) => {
-                    if (name === 'Obra') return [value, ''];
-                    return [value + (name === 'Atraso' ? ' dias' : '%'), name];
-                  }}
-                />
-                <ReferenceArea x1={10} x2={25} y1={20} y2={80} fill="#ef4444" fillOpacity={0.1} />
-                <Scatter name="Obras" data={riskMatrixData} shape="circle">
-                  {riskMatrixData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.status === 'delayed' ? '#ef4444' : entry.status === 'warning' ? '#f59e0b' : '#10b981'} />
-                  ))}
-                </Scatter>
-              </ScatterChart>
-            </ResponsiveContainer>
-          </div>
-        </motion.div>
-
+      <div className="grid grid-cols-1 gap-6">
         {/* Gráfico de Barras - SPI */}
         <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6">
           <h2 className="text-lg font-semibold text-white mb-1">Índice de Desempenho (SPI)</h2>
           <p className="text-sm text-slate-400 mb-4">SPI por etapa (&gt; 1 = Adiantado)</p>
           
-          <div className="h-52 w-full">
+          <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-              <BarChart data={spiData} margin={{ top: 10, right: 10, left: 70, bottom: 0 }} layout="vertical">
+              <BarChart data={spiData} margin={{ top: 10, right: 30, left: 70, bottom: 0 }} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#1e293b" />
                 <XAxis type="number" domain={[0, 1.2]} axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
                 <YAxis dataKey="etapa" type="category" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
                 <RechartsTooltip cursor={{fill: '#1e293b'}} content={<CustomTooltip />} />
-                <Bar dataKey="spi" radius={[0, 4, 4, 0]} barSize={16}>
+                <Bar dataKey="spi" radius={[0, 4, 4, 0]} barSize={24}>
                   {spiData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.spi >= 1 ? '#3b82f6' : '#f59e0b'} />
                   ))}
@@ -370,7 +328,6 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
             </ResponsiveContainer>
           </div>
         </motion.div>
-
       </div>
     </motion.div>
   );
