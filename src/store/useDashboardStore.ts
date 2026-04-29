@@ -20,6 +20,7 @@ interface DashboardState {
   marketIndices: Array<{ name: string; value: string; status: string; desc: string }>;
   notifications: Array<{ id: string; title: string; message: string; type: 'warning' | 'info' | 'success'; date: string; read: boolean }>;
   activityLog: Array<{ id: number; action: string; time: string; icon: string }>;
+  evidences: Array<{ id: number; title: string; loc: string; status: string; date: string; type: string }>;
   
   // Actions
   updateKpi: (key: keyof DashboardState['kpis'], value: number | string) => void;
@@ -35,6 +36,10 @@ interface DashboardState {
   markNotificationRead: (id: string) => void;
   addSupplyItem: (item: any) => void;
   addMeasurement: (projectId: number, measurement: any) => void;
+  setEvidences: (evidences: any[]) => void;
+  addEvidence: (evidence: any) => void;
+  updateEvidence: (id: number, updates: any) => void;
+  removeEvidence: (id: number) => void;
 }
 
 export const useDashboardStore = create<DashboardState>()(
@@ -138,6 +143,12 @@ export const useDashboardStore = create<DashboardState>()(
       activityLog: [
         { id: 1, action: 'Sistema BuildSync Iniciado', time: 'Há 1 hora', icon: 'Settings' }
       ],
+      evidences: [
+        { id: 1, title: "Ferragem Viga V102", loc: "Setor A", status: "Geolocalizado", date: "Hoje, 10:42", type: "Hidden" },
+        { id: 2, title: "Impermeabilização", loc: "Banheiro 12", status: "Geolocalizado", date: "Hoje, 09:15", type: "Hidden" },
+        { id: 3, title: "Tubulação Esgoto", loc: "Prumada 02", status: "Geolocalizado", date: "Ontem, 16:30", type: "Hidden" },
+        { id: 4, title: "Revestimento Piso", loc: "Hall", status: "Geolocalizado", date: "Ontem, 14:20", type: "Standard" },
+      ],
 
       updateKpi: (key, value) => set((state) => ({
         kpis: { ...state.kpis, [key]: value }
@@ -234,6 +245,32 @@ export const useDashboardStore = create<DashboardState>()(
 
       markNotificationRead: (id) => set((state) => ({
         notifications: state.notifications.map(n => n.id === id ? { ...n, read: true } : n)
+      })),
+      
+      setEvidences: (evidences) => set({ evidences }),
+      
+      addEvidence: (evidence) => set((state) => ({
+        evidences: [...state.evidences, { ...evidence, id: Date.now() }],
+        activityLog: [
+          { id: Date.now(), action: `Adicionou nova evidência: ${evidence.title}`, time: "Agora", icon: "Camera" },
+          ...state.activityLog
+        ]
+      })),
+      
+      updateEvidence: (id, updates) => set((state) => ({
+        evidences: state.evidences.map(e => e.id === id ? { ...e, ...updates } : e),
+        activityLog: [
+          { id: Date.now(), action: `Editou evidência ID ${id}`, time: "Agora", icon: "Edit3" },
+          ...state.activityLog
+        ]
+      })),
+      
+      removeEvidence: (id) => set((state) => ({
+        evidences: state.evidences.filter(e => e.id !== id),
+        activityLog: [
+          { id: Date.now(), action: `Removeu evidência ID ${id}`, time: "Agora", icon: "Trash2" },
+          ...state.activityLog
+        ]
       })),
     }),
     {

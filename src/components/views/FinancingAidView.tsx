@@ -34,13 +34,14 @@ const valleyOfDeathData = [
 
 export default function FinancingAidView() {
   const [activeSubModule, setActiveSubModule] = useState("translation");
-  const [evidences, setEvidences] = useState<any>([
-    { id: 1, title: "Ferragem Viga V102", loc: "Setor A", status: "Geolocalizado", date: "Hoje, 10:42", type: "Hidden" },
-    { id: 2, title: "Impermeabilização", loc: "Banheiro 12", status: "Geolocalizado", date: "Hoje, 09:15", type: "Hidden" },
-    { id: 3, title: "Tubulação Esgoto", loc: "Prumada 02", status: "Geolocalizado", date: "Ontem, 16:30", type: "Hidden" },
-    { id: 4, title: "Revestimento Piso", loc: "Hall", status: "Geolocalizado", date: "Ontem, 14:20", type: "Standard" },
-  ]);
-  const { complianceDocs, updateDocStatus } = useDashboardStore();
+  const { 
+    complianceDocs, 
+    updateDocStatus, 
+    evidences, 
+    addEvidence, 
+    updateEvidence, 
+    removeEvidence 
+  } = useDashboardStore();
   
   const [isUploading, setIsUploading] = useState(false);
 
@@ -298,14 +299,13 @@ export default function FinancingAidView() {
                       onClick={() => {
                         const newTitle = prompt("Título do Material/Evidência:");
                         if (newTitle) {
-                          setEvidences([...evidences, {
-                            id: Date.now(),
+                          addEvidence({
                             title: newTitle,
                             loc: "Novo Setor",
                             status: "Geolocalizado",
                             date: new Date().toLocaleDateString('pt-BR'),
                             type: "Standard"
-                          }]);
+                          });
                         }
                       }}
                       className="px-3 py-1.5 bg-blue-600 text-white text-[10px] font-bold rounded-lg hover:bg-blue-500 transition-all flex items-center uppercase tracking-widest"
@@ -325,7 +325,7 @@ export default function FinancingAidView() {
                           onClick={() => {
                             const updatedTitle = prompt("Novo título:", img.title);
                             if (updatedTitle) {
-                              setEvidences(evidences.map((e: any) => e.id === img.id ? { ...e, title: updatedTitle } : e));
+                              updateEvidence(img.id, { title: updatedTitle });
                             }
                           }}
                           className="absolute top-2 right-2 p-2 bg-slate-950/80 backdrop-blur-md rounded-lg border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-white"
@@ -348,7 +348,7 @@ export default function FinancingAidView() {
                           <button 
                             onClick={() => {
                               if (confirm("Remover esta evidência?")) {
-                                setEvidences(evidences.filter((e: any) => e.id !== img.id));
+                                removeEvidence(img.id);
                               }
                             }}
                             className="text-[10px] font-black text-red-500/50 hover:text-red-400 uppercase transition-colors"
