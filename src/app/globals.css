@@ -45,11 +45,37 @@ body {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-@keyframes shimmer {
-  100% {
-    transform: translateX(100%);
+@layer utilities {
+  .animate-shimmer {
+    animation: shimmer 2s infinite linear;
   }
 }
-.animate-shimmer {
-  animation: shimmer 2.5s infinite;
+
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  aside, header, .print\:hidden, button {
+    display: none !important;
+  }
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  .bg-white {
+    background-color: white !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
