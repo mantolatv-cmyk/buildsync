@@ -116,24 +116,76 @@ export default function FinancingAidView() {
               initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
               className="grid grid-cols-1 lg:grid-cols-2 gap-8"
             >
-              <div className="bg-slate-900/40 border border-white/5 p-8 rounded-3xl relative">
-                <h3 className="text-xl font-bold text-white mb-2"><GlossaryTooltip term="PCI">PCI</GlossaryTooltip> Traduzida vs. Realidade</h3>
-                <p className="text-sm text-slate-400 mb-8">Desvio entre o planejado no banco e o avanço físico real no canteiro.</p>
+              <div className="bg-slate-900/40 border border-white/5 p-8 rounded-3xl relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+                  <Calculator className="w-24 h-24 text-blue-500" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2 relative z-10"><GlossaryTooltip term="PCI">PCI</GlossaryTooltip> Traduzida vs. Realidade</h3>
+                <p className="text-sm text-slate-400 mb-8 relative z-10">Desvio entre o planejado no banco e o avanço físico real no canteiro.</p>
                 
-                <div className="h-72 w-full">
+                <div className="h-72 w-full relative z-10">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={pciComparisonData} layout="vertical" margin={{ left: 20 }}>
-                      <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#1e293b" />
+                    <BarChart data={pciComparisonData} layout="vertical" margin={{ left: 20, right: 30 }}>
+                      <defs>
+                        <linearGradient id="barGradient" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.8}/>
+                          <stop offset="100%" stopColor="#60a5fa" stopOpacity={1}/>
+                        </linearGradient>
+                        <filter id="barGlow" x="-20%" y="-20%" width="140%" height="140%">
+                          <feGaussianBlur stdDeviation="3" result="blur" />
+                          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#1e293b" opacity={0.5} />
                       <XAxis type="number" domain={[0, 100]} hide />
-                      <YAxis dataKey="item" type="category" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
-                      <Tooltip 
-                        contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b' }}
-                        itemStyle={{ color: '#f8fafc' }}
+                      <YAxis 
+                        dataKey="item" 
+                        type="category" 
+                        axisLine={false} 
+                        tickLine={false} 
+                        tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 600 }} 
+                        width={80}
                       />
-                      <Bar dataKey="planejado" name="Planejado (PCI)" fill="#334155" barSize={12} radius={[0, 4, 4, 0]} />
-                      <Bar dataKey="realizado" name="Realizado (Campo)" fill="#3b82f6" barSize={12} radius={[0, 4, 4, 0]} />
+                      <Tooltip 
+                        cursor={{ fill: 'rgba(255,255,255,0.03)' }}
+                        content={({ active, payload, label }) => {
+                          if (active && payload && payload.length) {
+                            return (
+                              <div className="bg-slate-950/90 backdrop-blur-xl border border-white/10 p-3 rounded-xl shadow-2xl">
+                                <p className="text-[10px] font-bold text-slate-500 uppercase mb-2 tracking-widest">{label}</p>
+                                <div className="space-y-1.5">
+                                  <div className="flex justify-between items-center space-x-4">
+                                    <span className="text-xs text-slate-400">Planejado (PCI):</span>
+                                    <span className="text-xs font-bold text-white">{payload[0].value}%</span>
+                                  </div>
+                                  <div className="flex justify-between items-center space-x-4">
+                                    <span className="text-xs text-blue-400">Realizado (Campo):</span>
+                                    <span className="text-xs font-bold text-blue-400">{payload[1].value}%</span>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }}
+                      />
+                      {/* Background bar for Planejado */}
+                      <Bar dataKey="planejado" name="Planejado (PCI)" fill="#1e293b" barSize={16} radius={[0, 8, 8, 0]} />
+                      {/* Foreground bar for Realizado with Gradient and Glow */}
+                      <Bar dataKey="realizado" name="Realizado (Campo)" fill="url(#barGradient)" barSize={16} radius={[0, 8, 8, 0]} filter="url(#barGlow)" />
                     </BarChart>
                   </ResponsiveContainer>
+                </div>
+
+                <div className="mt-6 flex items-center justify-between text-[10px] font-bold uppercase tracking-widest px-2">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-1 bg-[#1e293b] rounded-full" />
+                    <span className="text-slate-500">Benchmark Bancário</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-1 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+                    <span className="text-blue-400">Avanço Físico Real</span>
+                  </div>
                 </div>
               </div>
 
