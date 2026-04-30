@@ -425,7 +425,6 @@ export const useDashboardStore = create<DashboardState>()(
         whatsappLogs: [{ ...log, id: Date.now().toString() }, ...state.whatsappLogs]
       })),
     }),
-    }),
     {
       name: 'buildsync-dashboard-storage',
     }
