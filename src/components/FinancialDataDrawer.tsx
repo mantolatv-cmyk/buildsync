@@ -41,7 +41,7 @@ export default function FinancialDataDrawer({ isOpen, onClose }: FinancialDataDr
   };
 
   const cleanCurrency = (formattedValue: string) => {
-    return formattedValue.replace(/\D/g, "") / 100;
+    return Number(formattedValue.replace(/\D/g, "")) / 100;
   };
 
   const handleSubmit = () => {

@@ -42,7 +42,7 @@ export default function NegotiationAgentDrawer({ isOpen, onClose, negotiationId 
 
     const updatedSuppliers = [...negotiation.suppliers];
     updatedSuppliers[activeSupplier] = { ...currentSupplier, messages: updatedMessages };
-    updateNegotiation(negotiationId, { suppliers: updatedSuppliers });
+    updateNegotiation(negotiation.id, { suppliers: updatedSuppliers });
     setNewMessage("");
     setIsTyping(true);
 
@@ -74,7 +74,7 @@ export default function NegotiationAgentDrawer({ isOpen, onClose, negotiationId 
         ...finalSuppliers[activeSupplier], 
         messages: [...updatedMessages, supplierResponse] 
       };
-      updateNegotiation(negotiationId, { suppliers: finalSuppliers });
+      updateNegotiation(negotiation.id, { suppliers: finalSuppliers });
     } catch (error) {
       console.error("Negotiation Error:", error);
     } finally {
@@ -259,7 +259,7 @@ export default function NegotiationAgentDrawer({ isOpen, onClose, negotiationId 
                       onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                     />
                     <button 
-                      onClick={handleSendMessage}
+                      onClick={() => handleSendMessage()}
                       className="absolute right-2 top-2 p-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors"
                     >
                       <Send className="w-4 h-4" />
