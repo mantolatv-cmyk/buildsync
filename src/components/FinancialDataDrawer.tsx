@@ -29,14 +29,29 @@ export default function FinancialDataDrawer({ isOpen, onClose }: FinancialDataDr
   const handleNext = () => { if (step < 3) setStep(step + 1); };
   const handlePrev = () => { if (step > 1) setStep(step - 1); };
 
+  const formatCurrency = (value: string) => {
+    const digits = value.replace(/\D/g, "");
+    const number = (parseFloat(digits) / 100).toFixed(2);
+    if (isNaN(parseFloat(number))) return "";
+    
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(parseFloat(number));
+  };
+
+  const cleanCurrency = (formattedValue: string) => {
+    return formattedValue.replace(/\D/g, "") / 100;
+  };
+
   const handleSubmit = () => {
     setIsSubmitting(true);
     
     // Simulação de atualização na store
     setTimeout(() => {
-      if (formData.capital) updateKpi('capital', parseFloat(formData.capital));
+      if (formData.capital) updateKpi('capital', cleanCurrency(formData.capital));
       if (formData.yoc) updateKpi('yoc', parseFloat(formData.yoc));
-      if (formData.costPerSqm) updateKpi('costPerSqm', parseFloat(formData.costPerSqm));
+      if (formData.costPerSqm) updateKpi('costPerSqm', cleanCurrency(formData.costPerSqm));
       
       setIsSubmitting(false);
       setIsSuccess(true);
@@ -57,9 +72,14 @@ export default function FinancialDataDrawer({ isOpen, onClose }: FinancialDataDr
       <input 
         type={type} 
         value={(formData as any)[name]}
-        onChange={(e) => setFormData({...formData, [name]: e.target.value})}
+        onChange={(e) => {
+          const val = name === 'capital' || name === 'costPerSqm' || name === 'revenue' || name === 'expense' 
+            ? formatCurrency(e.target.value) 
+            : e.target.value;
+          setFormData({...formData, [name]: val});
+        }}
         placeholder={placeholder}
-        className="bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+        className="bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all font-mono"
       />
     </div>
   );
@@ -94,17 +114,17 @@ export default function FinancialDataDrawer({ isOpen, onClose }: FinancialDataDr
                   {step === 1 && (
                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
                       <h4 className="text-xs font-black text-blue-500 uppercase tracking-[0.2em] mb-6">Indicadores de Capital</h4>
-                      <InputField label="Capital Investido Total (R$)" name="capital" placeholder="Ex: 1500000" type="number" icon={Wallet} />
+                      <InputField label="Capital Investido Total" name="capital" placeholder="R$ 0,00" type="text" icon={Wallet} />
                       <InputField label="Yield on Cost Projetado (%)" name="yoc" placeholder="Ex: 14.5" type="number" icon={TrendingUp} />
-                      <InputField label="Custo por m² Médio (R$)" name="costPerSqm" placeholder="Ex: 4100" type="number" icon={Landmark} />
+                      <InputField label="Custo por m² Médio" name="costPerSqm" placeholder="R$ 0,00" type="text" icon={Landmark} />
                     </motion.div>
                   )}
                   {step === 2 && (
                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
                       <h4 className="text-xs font-black text-emerald-500 uppercase tracking-[0.2em] mb-6">Fluxo de Caixa (Mensal)</h4>
                       <InputField label="Data do Lançamento" name="date" type="date" icon={Calendar} />
-                      <InputField label="Entrada / Aporte (R$)" name="revenue" placeholder="R$ 0,00" type="number" icon={DollarSign} />
-                      <InputField label="Saída / Despesa (R$)" name="expense" placeholder="R$ 0,00" type="number" icon={TrendingUp} />
+                      <InputField label="Entrada / Aporte" name="revenue" placeholder="R$ 0,00" type="text" icon={DollarSign} />
+                      <InputField label="Saída / Despesa" name="expense" placeholder="R$ 0,00" type="text" icon={TrendingUp} />
                     </motion.div>
                   )}
                   {step === 3 && (
