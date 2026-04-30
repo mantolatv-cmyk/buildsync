@@ -138,16 +138,17 @@ export default function InvestorDashboard() {
           <div className="flex items-center">
             <button 
               onClick={() => setIsMobileMenuOpen(true)}
-              className="mr-4 text-slate-400 hover:text-white lg:hidden transition-colors"
+              className="mr-3 text-slate-400 hover:text-white lg:hidden transition-colors p-2 bg-slate-800/50 rounded-xl border border-white/5"
             >
-              <Menu className="w-6 h-6" />
+              <Menu className="w-5 h-5" />
             </button>
             <motion.h1 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="text-xl lg:text-2xl font-semibold text-white tracking-tight flex items-center"
+              className="text-lg lg:text-2xl font-bold text-white tracking-tight flex items-center"
             >
-              {activeMenu}
+              <span className="lg:inline hidden">{activeMenu}</span>
+              <span className="lg:hidden inline text-blue-400 font-black tracking-tighter mr-2">BS</span>
               
               {/* Global Time Filter (Only show on Visão Geral and Financeiro) */}
               {(activeMenu === "Visão Geral" || activeMenu === "Financeiro") && (
@@ -473,24 +474,33 @@ export default function InvestorDashboard() {
         setActiveTab={setAdminTab}
       />
 
-      {/* Bottom Navigation (Mobile Only) */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-slate-900/80 backdrop-blur-xl border-t border-white/5 flex items-center justify-around px-2 pb-safe z-40">
+      {/* Bottom Navigation (Mobile Only) - Overhauled for PWA */}
+      <nav className="lg:hidden fixed bottom-6 left-6 right-6 h-16 bg-slate-900/80 backdrop-blur-2xl border border-white/10 flex items-center justify-around px-4 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-40">
         {menuItems.slice(0, 4).map((item) => (
           <button
             key={item.name}
             onClick={() => setActiveMenu(item.name)}
-            className={`flex flex-col items-center justify-center space-y-1 w-16 transition-colors ${activeMenu === item.name ? "text-blue-400" : "text-slate-500"}`}
+            className="relative flex flex-col items-center justify-center space-y-1 w-12 transition-all active:scale-90"
           >
-            <item.icon className="w-5 h-5" />
-            <span className="text-[10px] font-bold uppercase tracking-tighter">{item.name.split(' ')[0]}</span>
+            {activeMenu === item.name && (
+              <motion.div 
+                layoutId="activeMobileTab"
+                className="absolute -inset-2 bg-blue-500/10 rounded-2xl"
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              />
+            )}
+            <item.icon className={`w-5 h-5 relative z-10 ${activeMenu === item.name ? "text-blue-400" : "text-slate-500"}`} />
+            <span className={`text-[9px] font-black uppercase tracking-tighter relative z-10 ${activeMenu === item.name ? "text-white" : "text-slate-500"}`}>
+              {item.name.split(' ')[0]}
+            </span>
           </button>
         ))}
         <button
           onClick={() => setIsMobileMenuOpen(true)}
-          className="flex flex-col items-center justify-center space-y-1 w-16 text-slate-500"
+          className="flex flex-col items-center justify-center space-y-1 w-12 text-slate-500 active:scale-90"
         >
           <Menu className="w-5 h-5" />
-          <span className="text-[10px] font-bold uppercase tracking-tighter">Mais</span>
+          <span className="text-[9px] font-black uppercase tracking-tighter">Mais</span>
         </button>
       </nav>
 

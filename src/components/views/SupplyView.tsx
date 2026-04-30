@@ -222,22 +222,36 @@ export default function SupplyView() {
             </div>
           </div>
           
-          <div className="h-80 w-full relative z-10">
+          <div className="h-64 lg:h-80 w-full relative z-10">
             <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-              <BarChart data={supplyData} margin={{ top: 20, right: 20, bottom: 0, left: -10 }}>
+              <BarChart data={supplyData} margin={{ top: 20, right: 10, bottom: 0, left: -20 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
-                <XAxis dataKey="item" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} tickFormatter={(val) => `R$${val}`} />
+                <XAxis 
+                  dataKey="item" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: '#64748b', fontSize: 10 }} 
+                  dy={10} 
+                  interval={0}
+                  tickFormatter={(val) => val.split(' ')[0]}
+                />
+                <YAxis 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: '#64748b', fontSize: 10 }} 
+                  tickFormatter={(val) => `R$${val}`} 
+                  width={40}
+                />
                 <RechartsTooltip 
                   cursor={{ fill: '#1e293b', opacity: 0.4 }}
                   contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)' }}
-                  itemStyle={{ color: '#f8fafc', fontSize: '14px', fontWeight: 500 }}
-                  labelStyle={{ color: '#94a3b8', marginBottom: '8px' }}
+                  itemStyle={{ color: '#f8fafc', fontSize: '12px', fontWeight: 500 }}
+                  labelStyle={{ color: '#94a3b8', marginBottom: '8px', fontSize: '12px' }}
                   formatter={(value: any, name: any) => [`R$ ${Number(value).toLocaleString('pt-BR')}`, name]}
                 />
-                <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '13px' }} iconType="circle" />
-                <Bar dataKey="orcado" name="Orçado" fill="#334155" radius={[4, 4, 0, 0]} barSize={30} />
-                <Bar dataKey="atual" name="Preço Atual" radius={[4, 4, 0, 0]} barSize={30}>
+                <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '11px' }} iconType="circle" />
+                <Bar dataKey="orcado" name="Orçado" fill="#334155" radius={[4, 4, 0, 0]} barSize={25} />
+                <Bar dataKey="atual" name="Preço Atual" radius={[4, 4, 0, 0]} barSize={25}>
                   {supplyData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.atual > entry.orcado ? '#ef4444' : '#10b981'} />
                   ))}
@@ -267,16 +281,17 @@ export default function SupplyView() {
             </button>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* Desktop Table View */}
+          <div className="hidden lg:block overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-white/5 pb-4">
                   <th className="py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Parceiro</th>
                   <th className="py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Macro Categoria</th>
                   <th className="py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Volume Negociado</th>
-                  <th className="py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Estabilidade de Preço</th>
+                  <th className="py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Estabilidade</th>
                   <th className="py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">vs. Mercado</th>
-                  <th className="py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">BuildSync Score</th>
+                  <th className="py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Score</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
@@ -325,6 +340,58 @@ export default function SupplyView() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="lg:hidden space-y-4">
+            {supplierRankingData.map((supplier) => (
+              <div key={supplier.id} className="bg-slate-800/30 rounded-2xl border border-white/5 p-4 active:bg-slate-800/50 transition-colors no-select">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-sm font-black text-blue-400 border border-white/5">
+                      {supplier.name.substring(0, 2)}
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-white flex items-center">
+                        {supplier.name}
+                        {supplier.score >= 4.8 && <ShieldCheck className="w-3.5 h-3.5 text-blue-400 ml-1.5" />}
+                      </h4>
+                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{supplier.category}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-1 bg-amber-500/10 px-2 py-1 rounded-lg">
+                    <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
+                    <span className="text-xs font-black text-amber-400">{supplier.score}</span>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 py-3 border-t border-white/5">
+                  <div>
+                    <p className="text-[9px] text-slate-500 font-bold uppercase mb-1">Volume</p>
+                    <p className="text-xs font-medium text-slate-200">{supplier.volume}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[9px] text-slate-500 font-bold uppercase mb-1">vs. Mercado</p>
+                    <p className={`text-xs font-black ${supplier.benchmark < 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {supplier.benchmark > 0 ? '+' : ''}{supplier.benchmark}%
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-white/5">
+                  <div className="flex justify-between items-center mb-1.5">
+                    <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Estabilidade de Preço</span>
+                    <span className="text-[10px] font-bold text-slate-300">{supplier.stability}%</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-blue-500 rounded-full" 
+                      style={{ width: `${supplier.stability}%` }} 
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </motion.div>
       </motion.div>
