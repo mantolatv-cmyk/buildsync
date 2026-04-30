@@ -5,10 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   X, Bot, User, Send, TrendingDown, 
   CheckCircle2, AlertCircle, Clock, Star,
-  MessageSquare, Zap, Scale, BrainCircuit
+  MessageSquare, Zap, Scale, BrainCircuit, FileDown
 } from "lucide-react";
 import { useDashboardStore } from "../store/useDashboardStore";
 import NegotiationComparisonTable from "./NegotiationComparisonTable";
+import { generatePurchaseOrder } from "../utils/pdfService";
 
 interface NegotiationAgentDrawerProps {
   isOpen: boolean;
@@ -22,34 +23,77 @@ export default function NegotiationAgentDrawer({ isOpen, onClose, negotiationId 
   const [activeSupplier, setActiveSupplier] = useState(0);
   const [activeTab, setActiveTab] = useState<'chat' | 'comparison'>('chat');
   const [newMessage, setNewMessage] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const [isDealClosed, setIsDealClosed] = useState(false);
 
   if (!negotiation) return null;
 
   const currentSupplier = negotiation.suppliers[activeSupplier];
 
-  const handleSendMessage = () => {
-    if (!newMessage.trim()) return;
-    
+  const handleSendMessage = async (customMessage?: string) => {
+    const textToSend = customMessage || newMessage;
+    if (!textToSend.trim() || isTyping) return;
+
+    const currentSupplier = negotiation.suppliers[activeSupplier];
+    const updatedMessages = [
+      ...currentSupplier.messages,
+      { sender: 'ai', text: textToSend, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+    ];
+
     const updatedSuppliers = [...negotiation.suppliers];
-    updatedSuppliers[activeSupplier].messages.push({
-      sender: 'ai',
-      text: newMessage,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    });
-
-    updateNegotiation(negotiation.id, { suppliers: updatedSuppliers });
+    updatedSuppliers[activeSupplier] = { ...currentSupplier, messages: updatedMessages };
+    updateNegotiation(negotiationId, { suppliers: updatedSuppliers });
     setNewMessage("");
+    setIsTyping(true);
 
-    // Simulate supplier response
-    setTimeout(() => {
-      const responseSuppliers = [...updatedSuppliers];
-      responseSuppliers[activeSupplier].messages.push({
-        sender: 'supplier',
-        text: "Entendido, vou verificar com minha gerência se conseguimos essa condição especial.",
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    try {
+      const response = await fetch('/api/negotiate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: updatedMessages.map(m => ({ role: m.sender === 'ai' ? 'user' : 'assistant', content: m.text })),
+          context: {
+            item: negotiation.item,
+            targetPrice: negotiation.targetPrice,
+            currentPrice: currentSupplier.price,
+            supplierName: currentSupplier.name
+          }
+        })
       });
-      updateNegotiation(negotiation.id, { suppliers: responseSuppliers });
-    }, 2000);
+
+      const data = await response.json();
+      
+      const supplierResponse = {
+        sender: 'supplier',
+        text: data.content || "Desculpe, tive um problema na conexão. Pode repetir?",
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+
+      const finalSuppliers = [...updatedSuppliers];
+      finalSuppliers[activeSupplier] = { 
+        ...finalSuppliers[activeSupplier], 
+        messages: [...updatedMessages, supplierResponse] 
+      };
+      updateNegotiation(negotiationId, { suppliers: finalSuppliers });
+    } catch (error) {
+      console.error("Negotiation Error:", error);
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
+  const handleDownloadPO = () => {
+    const s = negotiation.suppliers[activeSupplier];
+    generatePurchaseOrder({
+      poNumber: `PO-${Math.floor(1000 + Math.random() * 9000)}`,
+      date: new Date().toLocaleDateString('pt-BR'),
+      item: negotiation.item,
+      supplier: s.name,
+      price: s.price,
+      quantity: "Lote Integral",
+      paymentTerms: s.paymentTerms,
+      deliveryTime: s.deliveryTime
+    });
   };
 
   return (
@@ -169,26 +213,37 @@ export default function NegotiationAgentDrawer({ isOpen, onClose, negotiationId 
                       <p className="text-sm font-medium">Inicie a conversa para ver a negociação da IA com este fornecedor.</p>
                     </div>
                   ) : (
-                    currentSupplier.messages.map((msg: any, i: number) => (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        key={i}
-                        className={`flex ${msg.sender === 'ai' ? 'justify-end' : 'justify-start'}`}
-                      >
-                        <div className={`flex max-w-[85%] space-x-3 ${msg.sender === 'ai' ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${msg.sender === 'ai' ? 'bg-blue-600' : 'bg-slate-800 border border-white/10'}`}>
-                            {msg.sender === 'ai' ? <Bot className="w-4 h-4 text-white" /> : <User className="w-4 h-4 text-slate-400" />}
-                          </div>
-                          <div>
-                            <div className={`p-3 rounded-2xl text-sm ${msg.sender === 'ai' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-slate-800 text-slate-200 border border-white/5 rounded-tl-none'}`}>
-                              {msg.text}
+                    <>
+                      {currentSupplier.messages.map((msg: any, i: number) => (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          key={i}
+                          className={`flex ${msg.sender === 'ai' ? 'justify-end' : 'justify-start'}`}
+                        >
+                          <div className={`flex max-w-[85%] space-x-3 ${msg.sender === 'ai' ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${msg.sender === 'ai' ? 'bg-blue-600 shadow-lg shadow-blue-500/20' : 'bg-slate-800 border border-white/10'}`}>
+                              {msg.sender === 'ai' ? <Bot className="w-4 h-4 text-white" /> : <User className="w-4 h-4 text-slate-400" />}
                             </div>
-                            <p className={`text-[10px] text-slate-500 mt-1 ${msg.sender === 'ai' ? 'text-right' : ''}`}>{msg.time}</p>
+                            <div>
+                              <div className={`p-3 rounded-2xl text-sm ${msg.sender === 'ai' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-slate-800 text-slate-200 border border-white/5 rounded-tl-none'}`}>
+                                {msg.text}
+                              </div>
+                              <p className={`text-[10px] text-slate-500 mt-1 ${msg.sender === 'ai' ? 'text-right' : ''}`}>{msg.time}</p>
+                            </div>
                           </div>
-                        </div>
-                      </motion.div>
-                    ))
+                        </motion.div>
+                      ))}
+                      {isTyping && (
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
+                          <div className="bg-slate-800 border border-white/5 p-3 rounded-2xl rounded-tl-none flex space-x-1 items-center">
+                            <span className="w-1.5 h-1.5 bg-slate-500 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                            <span className="w-1.5 h-1.5 bg-slate-500 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                            <span className="w-1.5 h-1.5 bg-slate-500 rounded-full animate-bounce" />
+                          </div>
+                        </motion.div>
+                      )}
+                    </>
                   )}
                 </div>
 
@@ -212,23 +267,40 @@ export default function NegotiationAgentDrawer({ isOpen, onClose, negotiationId 
                   </div>
                     <div className="flex items-center justify-between mt-4">
                       <div className="flex space-x-2">
-                        <button className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-400 rounded-lg transition-colors border border-white/5">
+                        <button 
+                          onClick={() => handleSendMessage("Solicitar desconto adicional de 2% para fechamento hoje.")}
+                          className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-400 rounded-lg transition-colors border border-white/5"
+                        >
                           Pedir Desconto 5%
                         </button>
-                        <button className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-400 rounded-lg transition-colors border border-white/5">
-                          Pedir 30/60/90 Dias
+                        <button 
+                          onClick={() => handleSendMessage("Qual o melhor prazo de entrega se confirmarmos o pedido agora?")}
+                          className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-400 rounded-lg transition-colors border border-white/5"
+                        >
+                          Questionar Prazo
                         </button>
                       </div>
-                      <button 
-                        onClick={() => {
-                          finalizeNegotiation(negotiation.id, currentSupplier.name);
-                          onClose();
-                        }}
-                        className="flex items-center space-x-2 px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-black rounded-xl hover:from-emerald-500 hover:to-teal-500 transition-all shadow-lg shadow-emerald-500/20 uppercase tracking-tighter"
-                      >
-                        <CheckCircle2 className="w-4 h-4" />
-                        <span>Fechar com {currentSupplier.name}</span>
-                      </button>
+                      
+                      {!isDealClosed ? (
+                        <button 
+                          onClick={() => {
+                            finalizeNegotiation(negotiation.id, currentSupplier.name);
+                            setIsDealClosed(true);
+                          }}
+                          className="flex items-center space-x-2 px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-black rounded-xl hover:from-emerald-500 hover:to-teal-500 transition-all shadow-lg shadow-emerald-500/20 uppercase tracking-tighter"
+                        >
+                          <CheckCircle2 className="w-4 h-4" />
+                          <span>Fechar com {currentSupplier.name}</span>
+                        </button>
+                      ) : (
+                        <button 
+                          onClick={handleDownloadPO}
+                          className="flex items-center space-x-2 px-6 py-2.5 bg-blue-600 text-white text-xs font-black rounded-xl hover:bg-blue-500 transition-all shadow-lg shadow-blue-500/20 uppercase tracking-tighter animate-bounce"
+                        >
+                          <FileDown className="w-4 h-4" />
+                          <span>Baixar Ordem de Compra</span>
+                        </button>
+                      )}
                     </div>
                   </div>
                 </>
