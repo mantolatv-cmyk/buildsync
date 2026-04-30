@@ -7,7 +7,9 @@ import { TrendingDown, ArrowRightLeft, Wallet, AlertCircle } from "lucide-react"
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie, Legend } from "recharts";
 import { GlossaryTooltip } from "../GlossaryTooltip";
 import FinancialDataDrawer from "../FinancialDataDrawer";
-import { Plus } from "lucide-react";
+import { Plus, Bot, MessageSquare } from "lucide-react";
+import WhatsAppSyncCard from "../WhatsAppSyncCard";
+import WhatsAppAgentModal from "../WhatsAppAgentModal";
 
 const cashflowData = [
   { month: "Jan", entrada: 0, saida: 150, acumulado: -150 },
@@ -39,6 +41,7 @@ const costDistributionData = [
 
 export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isWAModalOpen, setIsWAModalOpen] = useState(false);
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: { opacity: 1, transition: { staggerChildren: 0.1 } }
@@ -66,6 +69,7 @@ export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
       </div>
 
       <FinancialDataDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
+      <WhatsAppAgentModal isOpen={isWAModalOpen} onClose={() => setIsWAModalOpen(false)} />
 
       <motion.div 
         variants={containerVariants}
@@ -109,42 +113,48 @@ export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
           </motion.div>
         </div>
 
-        <div className="grid grid-cols-1 gap-6">
-          {/* Gráfico de Fluxo de Caixa (Area) */}
-          <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6">
-            <h3 className="text-lg font-semibold text-white mb-6">Fluxo de Caixa Acumulado (R$ milhares)</h3>
-            <div className="h-64 lg:h-80 w-full">
-              <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-                <AreaChart data={cashflowData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="colorAcumulado" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.4}/>
-                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <XAxis 
-                    dataKey="month" 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{fill: '#64748b', fontSize: 10}} 
-                    dy={10}
-                    interval={"preserveStartEnd"}
-                  />
-                  <YAxis 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{fill: '#64748b', fontSize: 10}}
-                  />
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', fontSize: '12px' }}
-                    itemStyle={{ color: '#f8fafc' }}
-                  />
-                  <Area type="monotone" dataKey="acumulado" stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#colorAcumulado)" />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </motion.div>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div className="lg:col-span-3">
+            {/* Gráfico de Fluxo de Caixa (Area) */}
+            <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 h-full">
+              <h3 className="text-lg font-semibold text-white mb-6">Fluxo de Caixa Acumulado (R$ milhares)</h3>
+              <div className="h-64 lg:h-80 w-full">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                  <AreaChart data={cashflowData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorAcumulado" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.4}/>
+                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <XAxis 
+                      dataKey="month" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{fill: '#64748b', fontSize: 10}} 
+                      dy={10}
+                      interval={"preserveStartEnd"}
+                    />
+                    <YAxis 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{fill: '#64748b', fontSize: 10}}
+                    />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', fontSize: '12px' }}
+                      itemStyle={{ color: '#f8fafc' }}
+                    />
+                    <Area type="monotone" dataKey="acumulado" stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#colorAcumulado)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </motion.div>
+          </div>
+
+          <div className="lg:col-span-1">
+            <WhatsAppSyncCard onOpenModal={() => setIsWAModalOpen(true)} />
+          </div>
         </div>
 
         {/* Nova Seção: Rentabilidade e Custos */}

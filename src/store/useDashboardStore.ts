@@ -31,6 +31,20 @@ interface DashboardState {
     message: string;
     actionLabel: string;
   }>;
+  whatsappConfig: {
+    connected: boolean;
+    phoneNumber: string;
+    lastSync: string;
+    battery: number;
+  };
+  whatsappLogs: Array<{
+    id: string;
+    contact: string;
+    message: string;
+    time: string;
+    type: 'incoming' | 'outgoing' | 'ai_processed';
+    status: 'read' | 'delivered' | 'processing';
+  }>;
   
   // Actions
   updateKpi: (key: keyof DashboardState['kpis'], value: number | string) => void;
@@ -53,6 +67,8 @@ interface DashboardState {
   addNegotiation: (negotiation: any) => void;
   updateNegotiation: (id: string, updates: any) => void;
   finalizeNegotiation: (negotiationId: string, supplierName: string) => void;
+  toggleWhatsAppSync: () => void;
+  addWhatsAppLog: (log: any) => void;
 }
 
 export const useDashboardStore = create<DashboardState>()(
@@ -187,6 +203,17 @@ export const useDashboardStore = create<DashboardState>()(
           ],
           reasoning: "Gerdau é o fornecedor preferencial devido ao score técnico. Pressionando por 5% de desconto baseado no volume futuro do condomínio.",
         }
+      ],
+      whatsappConfig: {
+        connected: true,
+        phoneNumber: "+55 (11) 99876-5432",
+        lastSync: "Agora",
+        battery: 84
+      },
+      whatsappLogs: [
+        { id: 'w1', contact: 'Fornecedor Gerdau', message: 'Tabela de preços atualizada enviada.', time: '10:15', type: 'incoming', status: 'read' },
+        { id: 'w2', contact: 'Fornecedor Gerdau', message: 'CFO Digital analisando impacto no orçamento...', time: '10:16', type: 'ai_processed', status: 'processing' },
+        { id: 'w3', contact: 'Eng. Ricardo', message: 'Comprovante de medição Setor B anexado.', time: '09:30', type: 'incoming', status: 'read' },
       ],
       predictiveInsights: [
         {
@@ -389,6 +416,15 @@ export const useDashboardStore = create<DashboardState>()(
           }, ...state.notifications]
         };
       }),
+
+      toggleWhatsAppSync: () => set((state) => ({
+        whatsappConfig: { ...state.whatsappConfig, connected: !state.whatsappConfig.connected }
+      })),
+
+      addWhatsAppLog: (log) => set((state) => ({
+        whatsappLogs: [{ ...log, id: Date.now().toString() }, ...state.whatsappLogs]
+      })),
+    }),
     }),
     {
       name: 'buildsync-dashboard-storage',
