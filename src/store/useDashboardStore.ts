@@ -67,6 +67,7 @@ interface DashboardState {
   addNegotiation: (negotiation: any) => void;
   updateNegotiation: (id: string, updates: any) => void;
   finalizeNegotiation: (negotiationId: string, supplierName: string) => void;
+  addSupplier: (supplier: any) => void;
   toggleWhatsAppSync: () => void;
   addWhatsAppLog: (log: any) => void;
 }
@@ -153,11 +154,11 @@ export const useDashboardStore = create<DashboardState>()(
         }
       ],
       suppliers: [
-        { id: 1, name: "Gerdau S.A.", category: "Aço & Estrutura", volume: "R$ 1.2M", stability: 98, score: 4.9, benchmark: -4.2 },
-        { id: 2, name: "Votorantim Cimentos", category: "Concreto & Agregados", volume: "R$ 850k", stability: 95, score: 4.8, benchmark: -2.1 },
-        { id: 3, name: "Tigre Tubos", category: "Instalações Hidrosanitárias", volume: "R$ 420k", stability: 92, score: 4.7, benchmark: +0.5 },
-        { id: 4, name: "Amanco Wavin", category: "Instalações Hidrosanitárias", volume: "R$ 380k", stability: 89, score: 4.5, benchmark: -1.2 },
-        { id: 5, name: "Portobello", category: "Acabamentos & Pisos", volume: "R$ 610k", stability: 85, score: 4.6, benchmark: -5.8 },
+        { id: 1, name: "Gerdau S.A.", category: "Aço & Estrutura", volume: "R$ 1.2M", stability: 98, score: 4.9, benchmark: -4.2, email: "comercial@gerdau.com.br", phone: "(11) 3003-1234", location: "São Paulo, SP", status: "Homologado" },
+        { id: 2, name: "Votorantim Cimentos", category: "Concreto & Agregados", volume: "R$ 850k", stability: 95, score: 4.8, benchmark: -2.1, email: "pedidos@votorantim.com", phone: "0800 701 2345", location: "Curitiba, PR", status: "Homologado" },
+        { id: 3, name: "Tigre Tubos", category: "Instalações Hidrosanitárias", volume: "R$ 420k", stability: 92, score: 4.7, benchmark: +0.5, email: "vendas@tigre.com.br", phone: "(47) 3441-5000", location: "Joinville, SC", status: "Vencendo" },
+        { id: 4, name: "Amanco Wavin", category: "Instalações Hidrosanitárias", volume: "R$ 380k", stability: 89, score: 4.5, benchmark: -1.2, email: "contato@amancowavin.com.br", phone: "0800 701 8770", location: "Sumaré, SP", status: "Homologado" },
+        { id: 5, name: "Portobello", category: "Acabamentos & Pisos", volume: "R$ 610k", stability: 85, score: 4.6, benchmark: -5.8, email: "especificador@portobello.com.br", phone: "(48) 3279-2222", location: "Tijucas, SC", status: "Homologado" },
       ],
       marketIndices: [
         { name: "INCC-M", value: "4.85%", status: "up", desc: "Acumulado 12 meses" },
@@ -423,6 +424,25 @@ export const useDashboardStore = create<DashboardState>()(
 
       addWhatsAppLog: (log) => set((state) => ({
         whatsappLogs: [{ ...log, id: Date.now().toString() }, ...state.whatsappLogs]
+      })),
+
+      addSupplier: (supplier) => set((state) => ({
+        suppliers: [...state.suppliers, { ...supplier, id: Date.now() }],
+        activityLog: [
+          { id: Date.now(), action: `Novo parceiro homologado: ${supplier.name}`, time: "Agora", icon: "ShieldCheck" },
+          ...state.activityLog
+        ],
+        notifications: [
+          {
+            id: Date.now().toString(),
+            title: "Parceiro Homologado",
+            message: `${supplier.name} foi adicionado à rede BuildSync.`,
+            type: "success",
+            date: "Agora",
+            read: false
+          },
+          ...state.notifications
+        ]
       })),
     }),
     {
