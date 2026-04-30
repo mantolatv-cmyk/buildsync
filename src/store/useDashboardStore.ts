@@ -21,6 +21,16 @@ interface DashboardState {
   notifications: Array<{ id: string; title: string; message: string; type: 'warning' | 'info' | 'success'; date: string; read: boolean }>;
   activityLog: Array<{ id: number; action: string; time: string; icon: string }>;
   evidences: Array<{ id: number; title: string; loc: string; status: string; date: string; type: string }>;
+  negotiations: Array<any>;
+  predictiveInsights: Array<{
+    id: string;
+    item: string;
+    trend: 'up' | 'down' | 'stable';
+    probability: number;
+    impact: number;
+    message: string;
+    actionLabel: string;
+  }>;
   
   // Actions
   updateKpi: (key: keyof DashboardState['kpis'], value: number | string) => void;
@@ -40,6 +50,9 @@ interface DashboardState {
   addEvidence: (evidence: any) => void;
   updateEvidence: (id: number, updates: any) => void;
   removeEvidence: (id: number) => void;
+  addNegotiation: (negotiation: any) => void;
+  updateNegotiation: (id: string, updates: any) => void;
+  finalizeNegotiation: (negotiationId: string, supplierName: string) => void;
 }
 
 export const useDashboardStore = create<DashboardState>()(
@@ -148,6 +161,61 @@ export const useDashboardStore = create<DashboardState>()(
         { id: 2, title: "Impermeabilização", loc: "Banheiro 12", status: "Geolocalizado", date: "Hoje, 09:15", type: "Hidden" },
         { id: 3, title: "Tubulação Esgoto", loc: "Prumada 02", status: "Geolocalizado", date: "Ontem, 16:30", type: "Hidden" },
         { id: 4, title: "Revestimento Piso", loc: "Hall", status: "Geolocalizado", date: "Ontem, 14:20", type: "Standard" },
+      ],
+      negotiations: [
+        {
+          id: "neg-1",
+          item: "Aço CA-50 (Ton)",
+          status: "active",
+          targetPrice: 4800,
+          currentBest: "Gerdau S.A.",
+          suppliers: [
+            { 
+              name: "Gerdau S.A.", 
+              price: 4950, 
+              deliveryTime: "4 dias", 
+              paymentTerms: "30/60 dias",
+              score: 4.9,
+              messages: [
+                { sender: 'supplier', text: "Nosso melhor preço para 50 toneladas é R$ 5.200.", time: "10:00" },
+                { sender: 'ai', text: "Entendido. No entanto, o volume total do Residencial Alpha prevê mais 200 toneladas nos próximos meses. Conseguimos fechar em R$ 4.950 para pagamento à vista?", time: "10:05" },
+                { sender: 'supplier', text: "Nesse caso, conseguimos os R$ 4.950.", time: "10:10" }
+              ]
+            },
+            { name: "ArcelorMittal", price: 5100, deliveryTime: "7 dias", paymentTerms: "A vista", score: 4.7, messages: [] },
+            { name: "Açotubo", price: 5050, deliveryTime: "3 dias", paymentTerms: "28 dias", score: 4.5, messages: [] }
+          ],
+          reasoning: "Gerdau é o fornecedor preferencial devido ao score técnico. Pressionando por 5% de desconto baseado no volume futuro do condomínio.",
+        }
+      ],
+      predictiveInsights: [
+        {
+          id: "ins-1",
+          item: "Aço CA-50",
+          trend: "up",
+          probability: 85,
+          impact: 15400,
+          message: "Alta de 4.85% no INCC-M sinaliza reajuste iminente nas usinas.",
+          actionLabel: "Travar Preço Agora"
+        },
+        {
+          id: "ins-2",
+          item: "Cimento CP-II",
+          trend: "down",
+          probability: 60,
+          impact: 4200,
+          message: "Aumento de oferta regional pode reduzir preços em 15 dias.",
+          actionLabel: "Aguardar Compra"
+        },
+        {
+          id: "ins-3",
+          item: "Cobre (Fios)",
+          trend: "up",
+          probability: 92,
+          impact: 8900,
+          message: "Volatilidade na LME (London Metal Exchange) impactando importados.",
+          actionLabel: "Antecipar Lote"
+        }
       ],
 
       updateKpi: (key, value) => set((state) => ({
@@ -272,6 +340,55 @@ export const useDashboardStore = create<DashboardState>()(
           ...state.activityLog
         ]
       })),
+
+      addNegotiation: (negotiation) => set((state) => ({
+        negotiations: [negotiation, ...state.negotiations],
+        activityLog: [
+          { id: Date.now(), action: `Iniciou nova negociação IA para ${negotiation.item}`, time: "Agora", icon: "Bot" },
+          ...state.activityLog
+        ]
+      })),
+
+      updateNegotiation: (id, updates) => set((state) => ({
+        negotiations: state.negotiations.map(n => n.id === id ? { ...n, ...updates } : n)
+      })),
+
+      finalizeNegotiation: (negotiationId, supplierName) => set((state) => {
+        const negotiation = state.negotiations.find(n => n.id === negotiationId);
+        if (!negotiation) return state;
+
+        const supplier = negotiation.suppliers.find((s: any) => s.name === supplierName);
+        if (!supplier) return state;
+
+        // Update supplyData price
+        const updatedSupplyData = state.supplyData.map(s => 
+          s.item === negotiation.item || negotiation.item.includes(s.item.split(' ')[0])
+            ? { ...s, atual: supplier.price }
+            : s
+        );
+
+        // Add to log
+        const newLogEntry = {
+          id: Date.now(),
+          action: `Acordo fechado para ${negotiation.item} com ${supplierName} (R$ ${supplier.price})`,
+          time: "Agora",
+          icon: "CheckCircle"
+        };
+
+        return {
+          supplyData: updatedSupplyData,
+          negotiations: state.negotiations.filter(n => n.id !== negotiationId),
+          activityLog: [newLogEntry, ...state.activityLog],
+          notifications: [{
+            id: Date.now().toString(),
+            title: "CFO Digital: Acordo Fechado",
+            message: `Economia de R$ ${(negotiation.targetPrice - supplier.price) * 50} projetada para ${negotiation.item}.`,
+            type: "success",
+            date: "Agora",
+            read: false
+          }, ...state.notifications]
+        };
+      }),
     }),
     {
       name: 'buildsync-dashboard-storage',

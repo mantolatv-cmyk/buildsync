@@ -2,12 +2,17 @@
 
 import React from "react";
 import { motion, Variants } from "framer-motion";
-import { Package, ArrowRight, Star, Award, TrendingUp, ShieldCheck } from "lucide-react";
+import { 
+  ArrowRight, Star, Award, TrendingUp, TrendingDown, ShieldCheck,
+  Bot, MessageSquare, Zap, Target, BrainCircuit 
+} from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, Cell, ResponsiveContainer } from "recharts";
 import { GlossaryTooltip } from "../GlossaryTooltip";
 import { useDashboardStore } from "../../store/useDashboardStore";
 import SupplyEntryModal from "../SupplyEntryModal";
 import PartnerManagementDrawer from "../PartnerManagementDrawer";
+import NegotiationAgentDrawer from "../NegotiationAgentDrawer";
+import PredictiveRiskRadar from "../PredictiveRiskRadar";
 import { exportToCSV } from "../../utils/exportUtils";
 
 const supplyPriceData = [
@@ -35,7 +40,31 @@ const supplierRankingData = [
 export default function SupplyView() {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [isPartnerDrawerOpen, setIsPartnerDrawerOpen] = React.useState(false);
-  const { supplyData } = useDashboardStore();
+  const [activeNegotiationId, setActiveNegotiationId] = React.useState<string | null>(null);
+  const { supplyData, negotiations, addNegotiation } = useDashboardStore();
+
+  const handleNewNegotiation = () => {
+    // Find an item not currently in negotiation
+    const itemsInNegotiation = negotiations.map(n => n.item);
+    const availableItem = supplyData.find(s => !itemsInNegotiation.includes(s.item));
+    
+    if (availableItem) {
+      const newNeg = {
+        id: `neg-${Date.now()}`,
+        item: availableItem.item,
+        status: "active",
+        targetPrice: availableItem.orcado,
+        currentBest: null,
+        suppliers: [
+          { name: "Distribuidora Regional", price: availableItem.atual + 50, deliveryTime: "2 dias", paymentTerms: "A vista", score: 4.4, messages: [] },
+          { name: "Atacadista Central", price: availableItem.atual - 10, deliveryTime: "5 dias", paymentTerms: "28 dias", score: 4.6, messages: [] }
+        ],
+        reasoning: `Iniciando cotação para ${availableItem.item} para otimizar custo atual de R$ ${availableItem.atual}.`
+      };
+      addNegotiation(newNeg);
+      setActiveNegotiationId(newNeg.id);
+    }
+  };
   
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -73,6 +102,20 @@ export default function SupplyView() {
       <SupplyEntryModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       <PartnerManagementDrawer isOpen={isPartnerDrawerOpen} onClose={() => setIsPartnerDrawerOpen(false)} />
 
+      {/* CFO Digital: Predictive Intelligence Module */}
+      <section className="mb-12">
+        <div className="flex items-center space-x-3 mb-6">
+          <div className="p-2 bg-indigo-500/10 rounded-xl border border-indigo-500/20">
+            <BrainCircuit className="w-5 h-5 text-indigo-400" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-white tracking-tight">Inteligência Preditiva CFO</h3>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Antecipação de Mercado & Gestão de Risco</p>
+          </div>
+        </div>
+        <PredictiveRiskRadar />
+      </section>
+
       {/* Market Intelligence Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {marketIndices.map((idx, i) => (
@@ -100,10 +143,73 @@ export default function SupplyView() {
         variants={containerVariants}
         initial="hidden"
         animate="show"
-        className="grid grid-cols-1 gap-8"
+        className="grid grid-cols-1 lg:grid-cols-3 gap-8"
       >
+        {/* AI Negotiation Center */}
+        <motion.div variants={itemVariants} className="lg:col-span-1 space-y-6">
+          <div className="bg-gradient-to-br from-blue-600/20 to-indigo-600/20 border border-blue-500/20 rounded-3xl p-6 relative overflow-hidden group">
+            <div className="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <Bot className="w-24 h-24" />
+            </div>
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="p-2 bg-blue-500/20 rounded-xl">
+                <Bot className="w-5 h-5 text-blue-400" />
+              </div>
+              <h3 className="text-lg font-bold text-white tracking-tight">AI Negotiation Center</h3>
+            </div>
+            <p className="text-xs text-slate-400 mb-6 leading-relaxed">
+              O assistente está analisando <span className="text-white font-bold">{negotiations.length}</span> cotações ativas. Economia projetada de <span className="text-emerald-400 font-bold">R$ 12.500</span> este mês.
+            </p>
+            
+            <div className="space-y-3">
+              {negotiations.map(neg => (
+                <button 
+                  key={neg.id}
+                  onClick={() => setActiveNegotiationId(neg.id)}
+                  className="w-full bg-slate-900/50 hover:bg-slate-900 border border-white/5 p-4 rounded-2xl text-left transition-all group/item"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-sm font-bold text-white group-hover/item:text-blue-400 transition-colors">{neg.item}</span>
+                    <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2 text-[10px] text-slate-500">
+                      <Target className="w-3 h-3" />
+                      <span>Alvo: R$ {neg.targetPrice}</span>
+                    </div>
+                    <div className="text-[10px] font-bold text-emerald-400">
+                      Melhor: R$ {neg.currentBest ? neg.suppliers.find((s: any) => s.name === neg.currentBest)?.price : '---'}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <button 
+              onClick={handleNewNegotiation}
+              className="w-full mt-6 py-3 bg-white text-slate-950 text-xs font-bold rounded-xl hover:bg-slate-200 transition-all shadow-lg"
+            >
+              Nova Cotação Inteligente
+            </button>
+          </div>
+
+          <div className="bg-slate-900/40 border border-white/5 p-6 rounded-3xl">
+            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Insights de Negociação</h4>
+            <div className="space-y-4">
+              <div className="flex items-start space-x-3">
+                <div className="p-1.5 bg-amber-500/10 rounded-lg"><Zap className="w-4 h-4 text-amber-400" /></div>
+                <p className="text-[11px] text-slate-400">Gerdau costuma aceitar redução de 3% se o volume for &gt; 100t.</p>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="p-1.5 bg-blue-500/10 rounded-lg"><TrendingDown className="w-4 h-4 text-blue-400" /></div>
+                <p className="text-[11px] text-slate-400">Preço do Cimento tende a baixar 2% na próxima quinzena.</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Gráfico de Variação de Preços (Inflação Interna) */}
-        <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 relative">
+        <motion.div variants={itemVariants} className="lg:col-span-2 bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 relative">
           <div className="absolute -right-10 -top-10 w-32 h-32 bg-amber-500/10 blur-[50px] rounded-full pointer-events-none" />
           <div className="mb-6 relative z-10 flex justify-between items-start">
             <div>
@@ -142,7 +248,7 @@ export default function SupplyView() {
         </motion.div>
 
         {/* Tabela de Ranking de Fornecedores */}
-        <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 overflow-hidden">
+        <motion.div variants={itemVariants} className="lg:col-span-3 bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 overflow-hidden">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
@@ -222,6 +328,12 @@ export default function SupplyView() {
           </div>
         </motion.div>
       </motion.div>
+
+      <NegotiationAgentDrawer 
+        isOpen={!!activeNegotiationId} 
+        onClose={() => setActiveNegotiationId(null)} 
+        negotiationId={activeNegotiationId}
+      />
     </div>
   );
 }
