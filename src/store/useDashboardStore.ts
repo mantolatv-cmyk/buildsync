@@ -50,6 +50,25 @@ interface DashboardState {
     type: 'incoming' | 'outgoing' | 'ai_processed' | 'ai_processed_response';
     status: 'read' | 'delivered' | 'processing';
   }>;
+  weather: {
+    status: 'rain' | 'sun' | 'cloudy';
+    temp: string;
+    condition: string;
+    impact: string;
+  };
+  deliveries: Array<{
+    id: number;
+    supplier: string;
+    items: string;
+    time: string;
+    status: 'arriving' | 'delayed' | 'delivered';
+  }>;
+  dailyTasks: Array<{
+    id: number;
+    task: string;
+    completed: boolean;
+    priority: 'high' | 'medium' | 'low';
+  }>;
   
   // Actions
   updateKpi: (key: keyof DashboardState['kpis'], value: number | string) => void;
@@ -77,12 +96,29 @@ interface DashboardState {
   toggleWhatsAppSync: () => void;
   addWhatsAppLog: (log: any) => void;
   toggleSimplifiedMode: () => void;
+  toggleTaskStatus: (id: number) => void;
 }
 
 export const useDashboardStore = create<DashboardState>()(
   persist(
     (set) => ({
       isSimplifiedMode: true,
+      weather: {
+        status: 'rain',
+        temp: '24°C',
+        condition: 'Chuva prevista (14h)',
+        impact: 'Risco alto para concretagem da laje. Sugerido suspender trabalhos externos à tarde.'
+      },
+      deliveries: [
+        { id: 1, supplier: 'Gerdau', items: '2T Aço CA50', time: '09:00', status: 'delivered' },
+        { id: 2, supplier: 'Votorantim', items: '300 sacos de Cimento', time: '14:30', status: 'arriving' }
+      ],
+      dailyTasks: [
+        { id: 1, task: 'Liberar armação da laje 2', completed: false, priority: 'high' },
+        { id: 2, task: 'Assinar medição da Elétrica', completed: false, priority: 'medium' },
+        { id: 3, task: 'Receber fiscal da prefeitura', completed: true, priority: 'high' },
+        { id: 4, task: 'Comprar EPIs faltantes (luvas)', completed: false, priority: 'low' }
+      ],
       kpis: {
         capital: 850000,
         yoc: 14.2,
@@ -530,6 +566,11 @@ export const useDashboardStore = create<DashboardState>()(
       })),
       toggleSimplifiedMode: () => set((state) => ({
         isSimplifiedMode: !state.isSimplifiedMode
+      })),
+      toggleTaskStatus: (id) => set((state) => ({
+        dailyTasks: state.dailyTasks.map(task => 
+          task.id === id ? { ...task, completed: !task.completed } : task
+        )
       }))
     }),
     {

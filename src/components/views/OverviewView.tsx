@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { 
-  Clock, ArrowUpRight, ArrowDownRight, ShieldCheck, ChevronDown
+  Clock, ArrowUpRight, ArrowDownRight, ShieldCheck, ChevronDown, CloudRain, Truck, CheckCircle2, Circle
 } from "lucide-react";
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
@@ -543,8 +543,71 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
       </div>
       </>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <motion.div variants={itemVariants} className="lg:col-span-2 bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6">
+        <div className="flex flex-col space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <motion.div variants={itemVariants} className="lg:col-span-2 bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6">
+              <h2 className="text-lg font-semibold text-white mb-6">Painel de Campo (Hoje)</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-white/5 border border-white/5 rounded-2xl">
+                  <div className="flex items-center mb-3">
+                    <CloudRain className="w-5 h-5 text-blue-400 mr-2" />
+                    <span className="text-sm font-bold text-white">Clima & Condições</span>
+                  </div>
+                  <div className="flex items-center space-x-4 mb-2">
+                    <span className="text-2xl font-black text-white">{store.weather.temp}</span>
+                    <span className="text-xs text-blue-400 font-bold px-2 py-1 bg-blue-500/10 rounded-lg">{store.weather.condition}</span>
+                  </div>
+                  <p className="text-xs text-slate-400">{store.weather.impact}</p>
+                </div>
+                
+                <div className="p-4 bg-white/5 border border-white/5 rounded-2xl">
+                  <div className="flex items-center mb-3">
+                    <Truck className="w-5 h-5 text-emerald-400 mr-2" />
+                    <span className="text-sm font-bold text-white">Entregas Programadas</span>
+                  </div>
+                  <div className="space-y-3">
+                    {store.deliveries.map(d => (
+                      <div key={d.id} className="flex justify-between items-center border-b border-white/5 pb-2 last:border-0 last:pb-0">
+                        <div>
+                          <p className="text-xs font-bold text-white">{d.items}</p>
+                          <p className="text-[10px] text-slate-500">{d.supplier}</p>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-xs font-black text-emerald-400">{d.time}</span>
+                          <p className="text-[10px] text-slate-500">{d.status === 'delivered' ? 'Entregue' : 'A caminho'}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6">
+              <h2 className="text-lg font-semibold text-white mb-6">Checklist do Dia</h2>
+              <div className="space-y-3">
+                {store.dailyTasks.map(task => (
+                  <button 
+                    key={task.id}
+                    onClick={() => store.toggleTaskStatus(task.id)}
+                    className="w-full flex items-center p-3 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-colors text-left"
+                  >
+                    {task.completed ? (
+                      <CheckCircle2 className="w-5 h-5 text-emerald-500 mr-3 shrink-0" />
+                    ) : (
+                      <Circle className="w-5 h-5 text-slate-500 mr-3 shrink-0" />
+                    )}
+                    <span className={`text-sm font-medium ${task.completed ? 'text-slate-500 line-through' : 'text-white'}`}>
+                      {task.task}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <motion.div variants={itemVariants} className="lg:col-span-2 bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6">
             <h2 className="text-lg font-semibold text-white mb-6">Controle de Orçamento</h2>
             <div className="space-y-8">
               <div>
@@ -586,6 +649,7 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
               })}
             </div>
           </motion.div>
+        </div>
         </div>
       )}
     </motion.div>
