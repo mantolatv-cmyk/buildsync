@@ -123,58 +123,55 @@ export default function WhatsAppAgentModal({ isOpen, onClose }: WhatsAppAgentMod
             />
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-4 relative z-10 custom-scrollbar">
-              <div className="flex justify-center">
-                <span className="bg-[#182229] text-[#8696a0] text-[10px] px-3 py-1 rounded-md uppercase tracking-wider font-bold">HOJE</span>
-              </div>
-
-              {/* Message from Contact */}
-              <div className="flex justify-start">
-                <div className="bg-[#202c33] rounded-lg rounded-tl-none p-3 max-w-[70%] shadow-sm relative">
-                  <p className="text-sm text-[#e9edef] leading-relaxed">
-                    Bom dia CFO. Segue a nova tabela de preços do Aço para o mês de Maio. Conseguimos manter as condições de 60 dias para o volume do Residencial Alpha.
-                  </p>
-                  <div className="flex justify-end items-center mt-1 space-x-1">
-                    <span className="text-[9px] text-[#8696a0]">10:15</span>
-                  </div>
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 relative z-10 custom-scrollbar flex flex-col-reverse">
+              <div className="space-y-4">
+                <div className="flex justify-center mb-4">
+                  <span className="bg-[#182229] text-[#8696a0] text-[10px] px-3 py-1 rounded-md uppercase tracking-wider font-bold">HOJE</span>
                 </div>
-              </div>
 
-              {/* AI Processing Notification */}
-              <div className="flex justify-center">
-                <div className="bg-blue-900/20 border border-blue-500/30 rounded-full px-4 py-1.5 flex items-center space-x-2">
-                  <Bot className="w-3 h-3 text-blue-400 animate-pulse" />
-                  <span className="text-[10px] text-blue-300 font-bold uppercase tracking-tight">CFO Digital Processando Insumo...</span>
-                </div>
-              </div>
+                {whatsappLogs
+                  .filter(log => log.contact === contacts[activeChat].name)
+                  .map((log) => (
+                    <div key={log.id}>
+                      {log.type === 'incoming' && (
+                        <div className="flex justify-start">
+                          <div className="bg-[#202c33] rounded-lg rounded-tl-none p-3 max-w-[70%] shadow-sm relative">
+                            <p className="text-sm text-[#e9edef] leading-relaxed">{log.message}</p>
+                            <div className="flex justify-end items-center mt-1">
+                              <span className="text-[9px] text-[#8696a0]">{log.time}</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
 
-              {/* AI Outgoing Message */}
-              <div className="flex justify-end">
-                <div className="bg-[#005c4b] rounded-lg rounded-tr-none p-3 max-w-[70%] shadow-sm relative border-l-4 border-emerald-400">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <Bot className="w-3 h-3 text-emerald-300" />
-                    <span className="text-[9px] font-bold text-emerald-300 uppercase tracking-tighter">Resposta Autônoma</span>
-                  </div>
-                  <p className="text-sm text-[#e9edef] leading-relaxed">
-                    Recebido e processado. Notei uma redução de 1.2% no valor unitário em comparação com Abril. Já atualizei o orçamento projetado e enviei um alerta de economia para a diretoria.
-                  </p>
-                  <div className="flex justify-end items-center mt-1 space-x-1">
-                    <span className="text-[9px] text-[#cfdfdb]">10:17</span>
-                    <CheckCheck className="w-3 h-3 text-[#53bdeb]" />
-                  </div>
-                </div>
-              </div>
+                      {log.type === 'ai_processed' && (
+                        <div className="flex justify-center my-2">
+                          <div className="bg-blue-900/20 border border-blue-500/30 rounded-full px-4 py-1.5 flex items-center space-x-2">
+                            <Bot className="w-3 h-3 text-blue-400 animate-pulse" />
+                            <span className="text-[10px] text-blue-300 font-bold uppercase tracking-tight">{log.message}</span>
+                          </div>
+                        </div>
+                      )}
 
-              {/* Another Incoming */}
-              <div className="flex justify-start">
-                <div className="bg-[#202c33] rounded-lg rounded-tl-none p-3 max-w-[70%] shadow-sm relative">
-                  <p className="text-sm text-[#e9edef] leading-relaxed">
-                    Excelente. Vamos preparar o faturamento do primeiro lote de 20 toneladas.
-                  </p>
-                  <div className="flex justify-end items-center mt-1 space-x-1">
-                    <span className="text-[9px] text-[#8696a0]">10:18</span>
-                  </div>
-                </div>
+                      {(log.type === 'outgoing' || log.type === 'ai_processed_response') && (
+                        <div className="flex justify-end">
+                          <div className={`bg-[#005c4b] rounded-lg rounded-tr-none p-3 max-w-[70%] shadow-sm relative ${log.type === 'ai_processed_response' ? 'border-l-4 border-emerald-400' : ''}`}>
+                            {log.type === 'ai_processed_response' && (
+                              <div className="flex items-center space-x-2 mb-1">
+                                <Bot className="w-3 h-3 text-emerald-300" />
+                                <span className="text-[9px] font-bold text-emerald-300 uppercase tracking-tighter">Resposta Autônoma BuildSync</span>
+                              </div>
+                            )}
+                            <p className="text-sm text-[#e9edef] leading-relaxed">{log.message}</p>
+                            <div className="flex justify-end items-center mt-1 space-x-1">
+                              <span className="text-[9px] text-[#cfdfdb]">{log.time}</span>
+                              <CheckCheck className="w-3 h-3 text-[#53bdeb]" />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
               </div>
             </div>
 

@@ -432,7 +432,9 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
           <button 
             onClick={() => {
               setIsAnalyzing(true);
+              // Trigger a store update to simulate field data improving efficiency
               setTimeout(() => {
+                store.addMeasurement(1, { newProgress: store.projects[0].progress + 2, type: 'CPM_Adjustment' });
                 setIsAnalyzing(false);
                 setIsCriticalPathOpen(true);
               }, 1500);

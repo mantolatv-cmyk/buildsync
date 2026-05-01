@@ -1,11 +1,11 @@
 "use client";
 
 import React from "react";
-import { TrendingUp, ShieldCheck, MapPin, Calendar, Award, Landmark } from "lucide-react";
+import { TrendingUp, ShieldCheck, MapPin, Calendar, Award, Landmark, Bot } from "lucide-react";
 import { useDashboardStore } from "../store/useDashboardStore";
 
 export default function ExecutiveReport() {
-  const { kpis, spiData, complianceDocs } = useDashboardStore();
+  const { kpis, spiData, complianceDocs, predictiveInsights, evidences, negotiations } = useDashboardStore();
   const date = new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
 
   return (
@@ -85,12 +85,48 @@ export default function ExecutiveReport() {
             </div>
           </div>
 
-          <div className="bg-slate-900 text-white p-6 rounded-3xl flex flex-col justify-center">
+          <div className="bg-slate-900 text-white p-6 rounded-3xl flex flex-col justify-center relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <Bot className="w-16 h-16" />
+            </div>
             <Landmark className="w-8 h-8 mb-4 text-blue-400" />
-            <h3 className="text-xl font-black mb-2">Parecer do Gestor</h3>
-            <p className="text-xs text-slate-400 leading-relaxed italic">
-              "Portfólio apresenta resiliência frente à inflação de insumos. O avanço físico de 1.05 SPI na média consolidada garante a liberação das próximas parcelas de financiamento conforme planejado."
-            </p>
+            <h3 className="text-xl font-black mb-2 flex items-center">
+              CFO Digital Intelligence
+              <span className="ml-2 px-2 py-0.5 bg-blue-500 text-[8px] rounded-full uppercase tracking-tighter">AI Analysis</span>
+            </h3>
+            <div className="space-y-3">
+              {predictiveInsights.slice(0, 2).map((insight) => (
+                <div key={insight.id} className="border-l-2 border-blue-500/50 pl-3">
+                  <p className="text-[10px] font-bold text-blue-400 uppercase tracking-tighter mb-1">{insight.item} • Impacto R$ {insight.impact.toLocaleString('pt-BR')}</p>
+                  <p className="text-xs text-slate-400 leading-tight">{insight.message}</p>
+                </div>
+              ))}
+              <p className="text-[10px] text-slate-500 italic mt-4 border-t border-white/10 pt-4">
+                "Análise consolidada baseada em {evidences.length} evidências geolocalizadas e {negotiations.length} negociações ativas. SPI de {spiData[0].spi.toFixed(2)} indica resiliência operacional."
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Verification Seals */}
+        <div className="flex space-x-4">
+          <div className="flex-1 border-2 border-slate-100 rounded-2xl p-4 flex items-center space-x-4">
+            <div className="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center">
+              <ShieldCheck className="w-6 h-6 text-emerald-600" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-slate-400 uppercase">Dossiê de Evidências</p>
+              <p className="text-sm font-bold">{evidences.length} Itens Verificados</p>
+            </div>
+          </div>
+          <div className="flex-1 border-2 border-slate-100 rounded-2xl p-4 flex items-center space-x-4">
+            <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
+              <Award className="w-6 h-6 text-blue-600" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-slate-400 uppercase">Status do Portfólio</p>
+              <p className="text-sm font-bold text-blue-600">GRAU DE INVESTIMENTO</p>
+            </div>
           </div>
         </div>
       </div>

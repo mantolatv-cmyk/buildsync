@@ -60,6 +60,7 @@ interface DashboardState {
   markNotificationRead: (id: string) => void;
   addSupplyItem: (item: any) => void;
   addMeasurement: (projectId: number, measurement: any) => void;
+  triggerAIAction: (type: 'negotiation' | 'risk_mitigation', data: any) => void;
   setEvidences: (evidences: any[]) => void;
   addEvidence: (evidence: any) => void;
   updateEvidence: (id: number, updates: any) => void;
@@ -327,17 +328,89 @@ export const useDashboardStore = create<DashboardState>()(
         ]
       })),
 
-      addMeasurement: (projectId, measurement) => set((state) => ({
-        projects: state.projects.map(p => p.id === projectId ? {
-          ...p,
-          progress: measurement.newProgress,
-          measurements: [...(p.measurements || []), { ...measurement, id: Date.now(), date: new Date().toLocaleDateString() }]
-        } : p),
-        activityLog: [
-          { id: Date.now(), action: `Nova medição registrada na obra ID ${projectId}`, time: "Agora", icon: "Activity" },
-          ...state.activityLog
-        ]
-      })),
+      addMeasurement: (projectId: number, measurement: any) => set((state) => {
+        const project = state.projects.find(p => p.id === projectId);
+        if (!project) return state;
+
+        // Simplified SPI calculation: 
+        // If new progress > planned progress (using target 100% at deadline), SPI increases
+        const deltaProgress = measurement.newProgress - project.progress;
+        const spiDelta = deltaProgress > 0 ? 0.02 : -0.02;
+        
+        const updatedSpiData = state.spiData.map(s => {
+          // Find the relevant stage for this measurement (defaulting to first critical or matching name)
+          if (s.status === "Crítico" || s.etapa === "Fundação") {
+            const newSpi = Math.max(0.5, Math.min(1.5, s.spi + spiDelta));
+            return { ...s, spi: newSpi, status: newSpi >= 1 ? "Adiantado" : "Crítico" };
+          }
+          return s;
+        });
+
+        return {
+          projects: state.projects.map(p => p.id === projectId ? {
+            ...p,
+            progress: measurement.newProgress,
+            measurements: [...(p.measurements || []), { ...measurement, id: Date.now(), date: new Date().toLocaleDateString() }]
+          } : p),
+          spiData: updatedSpiData,
+          activityLog: [
+            { id: Date.now(), action: `Nova medição (${measurement.newProgress}%) - SPI atualizado`, time: "Agora", icon: "Activity" },
+            ...state.activityLog
+          ]
+        };
+      }),
+
+      triggerAIAction: (type, data) => set((state) => {
+        const newLogEntry = {
+          id: Date.now(),
+          action: type === 'negotiation' ? `CFO Digital: Iniciou negociação autônoma para ${data.item}` : `CFO Digital: Mitigação de risco para ${data.item}`,
+          time: "Agora",
+          icon: "Bot"
+        };
+
+        if (type === 'negotiation') {
+          // Add to WhatsApp logs
+          const newWhatsAppLog = {
+            id: `w-ai-${Date.now()}`,
+            contact: 'Fornecedor Gerdau',
+            message: `Detectada tendência de alta em ${data.item}. Iniciando negociação para travar preço...`,
+            time: 'Agora',
+            type: 'ai_processed',
+            status: 'processing'
+          };
+
+          const newNeg = {
+            id: `neg-${Date.now()}`,
+            item: data.item,
+            status: "active",
+            targetPrice: data.targetPrice || 4800,
+            currentBest: "Gerdau S.A.",
+            suppliers: [
+              { 
+                name: "Gerdau S.A.", 
+                price: data.targetPrice + 100, 
+                deliveryTime: "3 dias", 
+                paymentTerms: "30 dias",
+                score: 4.9,
+                messages: [
+                  { sender: 'ai', text: `Detectei tendência de alta em ${data.item}. Podemos travar o preço em R$ ${data.targetPrice}?`, time: "Agora" }
+                ]
+              }
+            ],
+            reasoning: `Iniciado proativamente devido ao alerta de mercado.`,
+          };
+
+          return {
+            negotiations: [newNeg, ...state.negotiations],
+            activityLog: [newLogEntry, ...state.activityLog],
+            whatsappLogs: [newWhatsAppLog, ...state.whatsappLogs]
+          };
+        }
+
+        return {
+          activityLog: [newLogEntry, ...state.activityLog]
+        };
+      }),
 
       markNotificationRead: (id) => set((state) => ({
         notifications: state.notifications.map(n => n.id === id ? { ...n, read: true } : n)
