@@ -133,7 +133,7 @@ export default function InvestorDashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto overflow-x-visible relative scroll-smooth custom-scrollbar flex flex-col w-full lg:w-auto z-20">
+      <main className="flex-1 overflow-y-auto overflow-x-visible relative scroll-smooth custom-scrollbar flex flex-col w-full lg:w-auto z-20 pb-24 lg:pb-0">
         <header className="h-20 flex items-center justify-between px-4 lg:px-8 bg-[#020617]/60 backdrop-blur-xl border-b border-white/5 sticky top-0 z-20">
           <div className="flex items-center">
             <button 

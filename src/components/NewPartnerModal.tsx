@@ -49,7 +49,7 @@ export default function NewPartnerModal({ isOpen, onClose }: NewPartnerModalProp
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-[100] p-4">
+        <div className="fixed inset-0 flex items-center justify-center z-[100] p-0 md:p-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -62,7 +62,7 @@ export default function NewPartnerModal({ isOpen, onClose }: NewPartnerModalProp
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="relative w-full max-w-lg bg-slate-900 rounded-3xl shadow-2xl overflow-hidden border border-white/10"
+            className="relative w-full h-[100dvh] md:h-auto max-w-lg bg-slate-900 md:rounded-3xl shadow-2xl overflow-y-auto overflow-x-hidden md:border border-white/10 flex flex-col"
           >
             <div className="p-6 border-b border-white/5 flex justify-between items-center bg-slate-800/20">
               <div className="flex items-center space-x-3">

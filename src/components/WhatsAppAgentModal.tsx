@@ -30,7 +30,7 @@ export default function WhatsAppAgentModal({ isOpen, onClose }: WhatsAppAgentMod
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 flex items-center justify-center z-[100] p-4 md:p-8">
+      <div className="fixed inset-0 flex items-center justify-center z-[100] p-0 md:p-8">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -43,10 +43,10 @@ export default function WhatsAppAgentModal({ isOpen, onClose }: WhatsAppAgentMod
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
-          className="relative w-full max-w-5xl h-[85vh] bg-[#111b21] rounded-2xl shadow-2xl overflow-hidden border border-white/10 flex"
+          className="relative w-full h-[100dvh] md:h-[85vh] max-w-5xl bg-[#111b21] md:rounded-2xl shadow-2xl overflow-hidden md:border border-white/10 flex"
         >
           {/* Sidebar */}
-          <div className="w-80 border-r border-[#222d34] flex flex-col bg-[#111b21]">
+          <div className="hidden md:flex w-80 border-r border-[#222d34] flex-col bg-[#111b21]">
             <div className="p-4 bg-[#202c33] flex justify-between items-center">
               <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
                 CFO
@@ -101,6 +101,11 @@ export default function WhatsAppAgentModal({ isOpen, onClose }: WhatsAppAgentMod
             {/* Chat Header */}
             <div className="p-3 bg-[#202c33] flex justify-between items-center z-10">
               <div className="flex items-center cursor-pointer">
+                <button onClick={onClose} className="md:hidden mr-3 text-[#aebac1] hover:text-white">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
                 <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold">
                   {contacts[activeChat].avatar}
                 </div>
@@ -111,8 +116,8 @@ export default function WhatsAppAgentModal({ isOpen, onClose }: WhatsAppAgentMod
                   </p>
                 </div>
               </div>
-              <div className="flex space-x-6 text-[#aebac1]">
-                <Search className="w-5 h-5 cursor-pointer" />
+              <div className="flex space-x-4 md:space-x-6 text-[#aebac1]">
+                <Search className="w-5 h-5 cursor-pointer hidden md:block" />
                 <MoreVertical className="w-5 h-5 cursor-pointer" />
               </div>
             </div>

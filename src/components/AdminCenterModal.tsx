@@ -184,17 +184,19 @@ export default function AdminCenterModal({ isOpen, onClose, activeTab, setActive
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed inset-0 m-auto w-full max-w-4xl h-[600px] bg-[#020617] border border-white/10 rounded-[40px] shadow-2xl z-[70] overflow-hidden flex"
+            className="fixed inset-0 m-auto w-full max-w-4xl h-[100dvh] md:h-[600px] bg-[#020617] md:border border-white/10 md:rounded-[40px] shadow-2xl z-[70] overflow-hidden flex flex-col md:flex-row"
           >
             {/* Sidebar */}
-            <div className="w-64 border-r border-white/5 bg-slate-900/40 p-8 flex flex-col">
-              <h2 className="text-xl font-bold text-white mb-8 tracking-tight">Admin Center</h2>
-              <nav className="flex-1 space-y-2">
+            <div className="w-full md:w-64 border-b md:border-b-0 md:border-r border-white/5 bg-slate-900/40 p-4 md:p-8 flex md:flex-col shrink-0">
+              <div className="flex items-center justify-between md:mb-8 mb-0 md:block mr-4 md:mr-0 shrink-0">
+                <h2 className="text-xl font-bold text-white tracking-tight">Admin Center</h2>
+              </div>
+              <nav className="flex-1 flex md:flex-col space-x-2 md:space-x-0 md:space-y-2 overflow-x-auto md:overflow-visible no-scrollbar">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center px-4 py-3 rounded-2xl text-sm font-semibold transition-all ${
+                    className={`shrink-0 flex items-center px-4 py-3 rounded-2xl text-sm font-semibold transition-all ${
                       activeTab === tab.id 
                         ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' 
                         : 'text-slate-500 hover:text-white hover:bg-white/5'
@@ -206,22 +208,22 @@ export default function AdminCenterModal({ isOpen, onClose, activeTab, setActive
                 ))}
               </nav>
 
-              <button className="flex items-center px-4 py-3 text-red-400 font-bold text-sm hover:bg-red-500/10 rounded-2xl transition-all">
+              <button className="hidden md:flex items-center px-4 py-3 text-red-400 font-bold text-sm hover:bg-red-500/10 rounded-2xl transition-all">
                 <LogOut className="w-4 h-4 mr-3" />
                 Sair do App
               </button>
             </div>
 
             {/* Content Area */}
-            <div className="flex-1 flex flex-col relative">
+            <div className="flex-1 flex flex-col relative overflow-hidden">
               <button 
                 onClick={onClose}
-                className="absolute top-8 right-8 p-2 text-slate-500 hover:text-white hover:bg-white/5 rounded-full transition-colors"
+                className="absolute top-4 right-4 md:top-8 md:right-8 p-2 text-slate-500 hover:text-white hover:bg-white/5 rounded-full transition-colors z-10"
               >
                 <X className="w-6 h-6" />
               </button>
 
-              <div className="flex-1 p-12 overflow-y-auto custom-scrollbar">
+              <div className="flex-1 p-6 md:p-12 overflow-y-auto custom-scrollbar">
                 <motion.div
                   key={activeTab}
                   initial={{ opacity: 0, x: 10 }}
