@@ -222,11 +222,11 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
             <KpiCard 
               id="cashBalance"
               title="Saldo em Caixa" 
-              value={<AnimatedCounter value={currentKpis.cashBalance.toString()} prefix="R$ " isCurrency={true} />}
-              trend={currentKpis.cashBalanceTrend} 
+              value={<AnimatedCounter value={(currentKpis?.cashBalance || 0).toString()} prefix="R$ " isCurrency={true} />}
+              trend={currentKpis?.cashBalanceTrend || '0%'} 
               trendUp={false} 
               subtitle="Dinheiro disponível hoje"
-              onClick={() => setActiveKpiDetail({ id: 'cashBalance', title: 'Fluxo de Caixa', value: currentKpis.cashBalance })}
+              onClick={() => setActiveKpiDetail({ id: 'cashBalance', title: 'Fluxo de Caixa', value: currentKpis?.cashBalance || 0 })}
             >
               <div className="mt-2 flex items-center text-[10px] font-bold text-slate-500">
                 <span>Próxima medição: +R$ 150k</span>
@@ -235,11 +235,11 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
             <KpiCard 
               id="monthlyCost"
               title="Custo Mensal Médio" 
-              value={<AnimatedCounter value={currentKpis.averageMonthlyCost.toString()} prefix="R$ " isCurrency={true} />}
-              trend={currentKpis.monthlyCostTrend} 
+              value={<AnimatedCounter value={(currentKpis?.averageMonthlyCost || 0).toString()} prefix="R$ " isCurrency={true} />}
+              trend={currentKpis?.monthlyCostTrend || '0%'} 
               trendUp={false} 
               subtitle="Média dos últimos 3 meses"
-              onClick={() => setActiveKpiDetail({ id: 'monthlyCost', title: 'Histórico de Custos', value: currentKpis.averageMonthlyCost })}
+              onClick={() => setActiveKpiDetail({ id: 'monthlyCost', title: 'Histórico de Custos', value: currentKpis?.averageMonthlyCost || 0 })}
             >
               <div className="mt-2 flex items-center text-[10px] font-bold text-emerald-400">
                 <span>-2% do esperado</span>
@@ -554,10 +554,10 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
                     <span className="text-sm font-bold text-white">Clima & Condições</span>
                   </div>
                   <div className="flex items-center space-x-4 mb-2">
-                    <span className="text-2xl font-black text-white">{store.weather.temp}</span>
-                    <span className="text-xs text-blue-400 font-bold px-2 py-1 bg-blue-500/10 rounded-lg">{store.weather.condition}</span>
+                    <span className="text-2xl font-black text-white">{store.weather?.temp || '--'}</span>
+                    <span className="text-xs text-blue-400 font-bold px-2 py-1 bg-blue-500/10 rounded-lg">{store.weather?.condition || 'Carregando...'}</span>
                   </div>
-                  <p className="text-xs text-slate-400">{store.weather.impact}</p>
+                  <p className="text-xs text-slate-400">{store.weather?.impact || 'Analisando impacto climático.'}</p>
                 </div>
                 
                 <div className="p-4 bg-white/5 border border-white/5 rounded-2xl">
@@ -566,7 +566,7 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
                     <span className="text-sm font-bold text-white">Entregas Programadas</span>
                   </div>
                   <div className="space-y-3">
-                    {store.deliveries.map(d => (
+                    {(store.deliveries || []).map(d => (
                       <div key={d.id} className="flex justify-between items-center border-b border-white/5 pb-2 last:border-0 last:pb-0">
                         <div>
                           <p className="text-xs font-bold text-white">{d.items}</p>
@@ -586,7 +586,7 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
             <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6">
               <h2 className="text-lg font-semibold text-white mb-6">Checklist do Dia</h2>
               <div className="space-y-3">
-                {store.dailyTasks.map(task => (
+                {(store.dailyTasks || []).map(task => (
                   <button 
                     key={task.id}
                     onClick={() => store.toggleTaskStatus(task.id)}
