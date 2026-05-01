@@ -42,7 +42,7 @@ interface DashboardState {
     contact: string;
     message: string;
     time: string;
-    type: 'incoming' | 'outgoing' | 'ai_processed';
+    type: 'incoming' | 'outgoing' | 'ai_processed' | 'ai_processed_response';
     status: 'read' | 'delivered' | 'processing';
   }>;
   
@@ -375,8 +375,8 @@ export const useDashboardStore = create<DashboardState>()(
             contact: 'Fornecedor Gerdau',
             message: `Detectada tendência de alta em ${data.item}. Iniciando negociação para travar preço...`,
             time: 'Agora',
-            type: 'ai_processed',
-            status: 'processing'
+            type: 'ai_processed' as const,
+            status: 'processing' as const
           };
 
           const newNeg = {
