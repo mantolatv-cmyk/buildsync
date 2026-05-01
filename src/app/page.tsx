@@ -36,7 +36,7 @@ export default function InvestorDashboard() {
   const [adminTab, setAdminTab] = useState("Meu Perfil");
   const [notifFilter, setNotifFilter] = useState<'all' | 'warning' | 'success'>('all');
   
-  const { notifications, markNotificationRead } = useDashboardStore();
+  const { notifications, markNotificationRead, isSimplifiedMode, toggleSimplifiedMode } = useDashboardStore();
   
   const handleLogout = () => {
     setIsUserMenuOpen(false);
@@ -193,6 +193,22 @@ export default function InvestorDashboard() {
           </motion.h1>
           </div>
           <div className="flex items-center space-x-2 lg:space-x-5">
+            {/* View Mode Toggle */}
+            <div className="hidden sm:flex items-center bg-slate-800/50 p-1 rounded-xl border border-white/10">
+              <button
+                onClick={() => { if (isSimplifiedMode) toggleSimplifiedMode() }}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${!isSimplifiedMode ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+              >
+                Avançado
+              </button>
+              <button
+                onClick={() => { if (!isSimplifiedMode) toggleSimplifiedMode() }}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${isSimplifiedMode ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+              >
+                Dia a Dia
+              </button>
+            </div>
+
             {/* Notification Bell */}
             <div className="relative">
               <button 

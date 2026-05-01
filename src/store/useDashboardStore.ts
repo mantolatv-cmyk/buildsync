@@ -2,13 +2,18 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface DashboardState {
+  isSimplifiedMode: boolean;
   kpis: {
     capital: number;
     yoc: number;
     costPerSqm: number;
+    cashBalance: number;
+    averageMonthlyCost: number;
     capitalTrend: string;
     yocTrend: string;
     costTrend: string;
+    cashBalanceTrend: string;
+    monthlyCostTrend: string;
   };
   costData: Array<{ month: string; orcado: number; realizado: number }>;
   spiData: Array<{ etapa: string; spi: number; cpi: number; status: string }>;
@@ -71,18 +76,24 @@ interface DashboardState {
   addSupplier: (supplier: any) => void;
   toggleWhatsAppSync: () => void;
   addWhatsAppLog: (log: any) => void;
+  toggleSimplifiedMode: () => void;
 }
 
 export const useDashboardStore = create<DashboardState>()(
   persist(
     (set) => ({
+      isSimplifiedMode: true,
       kpis: {
         capital: 850000,
         yoc: 14.2,
         costPerSqm: 3900,
+        cashBalance: 125400,
+        averageMonthlyCost: 145000,
         capitalTrend: "+2%",
         yocTrend: "+0.1%",
-        costTrend: "-0.5%"
+        costTrend: "-0.5%",
+        cashBalanceTrend: "-5%",
+        monthlyCostTrend: "+2%"
       },
       costData: [
         { month: "Sem 1", orcado: 200000, realizado: 195000 },
@@ -517,6 +528,9 @@ export const useDashboardStore = create<DashboardState>()(
           ...state.notifications
         ]
       })),
+      toggleSimplifiedMode: () => set((state) => ({
+        isSimplifiedMode: !state.isSimplifiedMode
+      }))
     }),
     {
       name: 'buildsync-dashboard-storage',

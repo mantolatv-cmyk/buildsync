@@ -201,7 +201,83 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
       className="p-4 md:p-8 max-w-7xl mx-auto space-y-8"
     >
       {/* Top Cards (KPIs Executivos) */}
+      {store.isSimplifiedMode && (
+        <div className="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border border-blue-500/20 p-6 rounded-3xl flex flex-col md:flex-row md:items-start space-y-4 md:space-y-0 md:space-x-4 mb-2">
+          <div className="p-3 bg-blue-500/20 text-blue-400 rounded-xl w-fit">
+            <Zap className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-white mb-1">Resumo da Obra - Bom dia!</h3>
+            <p className="text-sm text-slate-300 leading-relaxed">
+              A obra <strong className="text-white">Residencial Alpha</strong> está <strong className="text-emerald-400">adiantada em 2 dias</strong> e dentro do orçamento.
+              O custo médio mensal tem sido de <strong className="text-white">R$ 145.000</strong>. Atenção: Há uma previsão de aumento no Aço para a próxima semana.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {store.isSimplifiedMode ? (
+          <>
+            <KpiCard 
+              id="cashBalance"
+              title="Saldo em Caixa" 
+              value={<AnimatedCounter value={currentKpis.cashBalance.toString()} prefix="R$ " isCurrency={true} />}
+              trend={currentKpis.cashBalanceTrend} 
+              trendUp={false} 
+              subtitle="Dinheiro disponível hoje"
+              onClick={() => setActiveKpiDetail({ id: 'cashBalance', title: 'Fluxo de Caixa', value: currentKpis.cashBalance })}
+            >
+              <div className="mt-2 flex items-center text-[10px] font-bold text-slate-500">
+                <span>Próxima medição: +R$ 150k</span>
+              </div>
+            </KpiCard>
+            <KpiCard 
+              id="monthlyCost"
+              title="Custo Mensal Médio" 
+              value={<AnimatedCounter value={currentKpis.averageMonthlyCost.toString()} prefix="R$ " isCurrency={true} />}
+              trend={currentKpis.monthlyCostTrend} 
+              trendUp={false} 
+              subtitle="Média dos últimos 3 meses"
+              onClick={() => setActiveKpiDetail({ id: 'monthlyCost', title: 'Histórico de Custos', value: currentKpis.averageMonthlyCost })}
+            >
+              <div className="mt-2 flex items-center text-[10px] font-bold text-emerald-400">
+                <span>-2% do esperado</span>
+              </div>
+            </KpiCard>
+            <KpiCard 
+              id="deadline"
+              title="Prazo da Obra" 
+              value="Adiantada" 
+              trend="Nov 2026" 
+              trendUp={true} 
+              subtitle="2 dias à frente do esperado"
+              onClick={() => setActiveKpiDetail({ id: 'deadline', title: 'Cronograma da Obra', value: '142 Dias' })}
+            >
+              <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden mt-2">
+                <motion.div initial={{ width: 0 }} animate={{ width: '78%' }} className="h-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+              </div>
+              <div className="flex justify-between mt-2 text-[10px] font-bold text-slate-500">
+                <span>Avanço Físico</span>
+                <span className="text-emerald-400">78%</span>
+              </div>
+            </KpiCard>
+            <KpiCard 
+              id="yoc_simple"
+              title="Lucro Estimado" 
+              value={<AnimatedCounter value={currentKpis.yoc.toString()} suffix="%" />}
+              trend={currentKpis.yocTrend} 
+              trendUp={true} 
+              subtitle="Quanto a obra vai render"
+              onClick={() => setActiveKpiDetail({ id: 'yoc', title: 'Estimativa de Lucro', value: currentKpis.yoc })}
+            >
+               <div className="flex justify-between mt-2 text-[10px] font-bold text-slate-500">
+                <span>Baseado nos custos atuais</span>
+              </div>
+            </KpiCard>
+          </>
+        ) : (
+          <>
         <KpiCard 
           id="capital"
           title="Capital Total Investido" 
@@ -283,10 +359,14 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
             </div>
           </div>
         </KpiCard>
+          </>
+        )}
       </div>
 
       {/* Middle Layer (Gráficos Principais) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {!store.isSimplifiedMode ? (
+        <>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Gráfico de Linha - Desvio de Custo */}
         <motion.div variants={itemVariants} className="lg:col-span-2 bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 relative group hover:bg-slate-900/50 transition-colors">
           <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity duration-500 pointer-events-none" />
@@ -461,6 +541,53 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
           />
         </motion.div>
       </div>
+      </>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <motion.div variants={itemVariants} className="lg:col-span-2 bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6">
+            <h2 className="text-lg font-semibold text-white mb-6">Controle de Orçamento</h2>
+            <div className="space-y-8">
+              <div>
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-slate-400">Total Previsto da Obra</span>
+                  <span className="text-white font-bold">R$ 12.500.000</span>
+                </div>
+                <div className="w-full bg-slate-800 rounded-full h-4">
+                  <motion.div initial={{ width: 0 }} animate={{ width: '68%' }} className="h-full bg-blue-500 rounded-full" />
+                </div>
+                <div className="flex justify-between text-xs mt-2 font-bold">
+                  <span className="text-blue-400">Já gasto: R$ 8.500.000 (68%)</span>
+                </div>
+              </div>
+              
+              <div className="p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl">
+                <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-2">Feedback Rápido</h4>
+                <p className="text-sm text-slate-300">Você gastou R$ 145.000 este mês. Isso é 2% a menos do que o projetado. Ótimo trabalho de economia em materiais de acabamento!</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6">
+            <h2 className="text-lg font-semibold text-white mb-6">Saúde das Etapas</h2>
+            <div className="space-y-4">
+              {spiData.map((item, i) => {
+                 const isGood = item.status.includes('Adiantado') || item.status.includes('Eficiente') || item.status.includes('No Prazo');
+                 const isWarning = item.status.includes('Leve');
+                 const color = isGood ? 'bg-emerald-500' : isWarning ? 'bg-amber-500' : 'bg-red-500';
+                 return (
+                   <div key={i} className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/5">
+                      <span className="text-sm font-bold text-white">{item.etapa}</span>
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-3 h-3 rounded-full ${color} shadow-[0_0_8px_${isGood ? 'rgba(16,185,129,0.5)' : isWarning ? 'rgba(245,158,11,0.5)' : 'rgba(239,68,68,0.5)'}]`} />
+                        <span className="text-[10px] text-slate-400 uppercase font-black">{item.status}</span>
+                      </div>
+                   </div>
+                 )
+              })}
+            </div>
+          </motion.div>
+        </div>
+      )}
     </motion.div>
   );
 }
