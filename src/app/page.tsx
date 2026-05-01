@@ -87,13 +87,13 @@ export default function InvestorDashboard() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsMobileMenuOpen(false)}
-            className="fixed inset-0 bg-[#020617]/80 backdrop-blur-sm z-30 lg:hidden"
+            className="fixed inset-0 bg-[#020617]/80 backdrop-blur-sm z-40 lg:hidden"
           />
         )}
       </AnimatePresence>
 
       {/* Sidebar */}
-      <aside className={`w-64 bg-slate-900/90 lg:bg-slate-900/50 backdrop-blur-2xl border-r border-white/5 flex flex-col z-10 fixed lg:relative h-full transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      <aside className={`w-64 bg-slate-900/90 lg:bg-slate-900/50 backdrop-blur-2xl border-r border-white/5 flex flex-col z-50 fixed lg:relative h-full transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         <div className="h-20 flex items-center justify-between px-6 border-b border-white/5">
           <div className="flex items-center">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mr-3 shadow-lg shadow-blue-500/20">
@@ -133,7 +133,7 @@ export default function InvestorDashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto overflow-x-visible relative scroll-smooth custom-scrollbar flex flex-col w-full lg:w-auto z-20 pb-24 lg:pb-0">
+      <main className="flex-1 overflow-y-auto overflow-x-visible relative scroll-smooth custom-scrollbar flex flex-col w-full lg:w-auto z-20">
         <header className="h-20 flex items-center justify-between px-4 lg:px-8 bg-[#020617]/60 backdrop-blur-xl border-b border-white/5 sticky top-0 z-20">
           <div className="flex items-center">
             <button 
@@ -474,35 +474,6 @@ export default function InvestorDashboard() {
         setActiveTab={setAdminTab}
       />
 
-      {/* Bottom Navigation (Mobile Only) - Overhauled for PWA */}
-      <nav className="lg:hidden fixed bottom-6 left-6 right-6 h-16 bg-slate-900/80 backdrop-blur-2xl border border-white/10 flex items-center justify-around px-4 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-40">
-        {menuItems.slice(0, 4).map((item) => (
-          <button
-            key={item.name}
-            onClick={() => setActiveMenu(item.name)}
-            className="relative flex flex-col items-center justify-center space-y-1 w-12 transition-all active:scale-90"
-          >
-            {activeMenu === item.name && (
-              <motion.div 
-                layoutId="activeMobileTab"
-                className="absolute -inset-2 bg-blue-500/10 rounded-2xl"
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              />
-            )}
-            <item.icon className={`w-5 h-5 relative z-10 ${activeMenu === item.name ? "text-blue-400" : "text-slate-500"}`} />
-            <span className={`text-[9px] font-black uppercase tracking-tighter relative z-10 ${activeMenu === item.name ? "text-white" : "text-slate-500"}`}>
-              {item.name.split(' ')[0]}
-            </span>
-          </button>
-        ))}
-        <button
-          onClick={() => setIsMobileMenuOpen(true)}
-          className="flex flex-col items-center justify-center space-y-1 w-12 text-slate-500 active:scale-90"
-        >
-          <Menu className="w-5 h-5" />
-          <span className="text-[9px] font-black uppercase tracking-tighter">Mais</span>
-        </button>
-      </nav>
 
       {/* Reports hidden from screen, shown on print */}
       <div className="hidden print:block">
