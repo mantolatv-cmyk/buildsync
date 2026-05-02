@@ -1,15 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { Variants } from "framer-motion";
-import { TrendingDown, ArrowRightLeft, Wallet, AlertCircle } from "lucide-react";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie, Legend } from "recharts";
 import { GlossaryTooltip } from "../GlossaryTooltip";
 import FinancialDataDrawer from "../FinancialDataDrawer";
-import { Plus, Bot, MessageSquare } from "lucide-react";
+import { Plus, Bot, MessageSquare, TrendingDown, ArrowRightLeft, Wallet, AlertCircle } from "lucide-react";
 import WhatsAppSyncCard from "../WhatsAppSyncCard";
 import WhatsAppAgentModal from "../WhatsAppAgentModal";
+import { useDashboardStore } from "../../store/useDashboardStore";
 
 const cashflowData = [
   { month: "Jan", entrada: 0, saida: 150, acumulado: -150 },

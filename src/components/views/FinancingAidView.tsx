@@ -39,7 +39,6 @@ export default function FinancingAidView() {
     updateDocStatus, 
     evidences, 
     addEvidence, 
-    addEvidence, 
     updateEvidence, 
     removeEvidence,
     isSimplifiedMode
