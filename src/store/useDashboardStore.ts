@@ -14,11 +14,13 @@ interface DashboardState {
     costTrend: string;
     cashBalanceTrend: string;
     monthlyCostTrend: string;
+    disbursementTomorrow: number;
+    weeklyCommitment: number;
   };
   costData: Array<{ month: string; orcado: number; realizado: number }>;
   spiData: Array<{ etapa: string; spi: number; cpi: number; status: string }>;
   roiData: Array<{ ano: string; projetado: number; realizado: number | null }>;
-  supplyData: Array<{ item: string; orcado: number; atual: number; market: number }>;
+  supplyData: Array<{ item: string; orcado: number; atual: number; market: number; stockDays: number }>;
   complianceDocs: Array<{ id: string; doc: string; status: string; date: string; type: string }>;
   projects: Array<any>;
   suppliers: Array<any>;
@@ -129,7 +131,9 @@ export const useDashboardStore = create<DashboardState>()(
         yocTrend: "+0.1%",
         costTrend: "-0.5%",
         cashBalanceTrend: "-5%",
-        monthlyCostTrend: "+2%"
+        monthlyCostTrend: "+2%",
+        disbursementTomorrow: 15400,
+        weeklyCommitment: 85000
       },
       costData: [
         { month: "Sem 1", orcado: 200000, realizado: 195000 },
@@ -151,11 +155,11 @@ export const useDashboardStore = create<DashboardState>()(
         { ano: "2027", projetado: 17.0, realizado: null },
       ],
       supplyData: [
-        { item: 'Aço (Ton)', orcado: 4200, atual: 5100, market: 5350 },
-        { item: 'Concreto (m³)', orcado: 350, atual: 380, market: 375 },
-        { item: 'Cimento (Sc)', orcado: 28, atual: 32, market: 35 },
-        { item: 'Cobre (kg)', orcado: 45, atual: 52, market: 58 },
-        { item: 'Esquadrias (m²)', orcado: 800, atual: 780, market: 850 },
+        { item: 'Aço (Ton)', orcado: 4200, atual: 5100, market: 5350, stockDays: 12 },
+        { item: 'Concreto (m³)', orcado: 350, atual: 380, market: 375, stockDays: 2 },
+        { item: 'Cimento (Sc)', orcado: 28, atual: 32, market: 35, stockDays: 5 },
+        { item: 'Cobre (kg)', orcado: 45, atual: 52, market: 58, stockDays: 20 },
+        { item: 'Esquadrias (m²)', orcado: 800, atual: 780, market: 850, stockDays: 45 },
       ],
       complianceDocs: [
         { id: "1", doc: "Guia de INSS (GPS)", status: "Validado", date: "30/04/2024", type: "Mensal" },

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { 
-  Clock, ArrowUpRight, ArrowDownRight, ShieldCheck, ChevronDown, CloudRain, Truck, CheckCircle2, Circle, ExternalLink
+  Clock, ArrowUpRight, ArrowDownRight, ShieldCheck, ChevronDown, CloudRain, Truck, CheckCircle2, Circle, ExternalLink, DollarSign, AlertCircle
 } from "lucide-react";
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
@@ -613,6 +613,57 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
                   </button>
                 ))}
               </div>
+            </motion.div>
+          </div>
+
+          {/* New Operational Insights Layer */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                <DollarSign className="w-16 h-16 text-emerald-400" />
+              </div>
+              <h3 className="text-sm font-bold text-white uppercase tracking-widest mb-4">Financeiro de Amanhã</h3>
+              <div className="space-y-1">
+                <p className="text-3xl font-black text-white">R$ {(store.kpis.disbursementTomorrow || 0).toLocaleString('pt-BR')}</p>
+                <p className="text-xs text-slate-500 font-medium">Necessário em conta para as próximas 24h</p>
+              </div>
+              <div className="mt-4 p-3 bg-emerald-500/5 border border-emerald-500/10 rounded-xl">
+                <div className="flex justify-between text-[10px] font-bold text-emerald-400 uppercase">
+                  <span>Saldo Atual</span>
+                  <span>R$ {(store.kpis.cashBalance || 0).toLocaleString('pt-BR')}</span>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                <AlertCircle className="w-16 h-16 text-red-400" />
+              </div>
+              <h3 className="text-sm font-bold text-white uppercase tracking-widest mb-4">Alertas de Estoque</h3>
+              <div className="space-y-3">
+                {store.supplyData.filter(s => s.stockDays < 7).map((s, i) => (
+                  <div key={i} className="flex justify-between items-center p-2 bg-white/5 rounded-lg border border-white/5">
+                    <div>
+                      <p className="text-xs font-bold text-white">{s.item}</p>
+                      <p className="text-[10px] text-slate-500">{s.stockDays} dias restantes</p>
+                    </div>
+                    <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded ${s.stockDays < 3 ? 'bg-red-500/20 text-red-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                      {s.stockDays < 3 ? 'Crítico' : 'Atenção'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6">
+              <h3 className="text-sm font-bold text-white uppercase tracking-widest mb-4">Comprometimento Semanal</h3>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-2xl font-black text-white">R$ {(store.kpis.weeklyCommitment || 0).toLocaleString('pt-BR')}</p>
+              </div>
+              <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <motion.div initial={{ width: 0 }} animate={{ width: '45%' }} className="h-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+              </div>
+              <p className="text-[10px] text-slate-500 mt-2 font-medium">45% do orçamento mensal consumido</p>
             </motion.div>
           </div>
 

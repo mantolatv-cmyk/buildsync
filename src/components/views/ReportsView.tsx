@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion, Variants } from "framer-motion";
-import { FileText, Download, Calendar, Filter, FileBarChart, Presentation, PieChart, Loader2, CheckCircle2, TrendingUp, AlertTriangle, DollarSign, Target, ChevronLeft, Printer, Camera, ExternalLink, Users, AlertCircle, Image, Plus, Trash2, X, CloudRain } from "lucide-react";
+import { FileText, Download, Calendar, Filter, FileBarChart, Presentation, PieChart, Loader2, CheckCircle2, TrendingUp, AlertTriangle, DollarSign, Target, ChevronLeft, Printer, Camera, ExternalLink, Users, AlertCircle, Image, Plus, Trash2, X, CloudRain, MessageCircle } from "lucide-react";
 import ExecutiveReport from "../ExecutiveReport";
 import { useDashboardStore } from "../../store/useDashboardStore";
 
@@ -11,6 +11,8 @@ const reportTemplates = [
   { id: 2, type: 'cash', title: "Fechamento de Caixa", icon: FileBarChart, desc: "Fluxo de caixa detalhado, DRE e mapa de pagamentos.", color: "text-emerald-400", bg: "bg-emerald-500/10" },
   { id: 3, type: 'portfolio', title: "Análise de Portfólio", icon: PieChart, desc: "Comparativo de ROI, YOC e alocação de capital entre obras.", color: "text-purple-400", bg: "bg-purple-500/10" }
 ];
+
+const getWhatsAppLink = (message: string) => `https://wa.me/5511998765432?text=${encodeURIComponent(message)}`;
 
 const simplifiedReportTemplates = [
   { id: 1, type: 'diario', title: "Diário de Obra", icon: FileText, desc: "Efetivo, clima e atividades do dia.", color: "text-blue-400", bg: "bg-blue-500/10" },
@@ -212,15 +214,24 @@ export default function ReportsView() {
           </button>
         </div>
 
-        <button 
-          onClick={() => {
-            alert("Alerta de falta de materiais enviado para Compras!");
-            setActiveOperationalForm(null);
-          }}
-          className="w-full py-4 bg-red-600 text-white font-bold rounded-2xl hover:bg-red-500 transition-all shadow-xl shadow-red-600/20"
-        >
-          Enviar Alerta para Compras
-        </button>
+        <div className="flex space-x-3">
+          <button 
+            onClick={() => {
+              alert("Alerta de falta de materiais enviado para Compras!");
+              setActiveOperationalForm(null);
+            }}
+            className="flex-1 py-4 bg-slate-800 text-white font-bold rounded-2xl hover:bg-slate-700 transition-all border border-white/5"
+          >
+            Salvar Internamente
+          </button>
+          <a 
+            href={getWhatsAppLink("Alerta de Campo BuildSync: Insumos Críticos Faltantes no Residencial Alpha. Favor verificar urgência de compra.")}
+            target="_blank" rel="noopener noreferrer"
+            className="flex-1 py-4 bg-emerald-600 text-white font-bold rounded-2xl hover:bg-emerald-500 transition-all shadow-xl shadow-emerald-600/20 flex items-center justify-center"
+          >
+            <MessageCircle className="w-5 h-5 mr-2" /> Notificar Compras
+          </a>
+        </div>
       </motion.div>
     );
   }

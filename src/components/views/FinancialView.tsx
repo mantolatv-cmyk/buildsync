@@ -5,7 +5,7 @@ import { motion, AnimatePresence, Variants } from "framer-motion";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie, Legend } from "recharts";
 import { GlossaryTooltip } from "../GlossaryTooltip";
 import FinancialDataDrawer from "../FinancialDataDrawer";
-import { Plus, Bot, MessageSquare, TrendingDown, ArrowRightLeft, Wallet, AlertCircle } from "lucide-react";
+import { Plus, Bot, MessageSquare, TrendingDown, ArrowRightLeft, Wallet, AlertCircle, MessageCircle, Calendar } from "lucide-react";
 import WhatsAppSyncCard from "../WhatsAppSyncCard";
 import WhatsAppAgentModal from "../WhatsAppAgentModal";
 import { useDashboardStore } from "../../store/useDashboardStore";
@@ -39,7 +39,7 @@ const costDistributionData = [
 
 
 export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
-  const { isSimplifiedMode } = useDashboardStore();
+  const { isSimplifiedMode, kpis } = useDashboardStore();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isWAModalOpen, setIsWAModalOpen] = useState(false);
   const containerVariants: Variants = {
@@ -85,8 +85,17 @@ export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
                 <AlertCircle className="w-5 h-5 lg:w-6 lg:h-6 text-red-400" />
               </div>
               <div>
-                <p className="text-[10px] lg:text-sm text-slate-400 font-bold uppercase tracking-wider lg:normal-case lg:font-medium">A Pagar Hoje</p>
-                <h3 className="text-lg lg:text-2xl font-bold text-white mt-0.5 lg:mt-1">R$ 12.450</h3>
+                <p className="text-[10px] lg:text-sm text-slate-400 font-bold uppercase tracking-wider lg:normal-case lg:font-medium">Necessário Amanhã</p>
+                <h3 className="text-lg lg:text-2xl font-bold text-red-400 mt-0.5 lg:mt-1">R$ {(kpis.disbursementTomorrow || 0).toLocaleString('pt-BR')}</h3>
+              </div>
+            </motion.div>
+            <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-4 lg:p-6 flex items-center">
+              <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mr-3 lg:mr-4 shrink-0">
+                <Calendar className="w-5 h-5 lg:w-6 lg:h-6 text-emerald-400" />
+              </div>
+              <div>
+                <p className="text-[10px] lg:text-sm text-slate-400 font-bold uppercase tracking-wider lg:normal-case lg:font-medium">Total da Semana</p>
+                <h3 className="text-lg lg:text-2xl font-bold text-white mt-0.5 lg:mt-1">R$ {(kpis.weeklyCommitment || 0).toLocaleString('pt-BR')}</h3>
               </div>
             </motion.div>
             <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-4 lg:p-6 flex items-center">
@@ -157,16 +166,30 @@ export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
                     { prov: "Posto Ipiranga", desc: "Combustível Máquinas", val: "R$ 3.200", status: "amanha" },
                     { prov: "Leroy Merlin", desc: "Materiais Hidráulicos", val: "R$ 1.800", status: "semana" }
                   ].map((p, i) => (
-                    <div key={i} className="p-4 bg-white/5 rounded-xl border border-white/5 flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-bold text-white">{p.prov}</p>
-                        <p className="text-xs text-slate-500">{p.desc}</p>
+                    <div key={i} className="p-4 bg-white/5 rounded-xl border border-white/5 flex items-center justify-between group">
+                      <div className="flex items-center space-x-4">
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${p.status === 'hoje' ? 'bg-red-500/10' : 'bg-slate-800'}`}>
+                          <Wallet className={`w-5 h-5 ${p.status === 'hoje' ? 'text-red-400' : 'text-slate-500'}`} />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-white">{p.prov}</p>
+                          <p className="text-xs text-slate-500">{p.desc}</p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-sm font-black text-white">{p.val}</p>
-                        <span className={`text-[10px] font-bold uppercase ${p.status === 'hoje' ? 'text-red-400' : p.status === 'amanha' ? 'text-amber-400' : 'text-slate-400'}`}>
-                          {p.status === 'hoje' ? 'Vence Hoje' : p.status === 'amanha' ? 'Vence Amanhã' : 'Vence na Semana'}
-                        </span>
+                      <div className="flex items-center space-x-4">
+                        <div className="text-right">
+                          <p className="text-sm font-black text-white">{p.val}</p>
+                          <span className={`text-[10px] font-bold uppercase ${p.status === 'hoje' ? 'text-red-400' : p.status === 'amanha' ? 'text-amber-400' : 'text-slate-400'}`}>
+                            {p.status === 'hoje' ? 'Vence Hoje' : p.status === 'amanha' ? 'Vence Amanhã' : 'Vence na Semana'}
+                          </span>
+                        </div>
+                        <a 
+                          href={`https://wa.me/5511998765432?text=${encodeURIComponent(`Olá, gostaria de falar sobre o pagamento de ${p.val} para ${p.prov} referente a ${p.desc}.`)}`}
+                          target="_blank" rel="noopener noreferrer"
+                          className="p-2 bg-emerald-500/10 text-emerald-400 rounded-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-emerald-500/20"
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                        </a>
                       </div>
                     </div>
                   ))}

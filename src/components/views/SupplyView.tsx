@@ -3,8 +3,7 @@
 import React from "react";
 import { motion, Variants } from "framer-motion";
 import { 
-  ArrowRight, Star, Award, TrendingUp, TrendingDown, ShieldCheck,
-  Bot, MessageSquare, Zap, Target, BrainCircuit 
+  Bot, MessageSquare, Zap, Target, BrainCircuit, MessageCircle, AlertCircle, Package, ArrowRight, ShieldCheck, Star, Award, TrendingUp, TrendingDown 
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, Cell, ResponsiveContainer } from "recharts";
 import { GlossaryTooltip } from "../GlossaryTooltip";
@@ -155,13 +154,35 @@ export default function SupplyView() {
             <div className="space-y-4">
               {(deliveries || []).map(d => (
                 <div key={d.id} className="flex justify-between items-center bg-white/5 border border-white/5 p-4 rounded-xl">
-                  <div>
-                    <p className="text-sm font-bold text-white">{d.items}</p>
-                    <p className="text-xs text-slate-500">{d.supplier}</p>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                      <Package className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-white">{d.items}</p>
+                      <p className="text-xs text-slate-500">{d.supplier}</p>
+                    </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-sm font-black text-emerald-400">{d.time}</span>
-                    <p className="text-xs text-slate-400">{d.status === 'delivered' ? 'Entregue' : 'A Caminho'}</p>
+                    <p className="text-sm font-black text-white">{d.time}</p>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border ${
+                        d.status === 'delayed' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                        d.status === 'delivered' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                        'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                      }`}>
+                        {d.status === 'delayed' ? 'Atrasado' : d.status === 'delivered' ? 'Entregue' : 'A Caminho'}
+                      </span>
+                      {d.status === 'delayed' && (
+                        <a 
+                          href={`https://wa.me/5511998765432?text=${encodeURIComponent(`Olá, sobre o pedido de ${d.items} para a obra Residencial Alpha que está atrasado. Poderia nos dar um status?`)}`}
+                          target="_blank" rel="noopener noreferrer"
+                          className="p-1.5 bg-emerald-500/10 text-emerald-400 rounded-lg hover:bg-emerald-500/20 transition-colors"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5" />
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -406,17 +427,23 @@ export default function SupplyView() {
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-white/5">
-                  <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Estabilidade de Preço</span>
-                    <span className="text-[10px] font-bold text-slate-300">{supplier.stability}%</span>
+                <div className="pt-3 border-t border-white/5 flex justify-between items-center">
+                  <div className="flex-1 mr-4">
+                    <div className="flex justify-between items-center mb-1.5">
+                      <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Estabilidade</span>
+                      <span className="text-[10px] font-bold text-slate-300">{supplier.stability}%</span>
+                    </div>
+                    <div className="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-blue-500" style={{ width: `${supplier.stability}%` }} />
+                    </div>
                   </div>
-                  <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-blue-500 rounded-full" 
-                      style={{ width: `${supplier.stability}%` }} 
-                    />
-                  </div>
+                  <a 
+                    href={`https://wa.me/5511998765432?text=${encodeURIComponent(`Olá, gostaria de falar sobre o fornecimento para o Residencial Alpha.`)}`}
+                    target="_blank" rel="noopener noreferrer"
+                    className="p-2 bg-emerald-500/10 text-emerald-400 rounded-xl hover:bg-emerald-500/20 transition-all"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                  </a>
                 </div>
               </div>
             ))}
