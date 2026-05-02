@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { 
   ChevronLeft, MapPin, Calendar, Clock, 
-  TrendingUp, Camera, FileText, Download, Plus
+  TrendingUp, Camera, FileText, Download, Plus, CloudRain, ExternalLink
 } from "lucide-react";
 import EngineeringProgressDrawer from "../EngineeringProgressDrawer";
 import { 
@@ -202,6 +202,39 @@ export default function ProjectDetailView({ project, onBack }: ProjectDetailView
 
                 {/* Right Column: Weather & Contacts */}
                 <div className="space-y-6">
+                  {/* Weather Card */}
+                  <div className="bg-slate-900/40 border border-white/5 p-6 rounded-3xl">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-2">
+                        <CloudRain className="w-5 h-5 text-blue-400" />
+                        <h4 className="text-sm font-bold text-white uppercase tracking-widest">Clima Local</h4>
+                      </div>
+                      <span className="text-xs font-bold text-emerald-400 px-2 py-1 bg-emerald-500/10 rounded-lg">Favorável</span>
+                    </div>
+                    
+                    <div className="flex items-center space-x-4 mb-4">
+                      <span className="text-3xl font-black text-white">24°C</span>
+                      <div>
+                        <p className="text-sm text-white font-bold">Ensolarado</p>
+                        <p className="text-xs text-slate-500">Umidade: 62%</p>
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-slate-400 leading-relaxed mb-4">
+                      Janela climática ideal para concretagem e trabalhos externos nas próximas 48h.
+                    </p>
+
+                    <a 
+                      href="https://www.climatempo.com.br/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center text-[10px] font-bold text-blue-400 hover:text-blue-300 transition-colors group/link"
+                    >
+                      VER PREVISÃO EM TEMPO REAL
+                      <ExternalLink className="w-3 h-3 ml-1 group-hover/link:translate-x-0.5 transition-transform" />
+                    </a>
+                  </div>
+
                   <div className="bg-slate-900/40 border border-white/5 p-6 rounded-3xl">
                     <h4 className="text-sm font-bold text-white uppercase tracking-widest mb-4">Responsáveis Técnicos</h4>
                     <div className="space-y-4">

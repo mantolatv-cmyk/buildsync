@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion, Variants } from "framer-motion";
-import { FileText, Download, Calendar, Filter, FileBarChart, Presentation, PieChart, Loader2, CheckCircle2, TrendingUp, AlertTriangle, DollarSign, Target, ChevronLeft, Printer, Camera } from "lucide-react";
+import { FileText, Download, Calendar, Filter, FileBarChart, Presentation, PieChart, Loader2, CheckCircle2, TrendingUp, AlertTriangle, DollarSign, Target, ChevronLeft, Printer, Camera, ExternalLink } from "lucide-react";
 import ExecutiveReport from "../ExecutiveReport";
 import { useDashboardStore } from "../../store/useDashboardStore";
 
@@ -360,6 +360,17 @@ export default function ReportsView() {
                 <button className="mt-auto flex items-center text-sm font-semibold text-blue-400 group-hover:text-blue-300 transition-colors">
                   Gerar Agora <FileText className="w-4 h-4 ml-2" />
                 </button>
+                {template.type === 'diario' && (
+                  <a 
+                    href="https://www.climatempo.com.br/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="mt-2 flex items-center text-[10px] font-bold text-slate-500 hover:text-blue-400 transition-colors"
+                  >
+                    Consultar clima em tempo real <ExternalLink className="w-3 h-3 ml-1" />
+                  </a>
+                )}
               </motion.div>
             ))}
           </div>

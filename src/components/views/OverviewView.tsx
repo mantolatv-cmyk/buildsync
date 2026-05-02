@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { 
-  Clock, ArrowUpRight, ArrowDownRight, ShieldCheck, ChevronDown, CloudRain, Truck, CheckCircle2, Circle
+  Clock, ArrowUpRight, ArrowDownRight, ShieldCheck, ChevronDown, CloudRain, Truck, CheckCircle2, Circle, ExternalLink
 } from "lucide-react";
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
@@ -558,6 +558,16 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
                     <span className="text-xs text-blue-400 font-bold px-2 py-1 bg-blue-500/10 rounded-lg">{store.weather?.condition || 'Carregando...'}</span>
                   </div>
                   <p className="text-xs text-slate-400">{store.weather?.impact || 'Analisando impacto climático.'}</p>
+                  
+                  <a 
+                    href="https://www.climatempo.com.br/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="mt-4 flex items-center text-[10px] font-bold text-blue-400 hover:text-blue-300 transition-colors group/link"
+                  >
+                    ATUALIZAÇÃO EM TEMPO REAL
+                    <ExternalLink className="w-3 h-3 ml-1 group-hover/link:translate-x-0.5 transition-transform" />
+                  </a>
                 </div>
                 
                 <div className="p-4 bg-white/5 border border-white/5 rounded-2xl">
