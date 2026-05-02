@@ -40,6 +40,7 @@ const costDistributionData = [
 
 
 export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
+  const { isSimplifiedMode } = useDashboardStore();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isWAModalOpen, setIsWAModalOpen] = useState(false);
   const containerVariants: Variants = {
@@ -56,8 +57,8 @@ export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
     <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
       <div className="flex justify-between items-end">
         <div>
-          <h2 className="text-2xl font-semibold text-white tracking-tight">Financeiro & Fluxo de Caixa</h2>
-          <p className="text-sm text-slate-400 mt-1">Análise aprofundada de capital e previsibilidade</p>
+          <h2 className="text-2xl font-semibold text-white tracking-tight">{isSimplifiedMode ? "Caixa da Obra" : "Financeiro & Fluxo de Caixa"}</h2>
+          <p className="text-sm text-slate-400 mt-1">{isSimplifiedMode ? "Controle de despesas diárias e fundo fixo" : "Análise aprofundada de capital e previsibilidade"}</p>
         </div>
         <button 
           onClick={() => setIsDrawerOpen(true)}
@@ -78,87 +79,146 @@ export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
         className="space-y-6"
       >
         {/* Top Financial KPIs */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-          <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-4 lg:p-6 flex items-center">
-            <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mr-3 lg:mr-4 shrink-0">
-              <TrendingDown className="w-5 h-5 lg:w-6 lg:h-6 text-red-400" />
-            </div>
-            <div>
-              <p className="text-[10px] lg:text-sm text-slate-400 font-bold uppercase tracking-wider lg:normal-case lg:font-medium">
-                <GlossaryTooltip term="Burn Rate">Burn Rate</GlossaryTooltip> Médio
-              </p>
-              <h3 className="text-lg lg:text-2xl font-bold text-white mt-0.5 lg:mt-1">R$ 225k</h3>
-            </div>
-          </motion.div>
-          <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-4 lg:p-6 flex items-center">
-            <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mr-3 lg:mr-4 shrink-0">
-              <Wallet className="w-5 h-5 lg:w-6 lg:h-6 text-blue-400" />
-            </div>
-            <div>
-              <p className="text-[10px] lg:text-sm text-slate-400 font-bold uppercase tracking-wider lg:normal-case lg:font-medium">Caixa Disponível</p>
-              <h3 className="text-lg lg:text-2xl font-bold text-white mt-0.5 lg:mt-1">R$ 1.25M</h3>
-            </div>
-          </motion.div>
-          <motion.div variants={itemVariants} className="sm:col-span-2 lg:col-span-1 bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-4 lg:p-6 flex items-center relative group overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-500/10 to-transparent translate-x-[-100%] group-hover:animate-shimmer rounded-2xl pointer-events-none" />
-            <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mr-3 lg:mr-4 shrink-0">
-              <ArrowRightLeft className="w-5 h-5 lg:w-6 lg:h-6 text-amber-400" />
-            </div>
-            <div>
-              <p className="text-[10px] lg:text-sm text-slate-400 font-bold uppercase tracking-wider lg:normal-case lg:font-medium">
-                <GlossaryTooltip term="Runway">Runway</GlossaryTooltip> Estimado
-              </p>
-              <h3 className="text-lg lg:text-2xl font-bold text-white mt-0.5 lg:mt-1">5.5 Meses</h3>
-            </div>
-          </motion.div>
-        </div>
+        {isSimplifiedMode ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+            <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-4 lg:p-6 flex items-center">
+              <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mr-3 lg:mr-4 shrink-0">
+                <AlertCircle className="w-5 h-5 lg:w-6 lg:h-6 text-red-400" />
+              </div>
+              <div>
+                <p className="text-[10px] lg:text-sm text-slate-400 font-bold uppercase tracking-wider lg:normal-case lg:font-medium">A Pagar Hoje</p>
+                <h3 className="text-lg lg:text-2xl font-bold text-white mt-0.5 lg:mt-1">R$ 12.450</h3>
+              </div>
+            </motion.div>
+            <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-4 lg:p-6 flex items-center">
+              <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mr-3 lg:mr-4 shrink-0">
+                <Wallet className="w-5 h-5 lg:w-6 lg:h-6 text-blue-400" />
+              </div>
+              <div>
+                <p className="text-[10px] lg:text-sm text-slate-400 font-bold uppercase tracking-wider lg:normal-case lg:font-medium">Fundo Fixo (Caixinha)</p>
+                <h3 className="text-lg lg:text-2xl font-bold text-white mt-0.5 lg:mt-1">R$ 5.200</h3>
+              </div>
+            </motion.div>
+            <motion.div variants={itemVariants} className="sm:col-span-2 lg:col-span-1 bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-4 lg:p-6 flex items-center">
+              <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mr-3 lg:mr-4 shrink-0">
+                <ArrowRightLeft className="w-5 h-5 lg:w-6 lg:h-6 text-emerald-400" />
+              </div>
+              <div>
+                <p className="text-[10px] lg:text-sm text-slate-400 font-bold uppercase tracking-wider lg:normal-case lg:font-medium">Gastos da Semana</p>
+                <h3 className="text-lg lg:text-2xl font-bold text-white mt-0.5 lg:mt-1">R$ 38.900</h3>
+              </div>
+            </motion.div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+            <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-4 lg:p-6 flex items-center">
+              <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mr-3 lg:mr-4 shrink-0">
+                <TrendingDown className="w-5 h-5 lg:w-6 lg:h-6 text-red-400" />
+              </div>
+              <div>
+                <p className="text-[10px] lg:text-sm text-slate-400 font-bold uppercase tracking-wider lg:normal-case lg:font-medium">
+                  <GlossaryTooltip term="Burn Rate">Burn Rate</GlossaryTooltip> Médio
+                </p>
+                <h3 className="text-lg lg:text-2xl font-bold text-white mt-0.5 lg:mt-1">R$ 225k</h3>
+              </div>
+            </motion.div>
+            <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-4 lg:p-6 flex items-center">
+              <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mr-3 lg:mr-4 shrink-0">
+                <Wallet className="w-5 h-5 lg:w-6 lg:h-6 text-blue-400" />
+              </div>
+              <div>
+                <p className="text-[10px] lg:text-sm text-slate-400 font-bold uppercase tracking-wider lg:normal-case lg:font-medium">Caixa Disponível</p>
+                <h3 className="text-lg lg:text-2xl font-bold text-white mt-0.5 lg:mt-1">R$ 1.25M</h3>
+              </div>
+            </motion.div>
+            <motion.div variants={itemVariants} className="sm:col-span-2 lg:col-span-1 bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-4 lg:p-6 flex items-center relative group overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-500/10 to-transparent translate-x-[-100%] group-hover:animate-shimmer rounded-2xl pointer-events-none" />
+              <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mr-3 lg:mr-4 shrink-0">
+                <ArrowRightLeft className="w-5 h-5 lg:w-6 lg:h-6 text-amber-400" />
+              </div>
+              <div>
+                <p className="text-[10px] lg:text-sm text-slate-400 font-bold uppercase tracking-wider lg:normal-case lg:font-medium">
+                  <GlossaryTooltip term="Runway">Runway</GlossaryTooltip> Estimado
+                </p>
+                <h3 className="text-lg lg:text-2xl font-bold text-white mt-0.5 lg:mt-1">5.5 Meses</h3>
+              </div>
+            </motion.div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           <div className="lg:col-span-3">
             {/* Gráfico de Fluxo de Caixa (Area) */}
-            <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 h-full">
-              <h3 className="text-lg font-semibold text-white mb-6">Fluxo de Caixa Acumulado (R$ milhares)</h3>
-              <div className="h-64 lg:h-80 w-full">
-                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-                  <AreaChart data={cashflowData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="colorAcumulado" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.4}/>
-                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <XAxis 
-                      dataKey="month" 
-                      axisLine={false} 
-                      tickLine={false} 
-                      tick={{fill: '#64748b', fontSize: 10}} 
-                      dy={10}
-                      interval={"preserveStartEnd"}
-                    />
-                    <YAxis 
-                      axisLine={false} 
-                      tickLine={false} 
-                      tick={{fill: '#64748b', fontSize: 10}}
-                    />
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
-                    <Tooltip 
-                      contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', fontSize: '12px' }}
-                      itemStyle={{ color: '#f8fafc' }}
-                    />
-                    <Area type="monotone" dataKey="acumulado" stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#colorAcumulado)" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </motion.div>
+            {isSimplifiedMode ? (
+              <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 h-full">
+                <h3 className="text-lg font-semibold text-white mb-6">Próximos Vencimentos</h3>
+                <div className="space-y-4">
+                  {[
+                    { prov: "Gerdau S.A.", desc: "Aço Vergalhão CA-50", val: "R$ 12.450", status: "hoje" },
+                    { prov: "Posto Ipiranga", desc: "Combustível Máquinas", val: "R$ 3.200", status: "amanha" },
+                    { prov: "Leroy Merlin", desc: "Materiais Hidráulicos", val: "R$ 1.800", status: "semana" }
+                  ].map((p, i) => (
+                    <div key={i} className="p-4 bg-white/5 rounded-xl border border-white/5 flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-bold text-white">{p.prov}</p>
+                        <p className="text-xs text-slate-500">{p.desc}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-black text-white">{p.val}</p>
+                        <span className={`text-[10px] font-bold uppercase ${p.status === 'hoje' ? 'text-red-400' : p.status === 'amanha' ? 'text-amber-400' : 'text-slate-400'}`}>
+                          {p.status === 'hoje' ? 'Vence Hoje' : p.status === 'amanha' ? 'Vence Amanhã' : 'Vence na Semana'}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 h-full">
+                <h3 className="text-lg font-semibold text-white mb-6">Fluxo de Caixa Acumulado (R$ milhares)</h3>
+                <div className="h-64 lg:h-80 w-full">
+                  <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                    <AreaChart data={cashflowData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorAcumulado" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.4}/>
+                          <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <XAxis 
+                        dataKey="month" 
+                        axisLine={false} 
+                        tickLine={false} 
+                        tick={{fill: '#64748b', fontSize: 10}} 
+                        dy={10}
+                        interval={"preserveStartEnd"}
+                      />
+                      <YAxis 
+                        axisLine={false} 
+                        tickLine={false} 
+                        tick={{fill: '#64748b', fontSize: 10}}
+                      />
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', fontSize: '12px' }}
+                        itemStyle={{ color: '#f8fafc' }}
+                      />
+                      <Area type="monotone" dataKey="acumulado" stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#colorAcumulado)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </motion.div>
+            )}
           </div>
-
+          
           <div className="lg:col-span-1">
             <WhatsAppSyncCard onOpenModal={() => setIsWAModalOpen(true)} />
           </div>
         </div>
 
         {/* Nova Seção: Rentabilidade e Custos */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {!isSimplifiedMode && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Gráfico Waterfall (DRE) */}
           <motion.div variants={itemVariants} className="lg:col-span-2 bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 relative">
             <div className="absolute -right-20 -bottom-20 w-48 h-48 bg-blue-500/10 blur-[60px] rounded-full pointer-events-none" />
@@ -261,6 +321,7 @@ export default function FinancialView({ timeFilter }: { timeFilter?: string }) {
             </div>
           </motion.div>
         </div>
+        )}
       </motion.div>
     </div>
   );

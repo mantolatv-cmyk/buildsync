@@ -41,7 +41,7 @@ export default function SupplyView() {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [isPartnerDrawerOpen, setIsPartnerDrawerOpen] = React.useState(false);
   const [activeNegotiationId, setActiveNegotiationId] = React.useState<string | null>(null);
-  const { supplyData, negotiations, addNegotiation } = useDashboardStore();
+  const { supplyData, negotiations, addNegotiation, isSimplifiedMode, deliveries } = useDashboardStore();
 
   const handleNewNegotiation = () => {
     // Find an item not currently in negotiation
@@ -80,8 +80,8 @@ export default function SupplyView() {
     <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
       <div className="flex justify-between items-end mb-8">
         <div>
-          <h2 className="text-2xl font-semibold text-white tracking-tight">Cadeia de Suprimentos</h2>
-          <p className="text-sm text-slate-400 mt-1">Gestão de insumos críticos (<GlossaryTooltip term="Curva ABC">Curva ABC</GlossaryTooltip>)</p>
+          <h2 className="text-2xl font-semibold text-white tracking-tight">{isSimplifiedMode ? "Logística e Pedidos" : "Cadeia de Suprimentos"}</h2>
+          <p className="text-sm text-slate-400 mt-1">{isSimplifiedMode ? "Acompanhamento de entregas e novos pedidos" : <>Gestão de insumos críticos (<GlossaryTooltip term="Curva ABC">Curva ABC</GlossaryTooltip>)</>}</p>
         </div>
         <div className="flex space-x-3">
           <button 
@@ -103,41 +103,45 @@ export default function SupplyView() {
       <PartnerManagementDrawer isOpen={isPartnerDrawerOpen} onClose={() => setIsPartnerDrawerOpen(false)} />
 
       {/* CFO Digital: Predictive Intelligence Module */}
-      <section className="mb-12">
-        <div className="flex items-center space-x-3 mb-6">
-          <div className="p-2 bg-indigo-500/10 rounded-xl border border-indigo-500/20">
-            <BrainCircuit className="w-5 h-5 text-indigo-400" />
-          </div>
-          <div>
-            <h3 className="text-lg font-bold text-white tracking-tight">Inteligência Preditiva CFO</h3>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Antecipação de Mercado & Gestão de Risco</p>
-          </div>
-        </div>
-        <PredictiveRiskRadar />
-      </section>
-
-      {/* Market Intelligence Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {marketIndices.map((idx, i) => (
-          <motion.div 
-            key={i}
-            variants={itemVariants}
-            className="bg-slate-900/40 backdrop-blur-xl border border-white/5 p-5 rounded-2xl relative group hover:bg-slate-800/50 transition-colors"
-          >
-            <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
-              <TrendingUp className="w-12 h-12 text-white" />
-            </div>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{idx.name.includes('SINAPI') ? <GlossaryTooltip term="SINAPI">SINAPI</GlossaryTooltip> : idx.name}</p>
-            <div className="flex items-end justify-between">
-              <h4 className="text-xl font-bold text-white">{idx.value}</h4>
-              <div className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${idx.status === 'up' ? 'text-amber-400 bg-amber-500/10' : 'text-emerald-400 bg-emerald-500/10'}`}>
-                {idx.status === 'up' ? 'ALTA' : 'ESTÁVEL'}
+      {!isSimplifiedMode && (
+        <>
+          <section className="mb-12">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="p-2 bg-indigo-500/10 rounded-xl border border-indigo-500/20">
+                <BrainCircuit className="w-5 h-5 text-indigo-400" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white tracking-tight">Inteligência Preditiva CFO</h3>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Antecipação de Mercado & Gestão de Risco</p>
               </div>
             </div>
-            <p className="text-xs text-slate-400 mt-2">{idx.desc}</p>
-          </motion.div>
-        ))}
-      </div>
+            <PredictiveRiskRadar />
+          </section>
+
+          {/* Market Intelligence Section */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {marketIndices.map((idx, i) => (
+              <motion.div 
+                key={i}
+                variants={itemVariants}
+                className="bg-slate-900/40 backdrop-blur-xl border border-white/5 p-5 rounded-2xl relative group hover:bg-slate-800/50 transition-colors"
+              >
+                <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
+                  <TrendingUp className="w-12 h-12 text-white" />
+                </div>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{idx.name.includes('SINAPI') ? <GlossaryTooltip term="SINAPI">SINAPI</GlossaryTooltip> : idx.name}</p>
+                <div className="flex items-end justify-between">
+                  <h4 className="text-xl font-bold text-white">{idx.value}</h4>
+                  <div className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${idx.status === 'up' ? 'text-amber-400 bg-amber-500/10' : 'text-emerald-400 bg-emerald-500/10'}`}>
+                    {idx.status === 'up' ? 'ALTA' : 'ESTÁVEL'}
+                  </div>
+                </div>
+                <p className="text-xs text-slate-400 mt-2">{idx.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </>
+      )}
 
       <motion.div 
         variants={containerVariants}
@@ -145,6 +149,28 @@ export default function SupplyView() {
         animate="show"
         className="grid grid-cols-1 lg:grid-cols-3 gap-8"
       >
+        {isSimplifiedMode && (
+          <motion.div variants={itemVariants} className="lg:col-span-3 bg-slate-900/40 backdrop-blur-xl border border-white/5 rounded-2xl p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-white mb-6">Entregas Programadas</h3>
+            <div className="space-y-4">
+              {(deliveries || []).map(d => (
+                <div key={d.id} className="flex justify-between items-center bg-white/5 border border-white/5 p-4 rounded-xl">
+                  <div>
+                    <p className="text-sm font-bold text-white">{d.items}</p>
+                    <p className="text-xs text-slate-500">{d.supplier}</p>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-sm font-black text-emerald-400">{d.time}</span>
+                    <p className="text-xs text-slate-400">{d.status === 'delivered' ? 'Entregue' : 'A Caminho'}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {!isSimplifiedMode && (
+          <>
         {/* AI Negotiation Center */}
         <motion.div variants={itemVariants} className="lg:col-span-1 space-y-6">
           <div className="bg-gradient-to-br from-blue-600/20 to-indigo-600/20 border border-blue-500/20 rounded-3xl p-6 relative overflow-hidden group">
@@ -260,6 +286,8 @@ export default function SupplyView() {
             </ResponsiveContainer>
           </div>
         </motion.div>
+          </>
+        )}
 
         {/* Tabela de Ranking de Fornecedores */}
         <motion.div variants={itemVariants} className="lg:col-span-3 bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6 overflow-hidden">

@@ -61,7 +61,7 @@ export default function ProjectsView() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<any>(null);
   const [editingProject, setEditingProject] = useState<any>(null);
-  const { projects } = useDashboardStore();
+  const { projects, isSimplifiedMode } = useDashboardStore();
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -91,8 +91,8 @@ export default function ProjectsView() {
           >
             <div className="flex justify-between items-end mb-8">
               <div>
-                <h2 className="text-2xl font-semibold text-white tracking-tight">Portfólio de Obras</h2>
-                <p className="text-sm text-slate-400 mt-1">Gestão de múltiplos empreendimentos ativos</p>
+                <h2 className="text-2xl font-semibold text-white tracking-tight">{isSimplifiedMode ? "Minhas Obras Ativas" : "Portfólio de Obras"}</h2>
+                <p className="text-sm text-slate-400 mt-1">{isSimplifiedMode ? "Acompanhamento diário no canteiro" : "Gestão de múltiplos empreendimentos ativos"}</p>
               </div>
               <div className="flex space-x-3">
                 <button className="px-4 py-2 bg-slate-800 text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors border border-white/5">
@@ -108,36 +108,38 @@ export default function ProjectsView() {
             </div>
 
             {/* Curva S do Portfólio (Engenharia) */}
-            <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl border border-white/5 rounded-2xl p-6 mb-8 shadow-xl relative group">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-[80px] rounded-full pointer-events-none" />
-              <div className="flex justify-between items-center mb-6 relative z-10">
-                <div>
-                  <h3 className="text-xl font-semibold text-white"><GlossaryTooltip term="Curva S">Curva S</GlossaryTooltip> de Engenharia (Consolidada)</h3>
-                  <p className="text-sm text-slate-400">Avanço Físico (%) x Desembolso Financeiro (R$ mil)</p>
+            {!isSimplifiedMode && (
+              <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl border border-white/5 rounded-2xl p-6 mb-8 shadow-xl relative group">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-[80px] rounded-full pointer-events-none" />
+                <div className="flex justify-between items-center mb-6 relative z-10">
+                  <div>
+                    <h3 className="text-xl font-semibold text-white"><GlossaryTooltip term="Curva S">Curva S</GlossaryTooltip> de Engenharia (Consolidada)</h3>
+                    <p className="text-sm text-slate-400">Avanço Físico (%) x Desembolso Financeiro (R$ mil)</p>
+                  </div>
                 </div>
-              </div>
-              
-              <div className="h-80 w-full relative z-10">
-                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-                  <ComposedChart data={sCurveData} margin={{ top: 20, right: 20, bottom: 0, left: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
-                    <XAxis dataKey="mes" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
-                    <YAxis yAxisId="left" orientation="left" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} tickFormatter={(val) => `R$${val}k`} />
-                    <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} tickFormatter={(val) => `${val}%`} domain={[0, 100]} />
-                    <RechartsTooltip 
-                      cursor={{ fill: '#1e293b', opacity: 0.4 }}
-                      contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px' }}
-                      formatter={(value: any, name: any) => name.includes('Custo') ? [`R$ ${value}k`, name] : [`${value}%`, name]}
-                    />
-                    <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '13px' }} iconType="circle" />
-                    <Bar yAxisId="left" dataKey="custoPlan" name="Custo Planejado" fill="#334155" radius={[4, 4, 0, 0]} barSize={24} />
-                    <Bar yAxisId="left" dataKey="custoReal" name="Custo Realizado" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={24} opacity={0.8} />
-                    <Line yAxisId="right" type="monotone" dataKey="fisPlan" name="Físico Planejado" stroke="#94a3b8" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 4, fill: '#0f172a', stroke: '#94a3b8', strokeWidth: 2 }} />
-                    <Line yAxisId="right" type="monotone" dataKey="fisReal" name="Físico Realizado" stroke="#10b981" strokeWidth={3} dot={{ r: 6, fill: '#0f172a', stroke: '#10b981', strokeWidth: 2 }} />
-                  </ComposedChart>
-                </ResponsiveContainer>
-              </div>
-            </motion.div>
+                
+                <div className="h-80 w-full relative z-10">
+                  <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                    <ComposedChart data={sCurveData} margin={{ top: 20, right: 20, bottom: 0, left: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
+                      <XAxis dataKey="mes" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
+                      <YAxis yAxisId="left" orientation="left" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} tickFormatter={(val) => `R$${val}k`} />
+                      <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} tickFormatter={(val) => `${val}%`} domain={[0, 100]} />
+                      <RechartsTooltip 
+                        cursor={{ fill: '#1e293b', opacity: 0.4 }}
+                        contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px' }}
+                        formatter={(value: any, name: any) => name.includes('Custo') ? [`R$ ${value}k`, name] : [`${value}%`, name]}
+                      />
+                      <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '13px' }} iconType="circle" />
+                      <Bar yAxisId="left" dataKey="custoPlan" name="Custo Planejado" fill="#334155" radius={[4, 4, 0, 0]} barSize={24} />
+                      <Bar yAxisId="left" dataKey="custoReal" name="Custo Realizado" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={24} opacity={0.8} />
+                      <Line yAxisId="right" type="monotone" dataKey="fisPlan" name="Físico Planejado" stroke="#94a3b8" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 4, fill: '#0f172a', stroke: '#94a3b8', strokeWidth: 2 }} />
+                      <Line yAxisId="right" type="monotone" dataKey="fisReal" name="Físico Realizado" stroke="#10b981" strokeWidth={3} dot={{ r: 6, fill: '#0f172a', stroke: '#10b981', strokeWidth: 2 }} />
+                    </ComposedChart>
+                  </ResponsiveContainer>
+                </div>
+              </motion.div>
+            )}
 
             <motion.div 
               variants={containerVariants}
@@ -181,8 +183,8 @@ export default function ProjectsView() {
 
                     <div className="grid grid-cols-2 gap-4 mb-6">
                       <div className="bg-slate-800/50 p-3 rounded-xl border border-white/5">
-                        <p className="text-xs text-slate-500 mb-1">Orçamento</p>
-                        <p className="text-sm font-semibold text-white">{project.budget}</p>
+                        <p className="text-xs text-slate-500 mb-1">{isSimplifiedMode ? "Próxima Etapa" : "Orçamento"}</p>
+                        <p className="text-sm font-semibold text-white">{isSimplifiedMode ? "Concretagem" : project.budget}</p>
                       </div>
                       <div className="bg-slate-800/50 p-3 rounded-xl border border-white/5">
                         <p className="text-xs text-slate-500 mb-1">Entrega</p>

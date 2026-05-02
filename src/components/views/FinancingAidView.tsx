@@ -39,9 +39,13 @@ export default function FinancingAidView() {
     updateDocStatus, 
     evidences, 
     addEvidence, 
+    addEvidence, 
     updateEvidence, 
-    removeEvidence 
+    removeEvidence,
+    isSimplifiedMode
   } = useDashboardStore();
+  
+  const currentModule = isSimplifiedMode ? "evidence" : activeSubModule;
   
   const [isUploading, setIsUploading] = useState(false);
 
@@ -69,49 +73,55 @@ export default function FinancingAidView() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-gradient-to-r from-blue-900/40 to-indigo-900/40 p-8 rounded-3xl border border-blue-500/20">
         <div>
           <div className="flex items-center space-x-3 mb-2">
-            <div className="p-2 bg-blue-500/20 rounded-lg"><Landmark className="text-blue-400 w-5 h-5" /></div>
-            <span className="text-xs font-bold text-blue-300 uppercase tracking-widest">Conciliação Bancária (<GlossaryTooltip term="PCI">PCI</GlossaryTooltip>/<GlossaryTooltip term="PFUI">PFUI</GlossaryTooltip>)</span>
+            <div className="p-2 bg-blue-500/20 rounded-lg">
+              {isSimplifiedMode ? <Camera className="text-blue-400 w-5 h-5" /> : <Landmark className="text-blue-400 w-5 h-5" />}
+            </div>
+            <span className="text-xs font-bold text-blue-300 uppercase tracking-widest">{isSimplifiedMode ? "Gestão de Campo" : <>Conciliação Bancária (<GlossaryTooltip term="PCI">PCI</GlossaryTooltip>/<GlossaryTooltip term="PFUI">PFUI</GlossaryTooltip>)</>}</span>
           </div>
-          <h2 className="text-3xl font-black text-white">Auxílio Financiamento</h2>
+          <h2 className="text-3xl font-black text-white">{isSimplifiedMode ? "Envio de Fotos e Evidências" : "Auxílio Financiamento"}</h2>
           <p className="text-slate-400 mt-2 max-w-xl">
-            Motor de tradução e algoritmo de liquidez para gestão de crédito imobiliário (CEF).
+            {isSimplifiedMode ? "Registre e anexe o avanço físico da obra." : "Motor de tradução e algoritmo de liquidez para gestão de crédito imobiliário (CEF)."}
           </p>
         </div>
-        <div className="flex flex-col items-end">
-          <div className="text-right">
-            <p className="text-xs text-slate-500 font-bold uppercase">Status de Medição</p>
-            <p className="text-xl font-bold text-amber-400">Gatilho #04 Pendente</p>
-            <p className="text-xs text-slate-500 mt-1">Próxima liberação: R$ 450.000,00</p>
+        {!isSimplifiedMode && (
+          <div className="flex flex-col items-end">
+            <div className="text-right">
+              <p className="text-xs text-slate-500 font-bold uppercase">Status de Medição</p>
+              <p className="text-xl font-bold text-amber-400">Gatilho #04 Pendente</p>
+              <p className="text-xs text-slate-500 mt-1">Próxima liberação: R$ 450.000,00</p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Sub-Module Tabs */}
-      <div className="flex flex-wrap gap-4 border-b border-white/5 pb-1">
-        {[
-          { id: "translation", label: "Motor de Tradução", icon: Calculator },
-          { id: "predictive", label: "Fluxo Preditivo", icon: BarChart3 },
-          { id: "evidence", label: "Gestão de Evidências", icon: Smartphone },
-          { id: "compliance", label: "Cofre de Conformidade", icon: ShieldCheck },
-        ].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveSubModule(tab.id)}
-            className={`flex items-center space-x-2 pb-4 px-2 text-sm font-bold uppercase tracking-wider transition-all relative ${activeSubModule === tab.id ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
-          >
-            <tab.icon className="w-4 h-4" />
-            <span>{tab.label}</span>
-            {activeSubModule === tab.id && (
-              <motion.div layoutId="aidTab" className="absolute bottom-0 left-0 right-0 h-1 bg-blue-500 rounded-full" />
-            )}
-          </button>
-        ))}
-      </div>
+      {!isSimplifiedMode && (
+        <div className="flex flex-wrap gap-4 border-b border-white/5 pb-1">
+          {[
+            { id: "translation", label: "Motor de Tradução", icon: Calculator },
+            { id: "predictive", label: "Fluxo Preditivo", icon: BarChart3 },
+            { id: "evidence", label: "Gestão de Evidências", icon: Smartphone },
+            { id: "compliance", label: "Cofre de Conformidade", icon: ShieldCheck },
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveSubModule(tab.id)}
+              className={`flex items-center space-x-2 pb-4 px-2 text-sm font-bold uppercase tracking-wider transition-all relative ${currentModule === tab.id ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
+            >
+              <tab.icon className="w-4 h-4" />
+              <span>{tab.label}</span>
+              {currentModule === tab.id && (
+                <motion.div layoutId="aidTab" className="absolute bottom-0 left-0 right-0 h-1 bg-blue-500 rounded-full" />
+              )}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Content Area */}
       <div className="min-h-[500px]">
         <AnimatePresence mode="wait">
-          {activeSubModule === "translation" && (
+          {currentModule === "translation" && (
             <motion.div 
               key="translation" 
               initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
@@ -221,7 +231,7 @@ export default function FinancingAidView() {
             </motion.div>
           )}
 
-          {activeSubModule === "predictive" && (
+          {currentModule === "predictive" && (
             <motion.div 
               key="predictive" 
               initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
@@ -282,7 +292,7 @@ export default function FinancingAidView() {
             </motion.div>
           )}
 
-          {activeSubModule === "evidence" && (
+          {currentModule === "evidence" && (
             <motion.div 
               key="evidence" 
               initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
@@ -392,7 +402,7 @@ export default function FinancingAidView() {
             </motion.div>
           )}
 
-          {activeSubModule === "compliance" && (
+          {currentModule === "compliance" && (
             <motion.div 
               key="compliance" 
               initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}

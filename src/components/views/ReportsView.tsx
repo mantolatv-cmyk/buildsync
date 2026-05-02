@@ -2,13 +2,20 @@
 
 import React from "react";
 import { motion, Variants } from "framer-motion";
-import { FileText, Download, Calendar, Filter, FileBarChart, Presentation, PieChart, Loader2, CheckCircle2, TrendingUp, AlertTriangle, DollarSign, Target, ChevronLeft, Printer } from "lucide-react";
+import { FileText, Download, Calendar, Filter, FileBarChart, Presentation, PieChart, Loader2, CheckCircle2, TrendingUp, AlertTriangle, DollarSign, Target, ChevronLeft, Printer, Camera } from "lucide-react";
 import ExecutiveReport from "../ExecutiveReport";
+import { useDashboardStore } from "../../store/useDashboardStore";
 
 const reportTemplates = [
   { id: 1, type: 'exec', title: "Resumo Executivo YTD", icon: Presentation, desc: "Avanço físico, financeiro e principais milestones.", color: "text-blue-400", bg: "bg-blue-500/10" },
   { id: 2, type: 'cash', title: "Fechamento de Caixa", icon: FileBarChart, desc: "Fluxo de caixa detalhado, DRE e mapa de pagamentos.", color: "text-emerald-400", bg: "bg-emerald-500/10" },
   { id: 3, type: 'portfolio', title: "Análise de Portfólio", icon: PieChart, desc: "Comparativo de ROI, YOC e alocação de capital entre obras.", color: "text-purple-400", bg: "bg-purple-500/10" }
+];
+
+const simplifiedReportTemplates = [
+  { id: 1, type: 'diario', title: "Diário de Obra", icon: FileText, desc: "Efetivo, clima e atividades do dia.", color: "text-blue-400", bg: "bg-blue-500/10" },
+  { id: 2, type: 'fotos', title: "Relatório Fotográfico", icon: Camera, desc: "Evidências e registros visuais diários.", color: "text-emerald-400", bg: "bg-emerald-500/10" },
+  { id: 3, type: 'materiais', title: "Falta de Materiais", icon: AlertTriangle, desc: "Insumos críticos para a próxima semana.", color: "text-amber-400", bg: "bg-amber-500/10" }
 ];
 
 const historicalReports = [
@@ -23,6 +30,8 @@ export default function ReportsView() {
   const [activeReport, setActiveReport] = React.useState<string | null>(null);
   const [genProgress, setGenProgress] = React.useState(0);
   const [genText, setGenText] = React.useState("");
+  const { isSimplifiedMode } = useDashboardStore();
+  const currentTemplates = isSimplifiedMode ? simplifiedReportTemplates : reportTemplates;
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -316,7 +325,7 @@ export default function ReportsView() {
     <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
       <div className="flex justify-between items-end">
         <div>
-          <h2 className="text-2xl font-semibold text-white tracking-tight">Central de Relatórios</h2>
+          <h2 className="text-2xl font-semibold text-white tracking-tight">{isSimplifiedMode ? "Relatórios de Campo" : "Central de Relatórios"}</h2>
           <p className="text-sm text-slate-400 mt-1">Gere novos documentos ou acesse o histórico</p>
         </div>
       </div>
@@ -331,7 +340,7 @@ export default function ReportsView() {
         <section>
           <h3 className="text-lg font-semibold text-white mb-4">Templates Disponíveis</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {reportTemplates.map(template => (
+            {currentTemplates.map(template => (
               <motion.div 
                 key={template.id}
                 variants={itemVariants}
