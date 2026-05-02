@@ -26,6 +26,17 @@ export default function NegotiationAgentDrawer({ isOpen, onClose, negotiationId 
   const [isTyping, setIsTyping] = useState(false);
   const [isDealClosed, setIsDealClosed] = useState(false);
 
+  if (!negotiation && isOpen) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center z-[100] bg-black/50 backdrop-blur-sm">
+        <div className="bg-slate-900 p-8 rounded-2xl border border-white/10 flex flex-col items-center">
+          <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4" />
+          <p className="text-white font-bold">Iniciando Agente de Negociação...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!negotiation) return null;
 
   const currentSupplier = negotiation.suppliers[activeSupplier];

@@ -62,6 +62,13 @@ export default function SupplyView() {
       };
       addNegotiation(newNeg);
       setActiveNegotiationId(newNeg.id);
+    } else {
+      // Se não houver itens novos, abre o primeiro item já existente para não deixar o usuário sem resposta
+      if (negotiations.length > 0) {
+        setActiveNegotiationId(negotiations[0].id);
+      } else {
+        alert("Não há insumos pendentes para nova cotação no momento.");
+      }
     }
   };
   
