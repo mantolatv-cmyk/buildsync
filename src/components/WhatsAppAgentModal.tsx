@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   X, Phone, Video, MoreVertical, Search, 
   Smile, Paperclip, Mic, Send, CheckCheck,
-  User, Bot, ShieldCheck, Zap
+  User, Bot, ShieldCheck, Zap, Camera, Play
 } from "lucide-react";
 import { useDashboardStore } from "../store/useDashboardStore";
 
@@ -140,8 +140,29 @@ export default function WhatsAppAgentModal({ isOpen, onClose }: WhatsAppAgentMod
                     <div key={log.id}>
                       {log.type === 'incoming' && (
                         <div className="flex justify-start">
-                          <div className="bg-[#202c33] rounded-lg rounded-tl-none p-3 max-w-[70%] shadow-sm relative">
+                          <div className="bg-[#202c33] rounded-lg rounded-tl-none p-3 max-w-[70%] shadow-sm relative border-l-2 border-indigo-500/30">
+                            {log.mediaType === 'photo' && (
+                              <div className="mb-2 p-2 bg-indigo-500/10 rounded-lg flex items-center space-x-2 text-indigo-300">
+                                <Camera className="w-4 h-4" />
+                                <span className="text-[10px] font-bold uppercase">Foto Detectada</span>
+                              </div>
+                            )}
+                            {log.mediaType === 'audio' && (
+                              <div className="mb-2 p-2 bg-blue-500/10 rounded-lg flex items-center space-x-3 text-blue-300">
+                                <Play className="w-4 h-4 fill-blue-300" />
+                                <div className="h-0.5 flex-1 bg-blue-300/30 rounded-full overflow-hidden">
+                                  <div className="h-full bg-blue-300 w-2/3" />
+                                </div>
+                                <span className="text-[10px] font-bold">0:12</span>
+                              </div>
+                            )}
                             <p className="text-sm text-[#e9edef] leading-relaxed">{log.message}</p>
+                            {log.extraction && (
+                              <div className="mt-2 p-2 bg-white/5 rounded border border-white/5">
+                                <p className="text-[9px] text-slate-500 font-bold uppercase mb-1">Extração I.A. Multimodal:</p>
+                                <p className="text-[11px] text-indigo-300 font-medium italic">{log.extraction}</p>
+                              </div>
+                            )}
                             <div className="flex justify-end items-center mt-1">
                               <span className="text-[9px] text-[#8696a0]">{log.time}</span>
                             </div>

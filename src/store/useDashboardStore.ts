@@ -51,6 +51,16 @@ interface DashboardState {
     time: string;
     type: 'incoming' | 'outgoing' | 'ai_processed' | 'ai_processed_response';
     status: 'read' | 'delivered' | 'processing';
+    mediaType?: 'photo' | 'audio' | 'text';
+    extraction?: string;
+  }>;
+  pendingAIValidations: Array<{
+    id: string;
+    type: 'cost' | 'progress';
+    source: 'whatsapp';
+    data: any;
+    status: 'pending' | 'confirmed' | 'rejected';
+    timestamp: string;
   }>;
   weather: {
     status: 'rain' | 'sun' | 'cloudy';
@@ -99,6 +109,8 @@ interface DashboardState {
   addWhatsAppLog: (log: any) => void;
   toggleSimplifiedMode: () => void;
   toggleTaskStatus: (id: number) => void;
+  confirmAIValidation: (id: string) => void;
+  rejectAIValidation: (id: string) => void;
 }
 
 export const useDashboardStore = create<DashboardState>()(
@@ -266,7 +278,27 @@ export const useDashboardStore = create<DashboardState>()(
       whatsappLogs: [
         { id: 'w1', contact: 'Fornecedor Gerdau', message: 'Tabela de preços atualizada enviada.', time: '10:15', type: 'incoming', status: 'read' },
         { id: 'w2', contact: 'Fornecedor Gerdau', message: 'CFO Digital analisando impacto no orçamento...', time: '10:16', type: 'ai_processed', status: 'processing' },
+        { id: 'w-media-1', contact: 'Eng. Ricardo', message: '📸 Foto do recibo de combustível anexada.', time: '11:05', type: 'incoming', status: 'read', mediaType: 'photo', extraction: 'R$ 154,20 - Posto Ipiranga' },
+        { id: 'w-media-2', contact: 'Eng. Ricardo', message: '🎤 Áudio: "Laje do bloco A concluída, pode liberar medição."', time: '11:10', type: 'incoming', status: 'read', mediaType: 'audio', extraction: 'Progresso: 100% Laje Bloco A' },
         { id: 'w3', contact: 'Eng. Ricardo', message: 'Comprovante de medição Setor B anexado.', time: '09:30', type: 'incoming', status: 'read' },
+      ],
+      pendingAIValidations: [
+        { 
+          id: 'v1', 
+          type: 'cost', 
+          source: 'whatsapp', 
+          data: { description: 'Recibo Combustível (VTR 02)', amount: 154.20, category: 'Transporte' }, 
+          status: 'pending', 
+          timestamp: '11:05' 
+        },
+        { 
+          id: 'v2', 
+          type: 'progress', 
+          source: 'whatsapp', 
+          data: { project: 'Residencial Alpha', stage: 'Laje Bloco A', progress: 100 }, 
+          status: 'pending', 
+          timestamp: '11:10' 
+        }
       ],
       predictiveInsights: [
         {
@@ -575,6 +607,30 @@ export const useDashboardStore = create<DashboardState>()(
         dailyTasks: state.dailyTasks.map(task => 
           task.id === id ? { ...task, completed: !task.completed } : task
         )
+      })),
+      confirmAIValidation: (id) => set((state) => {
+        const validation = state.pendingAIValidations.find(v => v.id === id);
+        if (!validation) return state;
+
+        // Perform side effects based on type
+        if (validation.type === 'cost') {
+          // In a real app, update financial records
+          console.log("Financeiro atualizado:", validation.data);
+        } else if (validation.type === 'progress') {
+          // Update project progress
+          console.log("Progresso atualizado:", validation.data);
+        }
+
+        return {
+          pendingAIValidations: state.pendingAIValidations.filter(v => v.id !== id),
+          activityLog: [
+            { id: Date.now(), action: `Confirmou validação I.A.: ${validation.type === 'cost' ? 'Custo' : 'Progresso'}`, time: "Agora", icon: "CheckCircle" },
+            ...state.activityLog
+          ]
+        };
+      }),
+      rejectAIValidation: (id) => set((state) => ({
+        pendingAIValidations: state.pendingAIValidations.filter(v => v.id !== id)
       }))
     }),
     {

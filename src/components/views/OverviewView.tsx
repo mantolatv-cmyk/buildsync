@@ -10,6 +10,7 @@ import {
   PieChart, Pie, Cell, BarChart, Bar, Legend, ComposedChart, Area
 } from "recharts";
 import { useDashboardStore } from "../../store/useDashboardStore";
+import AIPendingValidation from "../AIPendingValidation";
 import CriticalPathDrawer from "../CriticalPathDrawer";
 import { Loader2, Zap } from "lucide-react";
 
@@ -668,8 +669,11 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <motion.div variants={itemVariants} className="lg:col-span-2 bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6">
-            <h2 className="text-lg font-semibold text-white mb-6">Controle de Orçamento</h2>
+            <div className="lg:col-span-2 space-y-6">
+              <AIPendingValidation />
+              
+              <motion.div variants={itemVariants} className="bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/5 p-6">
+                <h2 className="text-lg font-semibold text-white mb-6">Controle de Orçamento</h2>
             <div className="space-y-8">
               <div>
                 <div className="flex justify-between text-sm mb-2">
@@ -710,6 +714,7 @@ export default function OverviewView({ timeFilter, setActiveKpiDetail }: { timeF
               })}
             </div>
           </motion.div>
+        </div>
         </div>
         </div>
       )}
