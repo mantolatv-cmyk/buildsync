@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   BarChart3, ShieldCheck, Camera, Calculator, AlertCircle, 
   CheckCircle2, FileWarning, ArrowUpRight, TrendingDown,
-  Lock, Landmark, Smartphone, MapPin, FileCheck, Plus, Settings
+  Lock, Landmark, Smartphone, MapPin, FileCheck, Plus, Settings,
+  Upload, Trash2, Edit2, X
 } from "lucide-react";
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, 
@@ -47,6 +48,7 @@ export default function FinancingAidView() {
   const currentModule = isSimplifiedMode ? "evidence" : activeSubModule;
   
   const [isUploading, setIsUploading] = useState(false);
+  const [editingEvidence, setEditingEvidence] = useState<any>(null);
 
   const handleUpload = (id: string) => {
     setIsUploading(true);
@@ -184,9 +186,7 @@ export default function FinancingAidView() {
                           return null;
                         }}
                       />
-                      {/* Background bar for Planejado */}
                       <Bar dataKey="planejado" name="Planejado (PCI)" fill="#1e293b" barSize={16} radius={[0, 8, 8, 0]} />
-                      {/* Foreground bar for Realizado with Gradient and Glow */}
                       <Bar dataKey="realizado" name="Realizado (Campo)" fill="url(#barGradient)" barSize={16} radius={[0, 8, 8, 0]} filter="url(#barGlow)" />
                     </BarChart>
                   </ResponsiveContainer>
@@ -321,54 +321,112 @@ export default function FinancingAidView() {
                     >
                       <Plus className="w-3 h-3 mr-2" /> Adicionar Material
                     </button>
-                    <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded-lg border border-emerald-500/20 uppercase tracking-widest flex items-center">Aprovado</span>
                   </div>
                 </div>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {evidences.map((img: any) => (
-                    <div key={img.id} className="group relative bg-slate-800/50 rounded-2xl overflow-hidden border border-white/5 hover:border-blue-500/30 transition-all">
+                  {evidences.map((evidence: any) => (
+                    <motion.div key={evidence.id} className="group relative bg-slate-800/50 rounded-2xl overflow-hidden border border-white/5 hover:border-blue-500/30 transition-all">
                       <div className="h-40 bg-slate-700/30 flex items-center justify-center relative">
                         <Camera className="w-8 h-8 text-slate-600 group-hover:text-blue-500 transition-colors" />
-                        <button 
-                          onClick={() => {
-                            const updatedTitle = prompt("Novo título:", img.title);
-                            if (updatedTitle) {
-                              updateEvidence(img.id, { title: updatedTitle });
-                            }
-                          }}
-                          className="absolute top-2 right-2 p-2 bg-slate-950/80 backdrop-blur-md rounded-lg border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-white"
-                        >
-                          <Settings className="w-3.5 h-3.5" />
-                        </button>
-                        {img.type === 'Hidden' && (
-                          <div className="absolute top-2 left-2 px-2 py-1 bg-red-500 text-white text-[10px] font-bold rounded uppercase">Item Oculto</div>
-                        )}
                       </div>
                       <div className="p-4">
-                        <h4 className="text-sm font-bold text-white">{img.title}</h4>
+                        <h4 className="text-sm font-bold text-white">{evidence.title}</h4>
                         <div className="flex items-center mt-2 text-[10px] text-slate-500">
-                          <MapPin className="w-3 h-3 mr-1" /> {img.loc} • {img.date}
+                          <MapPin className="w-3 h-3 mr-1" /> {evidence.loc} • {evidence.date}
                         </div>
                         <div className="mt-3 flex items-center justify-between">
                           <div className="flex items-center space-x-1 text-emerald-400 text-[10px] font-bold uppercase">
                             <ShieldCheck className="w-3 h-3" /> <span>VERIFICADO</span>
                           </div>
-                          <button 
-                            onClick={() => {
-                              if (confirm("Remover esta evidência?")) {
-                                removeEvidence(img.id);
-                              }
-                            }}
-                            className="text-[10px] font-black text-red-500/50 hover:text-red-400 uppercase transition-colors"
-                          >
-                            Excluir
-                          </button>
+                          <div className="flex items-center space-x-2">
+                            <button 
+                              onClick={() => setEditingEvidence(evidence)}
+                              className="p-2 text-slate-500 hover:text-blue-400 transition-colors"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button 
+                              onClick={() => {
+                                if (confirm("Remover esta evidência?")) {
+                                  removeEvidence(evidence.id);
+                                }
+                              }}
+                              className="p-2 text-slate-500 hover:text-red-400 transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
+
+                {/* Edit Modal */}
+                <AnimatePresence>
+                  {editingEvidence && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                      <motion.div 
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        onClick={() => setEditingEvidence(null)}
+                        className="absolute inset-0 bg-[#020617]/80 backdrop-blur-sm"
+                      />
+                      <motion.div 
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                        className="bg-slate-900 border border-white/10 p-6 rounded-3xl w-full max-w-md relative z-10 shadow-2xl"
+                      >
+                        <div className="flex justify-between items-center mb-6">
+                          <h3 className="text-xl font-bold text-white">Editar Evidência</h3>
+                          <button onClick={() => setEditingEvidence(null)} className="p-2 hover:bg-white/5 rounded-full transition-colors text-slate-400">
+                            <X className="w-5 h-5" />
+                          </button>
+                        </div>
+
+                        <div className="space-y-4">
+                          <div>
+                            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 block">Título</label>
+                            <input 
+                              type="text" 
+                              value={editingEvidence.title}
+                              onChange={(e) => setEditingEvidence({...editingEvidence, title: e.target.value})}
+                              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50 transition-colors"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 block">Localização</label>
+                            <input 
+                              type="text" 
+                              value={editingEvidence.loc}
+                              onChange={(e) => setEditingEvidence({...editingEvidence, loc: e.target.value})}
+                              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50 transition-colors"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex space-x-3 mt-8">
+                          <button 
+                            onClick={() => setEditingEvidence(null)}
+                            className="flex-1 px-4 py-3 bg-white/5 text-white font-bold rounded-xl hover:bg-white/10 transition-colors"
+                          >
+                            Cancelar
+                          </button>
+                          <button 
+                            onClick={() => {
+                              updateEvidence(editingEvidence.id, { title: editingEvidence.title, loc: editingEvidence.loc });
+                              setEditingEvidence(null);
+                            }}
+                            className="flex-1 px-4 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-500 transition-colors shadow-lg shadow-blue-600/20"
+                          >
+                            Salvar Alterações
+                          </button>
+                        </div>
+                      </motion.div>
+                    </div>
+                  )}
+                </AnimatePresence>
               </div>
 
               {/* Inspector Preview */}

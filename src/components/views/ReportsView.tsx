@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion, Variants } from "framer-motion";
-import { FileText, Download, Calendar, Filter, FileBarChart, Presentation, PieChart, Loader2, CheckCircle2, TrendingUp, AlertTriangle, DollarSign, Target, ChevronLeft, Printer, Camera, ExternalLink } from "lucide-react";
+import { FileText, Download, Calendar, Filter, FileBarChart, Presentation, PieChart, Loader2, CheckCircle2, TrendingUp, AlertTriangle, DollarSign, Target, ChevronLeft, Printer, Camera, ExternalLink, Users, AlertCircle, Image, Plus, Trash2, X, CloudRain } from "lucide-react";
 import ExecutiveReport from "../ExecutiveReport";
 import { useDashboardStore } from "../../store/useDashboardStore";
 
@@ -30,7 +30,8 @@ export default function ReportsView() {
   const [activeReport, setActiveReport] = React.useState<string | null>(null);
   const [genProgress, setGenProgress] = React.useState(0);
   const [genText, setGenText] = React.useState("");
-  const { isSimplifiedMode } = useDashboardStore();
+  const [activeOperationalForm, setActiveOperationalForm] = React.useState<string | null>(null);
+  const { isSimplifiedMode, weather } = useDashboardStore();
   const currentTemplates = isSimplifiedMode ? simplifiedReportTemplates : reportTemplates;
 
   const containerVariants: Variants = {
@@ -44,6 +45,10 @@ export default function ReportsView() {
   };
 
   const handleGenerate = (type: string) => {
+    if (isSimplifiedMode) {
+      setActiveOperationalForm(type);
+      return;
+    }
     setIsGenerating(true);
     setGenProgress(0);
     
@@ -103,6 +108,170 @@ export default function ReportsView() {
         </div>
         <span className="mt-4 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">{genProgress}% COMPLETO</span>
       </div>
+    );
+  }
+
+  // --- Operational Forms for Simplified Mode ---
+  if (activeOperationalForm === 'diario') {
+    return (
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl mx-auto space-y-8 pb-20">
+        <div className="flex items-center justify-between border-b border-white/10 pb-6">
+          <div className="flex items-center space-x-4">
+            <button onClick={() => setActiveOperationalForm(null)} className="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-400">
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <h2 className="text-2xl font-bold text-white">Novo Diário de Obra</h2>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-slate-900/40 border border-white/5 p-6 rounded-3xl">
+            <div className="flex items-center space-x-3 mb-6">
+              <Users className="w-5 h-5 text-blue-400" />
+              <h3 className="text-sm font-bold text-white uppercase tracking-widest">Efetivo do Dia</h3>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs text-slate-500 font-bold uppercase block mb-2">Funcionários Próprios</label>
+                <input type="number" defaultValue={12} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-blue-500/50" />
+              </div>
+              <div>
+                <label className="text-xs text-slate-500 font-bold uppercase block mb-2">Terceirizados</label>
+                <input type="number" defaultValue={8} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-blue-500/50" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-slate-900/40 border border-white/5 p-6 rounded-3xl">
+            <div className="flex items-center space-x-3 mb-6">
+              <CloudRain className="w-5 h-5 text-blue-400" />
+              <h3 className="text-sm font-bold text-white uppercase tracking-widest">Condições Climáticas</h3>
+            </div>
+            <div className="p-4 bg-blue-500/5 border border-blue-500/20 rounded-2xl">
+              <p className="text-sm text-white font-bold">{weather?.temp} • {weather?.condition}</p>
+              <p className="text-xs text-slate-400 mt-1">{weather?.impact}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-slate-900/40 border border-white/5 p-6 rounded-3xl">
+          <h3 className="text-sm font-bold text-white uppercase tracking-widest mb-4">Relato de Atividades</h3>
+          <textarea 
+            rows={4}
+            placeholder="Descreva o que foi feito hoje..."
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-blue-500/50 resize-none"
+          />
+        </div>
+
+        <button 
+          onClick={() => {
+            alert("Diário de Obra salvo com sucesso!");
+            setActiveOperationalForm(null);
+          }}
+          className="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20"
+        >
+          Finalizar e Salvar Diário
+        </button>
+      </motion.div>
+    );
+  }
+
+  if (activeOperationalForm === 'materiais') {
+    return (
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl mx-auto space-y-8 pb-20">
+        <div className="flex items-center justify-between border-b border-white/10 pb-6">
+          <div className="flex items-center space-x-4">
+            <button onClick={() => setActiveOperationalForm(null)} className="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-400">
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <h2 className="text-2xl font-bold text-white">Sinalizar Falta de Materiais</h2>
+          </div>
+        </div>
+
+        <div className="bg-slate-900/40 border border-white/5 p-6 rounded-3xl space-y-4">
+          {[
+            { id: 1, item: "Cimento CP-II", qty: "50 sacos", priority: "Alta" },
+            { id: 2, item: "Areia Média", qty: "3 m³", priority: "Média" },
+          ].map((m) => (
+            <div key={m.id} className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl">
+              <div>
+                <p className="font-bold text-white">{m.item}</p>
+                <p className="text-xs text-slate-500">Qtd: {m.qty}</p>
+              </div>
+              <div className="flex items-center space-x-4">
+                <span className={`text-[10px] font-black uppercase px-2 py-1 rounded ${m.priority === 'Alta' ? 'bg-red-500/20 text-red-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                  {m.priority}
+                </span>
+                <button className="text-slate-500 hover:text-red-400"><Trash2 className="w-4 h-4" /></button>
+              </div>
+            </div>
+          ))}
+          
+          <button className="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl text-slate-500 font-bold flex items-center justify-center hover:border-blue-500/50 hover:text-blue-400 transition-all">
+            <Plus className="w-5 h-5 mr-2" /> Adicionar Item Faltante
+          </button>
+        </div>
+
+        <button 
+          onClick={() => {
+            alert("Alerta de falta de materiais enviado para Compras!");
+            setActiveOperationalForm(null);
+          }}
+          className="w-full py-4 bg-red-600 text-white font-bold rounded-2xl hover:bg-red-500 transition-all shadow-xl shadow-red-600/20"
+        >
+          Enviar Alerta para Compras
+        </button>
+      </motion.div>
+    );
+  }
+
+  if (activeOperationalForm === 'fotos') {
+    return (
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-4xl mx-auto space-y-8 pb-20">
+        <div className="flex items-center justify-between border-b border-white/10 pb-6">
+          <div className="flex items-center space-x-4">
+            <button onClick={() => setActiveOperationalForm(null)} className="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-400">
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <h2 className="text-2xl font-bold text-white">Relatório Fotográfico Diário</h2>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-slate-900/40 border border-white/5 rounded-3xl overflow-hidden group">
+              <div className="h-48 bg-slate-800 flex items-center justify-center relative">
+                <Image className="w-10 h-10 text-slate-700 group-hover:text-blue-500 transition-colors" />
+                <button className="absolute top-2 right-2 p-2 bg-red-500/20 text-red-400 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="p-4">
+                <input 
+                  type="text" 
+                  placeholder="Adicione uma legenda..." 
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-blue-500/50"
+                />
+              </div>
+            </div>
+          ))}
+          
+          <button className="h-full min-h-[200px] border-2 border-dashed border-white/10 rounded-3xl text-slate-500 font-bold flex flex-col items-center justify-center hover:border-blue-500/50 hover:text-blue-400 transition-all space-y-2">
+            <Camera className="w-8 h-8" />
+            <span className="text-sm">Anexar Nova Foto</span>
+          </button>
+        </div>
+
+        <button 
+          onClick={() => {
+            alert("Relatório Fotográfico gerado com sucesso!");
+            setActiveOperationalForm(null);
+          }}
+          className="w-full py-4 bg-emerald-600 text-white font-bold rounded-2xl hover:bg-emerald-500 transition-all shadow-xl shadow-emerald-600/20"
+        >
+          Gerar PDF do Relatório
+        </button>
+      </motion.div>
     );
   }
 
